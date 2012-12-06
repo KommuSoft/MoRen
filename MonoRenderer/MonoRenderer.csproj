@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5161718C-11FB-42E2-B42C-E95510626A5B}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>MonoRenderer</RootNamespace>
+    <AssemblyName>MonoRenderer</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="Accelerator.cs" />
+    <Compile Include="AddRemoveEvent.cs" />
+    <Compile Include="AntiAliasingTechnique.cs" />
+    <Compile Include="BinarySpaceTree.cs" />
+    <Compile Include="Blob.cs" />
+    <Compile Include="Camera.cs" />
+    <Compile Include="CastResult.cs" />
+    <Compile Include="Color.cs" />
+    <Compile Include="CombinedList.cs" />
+    <Compile Include="DebugFile.cs" />
+    <Compile Include="Dequeue.cs" />
+    <Compile Include="Face.cs" />
+    <Compile Include="FinalList.cs" />
+    <Compile Include="GlobalClock.cs" />
+    <Compile Include="GridAccelerator.cs" />
+    <Compile Include="IRenderable.cs" />
+    <Compile Include="KdeTreeAccelerator.cs" />
+    <Compile Include="LazyFunc.cs" />
+    <Compile Include="Lensflare.cs" />
+    <Compile Include="Light.cs" />
+    <Compile Include="Loader3ds.cs" />
+    <Compile Include="LoaderObj.cs" />
+    <Compile Include="Material.cs" />
+    <Compile Include="Maths.cs" />
+    <Compile Include="Matrix4.cs" />
+    <Compile Include="MatrixStack.cs" />
+    <Compile Include="Mesh.cs" />
+    <Compile Include="MeshLoader.cs" />
+    <Compile Include="ModelDecoder.cs" />
+    <Compile Include="ModelDecoderBase.cs" />
+    <Compile Include="NaiveAccelerator.cs" />
+    <Compile Include="NameBase.cs" />
+    <Compile Include="OctTreeAccelerator.cs" />
+    <Compile Include="OrderingRenderItem.cs" />
+    <Compile Include="Perlin.cs" />
+    <Compile Include="Point2.cs" />
+    <Compile Include="Point3.cs" />
+    <Compile Include="ProxyRenderItem.cs" />
+    <Compile Include="ProxyTriangle.cs" />
+    <Compile Include="Rasterizer.cs" />
+    <Compile Include="Ray.cs" />
+    <Compile Include="RayTracer.cs" />
+    <Compile Include="RenderItem.cs" />
+    <Compile Include="RenderItemFeeder.cs" />
+    <Compile Include="RenderWindow.cs" />
+    <Compile Include="Scene.cs" />
+    <Compile Include="SceneDescription.cs" />
+    <Compile Include="SceneGraph.cs" />
+    <Compile Include="SceneGraphNode.cs" />
+    <Compile Include="SobelGenerator.cs" />
+    <Compile Include="Sphere.cs" />
+    <Compile Include="SubList.cs" />
+    <Compile Include="Texture.cs" />
+    <Compile Include="Triangle.cs" />
+    <Compile Include="Triangle3.cs" />
+    <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+</Project>
