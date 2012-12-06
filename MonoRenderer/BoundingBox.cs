@@ -82,16 +82,20 @@ namespace Renderer {
 			whd[dim] = sweep-xyz0[dim];
 			return 2.0d*(whd[0x00]*whd[0x01]+whd[0x00]*whd[0x02]+whd[0x01]*whd[0x02]);
 		}
-		public override Tuple<ProxyRenderItem[],ProxyRenderItem[]> SplitAt (double sweep, int dim) {
-			BoundingBox left = new BoundingBox();
+		public override void SplitAt (double sweep, int dim, out BoundingBox left, out BoundingBox right) {
+			left = new BoundingBox();
 			left.xyz0.SetValues(this.xyz0);
 			left.xyz1.SetValues(this.xyz1);
 			left.xyz1[dim] = sweep;
-			BoundingBox right = new BoundingBox();
+			right = new BoundingBox();
 			right.xyz0.SetValues(this.xyz0);
 			right.xyz1.SetValues(this.xyz1);
 			right.xyz0[dim] = sweep;
-			return new Tuple<ProxyRenderItem[], ProxyRenderItem[]>(new ProxyRenderItem[] {left}, new ProxyRenderItem[] {right});
+		}
+		public override Tuple<ProxyRenderItem[],ProxyRenderItem[]> SplitAt (double sweep, int dim) {
+			BoundingBox l, r;
+			SplitAt(sweep, dim, out l, out r);
+			return new Tuple<ProxyRenderItem[], ProxyRenderItem[]>(new ProxyRenderItem[] {l}, new ProxyRenderItem[] {r});
 		}
 		public override void GetDimensionBounds (int dim, out double x0, out double x1) {
 			x0 = xyz0[dim];

@@ -22,10 +22,11 @@ using System;
 
 namespace Renderer {
 
-	public interface IRenderable
-	{
+	public interface IRenderable {
 
-
+		RenderItem Root {
+			get;
+		}
 		double Surface ();
 		double SplitSurface (double sweep, int dimension);
 		Tuple<ProxyRenderItem[],ProxyRenderItem[]> SplitAt (double sweep, int dimension);

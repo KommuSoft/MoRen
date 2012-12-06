@@ -25,6 +25,11 @@ namespace Renderer {
 	public abstract class ProxyRenderItem : IRenderable {
 
 		public readonly RenderItem Source;
+		public RenderItem Root {
+			get {
+				return this.Source;
+			}
+		}
 
 		public ProxyRenderItem (RenderItem source) {
 			this.Source = source;

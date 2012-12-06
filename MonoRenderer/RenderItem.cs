@@ -2,9 +2,13 @@ using System;
 
 namespace Renderer {
 	
-	public abstract class RenderItem : IRenderable
-	{
+	public abstract class RenderItem : IRenderable {
 		
+		public RenderItem Root {
+			get {
+				return this.Root;
+			}
+		}
 		public readonly int Id = 0;
 		private static int IdDispatcher = 0x00;
 		public readonly Material Material;
