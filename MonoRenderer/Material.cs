@@ -3,8 +3,10 @@ using System.IO;
 
 namespace Renderer {
 	
+	public delegate void MaterialGetter (Point3 tu,out uint ambient,out uint diffuse,out uint specular);
+
 	public sealed class Material {
-		
+
 		public static readonly Material DefaultMaterial = new Material();
 		public readonly uint Ambient;
 		public readonly uint Specular;
@@ -16,6 +18,7 @@ namespace Renderer {
 		public readonly Texture Reflection;
 		public readonly Texture Bump;
 		public readonly Texture Envmap;
+		public readonly MaterialGetter ADSAt;
 		
 		public Material (uint ambient = 0xc0c0c0, uint specular = 0xc0c0c0, uint diffuse = 0xc0c0c0, double shininess = 15.0d, double transparent = 0.0d, Texture texture = null, Texture reflection = null, Texture bump = null, double nfactor=1.0d) {
 			this.Ambient = ambient;
@@ -26,26 +29,30 @@ namespace Renderer {
 			this.Texture = texture;
 			this.Reflection = reflection;
 			this.Bump = bump;
+			if(this.Texture == null && this.Reflection == null) {
+				this.ADSAt = ADSAt00;
+			}
 		}
 
-		public void ADSAt (Point3 tu, out uint ambient, out uint diffuse, out uint specular) {
-			//return PerlinCache.Sky3(tu);
+		public void ADSAt00 (Point3 tu, out uint ambient, out uint diffuse, out uint specular) {
+			ambient = this.Ambient;
+			diffuse = this.Diffuse;
+			specular = this.Specular;
+		}
+
+		public void ADSAt11 (Point3 tu, out uint ambient, out uint diffuse, out uint specular) {
 			ambient = this.Ambient;
 			diffuse = this.Diffuse;
 			specular = this.Specular;
 			uint tex;
-			if(this.Texture != null) {
-				tex = this.Texture.ColorAt(tu);
-				ambient = Color.Multiply(ambient, tex);
-				diffuse = Color.Multiply(diffuse, tex);
-				specular = Color.Multiply(specular, tex);
-			}
-			if(this.Reflection != null) {
-				tex = this.Texture.ColorAt(tu);
-				ambient = Color.Multiply(ambient, tex);
-				diffuse = Color.Multiply(diffuse, tex);
-				specular = Color.Multiply(specular, tex);
-			}
+			tex = this.Texture.ColorAt(tu);
+			ambient = Color.Multiply(ambient, tex);
+			diffuse = Color.Multiply(diffuse, tex);
+			specular = Color.Multiply(specular, tex);
+			tex = this.Reflection.ColorAt(tu);
+			//ambient = Color.Multiply(ambient, tex);
+			//diffuse = Color.Multiply(diffuse, tex);
+			specular = Color.Multiply(specular, tex);
 		}
 		
 		private uint readInt (BinaryReader br) {

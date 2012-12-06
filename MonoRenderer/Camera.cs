@@ -169,11 +169,12 @@ namespace Renderer {
 			DateTime start = DateTime.Now;
 			this.RebuildMatrix();
 			int cores = Environment.ProcessorCount;
-			System.Threading.Tasks.Parallel.For(0x00, cores, x => CalculateImage(x*Height/cores, (x+1)*Height/cores));
+			//System.Threading.Tasks.Parallel.For(0x00, cores, x => CalculateImage(x*Height/cores, (x+1)*Height/cores));
+			//this.CalculateImage(0x00, this.Height);
 			DateTime stop = DateTime.Now;
 			Console.WriteLine("Rendered in {0}", stop-start);
 		}
-		public void CalculateImage (int yfrom, int yto) {
+		public async Task<void> CalculateImage (int yfrom, int yto) {
 			double sh = ScreenDistance*Math.Tan(0.5d*this.foVH);
 			int w = this.Width;
 			int h = this.Height;

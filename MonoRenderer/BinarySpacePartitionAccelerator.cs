@@ -29,30 +29,31 @@ namespace Renderer {
 		private readonly BinarySpaceNode root;
 		private readonly double x0, x1, y0, y1, z0, z1;
 
-		public BinarySpacePartitionAccelerator (List<RenderItem> items) : this(items,(int) Math.Ceiling(1.25d*Math.Log(Math.Max(1.0d,items.Count),2))) {
+		public BinarySpacePartitionAccelerator (List<RenderItem> items) : this(items,(int) Math.Ceiling(2.0d*Math.Log(Math.Max(1.0d,items.Count),2))) {
 		}
 		public BinarySpacePartitionAccelerator (List<RenderItem> items, int maxdepth, int maxsize = 6) {
 			BoundingBox bb = new BoundingBox();
 			Utils.CalculateBoundingBox(items, bb);
-			root = Subdivide(maxdepth, maxsize, bb, 0x00, items);
+			double totalSurface = items.Sum(ri => ri.Surface());
+			root = Subdivide(maxdepth, maxsize, bb, 0x00, items, totalSurface);
 			bb.OutParam(out x0, out x1, out y0, out y1, out z0, out z1);
 		}
 
-		private static BinarySpaceNode Subdivide (int maxdepth, int maxsize, BoundingBox bb, int depth, List<RenderItem> items) {
+		private static BinarySpaceNode Subdivide (int maxdepth, int maxsize, BoundingBox bb, int depth, List<RenderItem> items, double total) {
 			if(depth >= maxdepth || items.Count <= maxsize) {
 				return new BinarySpaceNode(items.ToArray());
 			}
 			int dim;
-			double sweep = CalculateOptimalSplit(items, bb, out dim);
+			double sweep = CalculateOptimalSplit(items, bb, out dim, total);
 			BoundingBox bbleft, bbright;
 			bb.SplitAt(sweep, dim, out bbleft, out bbright);
 			List<RenderItem> left = new List<RenderItem>(), right = new List<RenderItem>();
-			Split(items, dim, sweep, left, right, bbleft, bbright);
-			return new BinarySpaceNode(Subdivide(maxdepth, maxsize, bbleft, depth+0x01, left), Subdivide(maxdepth, maxsize, bbright, depth+0x01, right), sweep, dim);
+			double leftsf, rightsf;
+			Split(items, dim, sweep, left, right, bbleft, bbright, out leftsf, out rightsf);
+			return new BinarySpaceNode(Subdivide(maxdepth, maxsize, bbleft, depth+0x01, left, leftsf), Subdivide(maxdepth, maxsize, bbright, depth+0x01, right, rightsf), sweep, dim);
 		}
 
-		private static double CalculateOptimalSplit (List<RenderItem> items, BoundingBox bb, out int maxDim) {
-			double totalSurface = items.Sum(ri => ri.Surface());
+		private static double CalculateOptimalSplit (List<RenderItem> items, BoundingBox bb, out int maxDim, double totalSurface) {
 			double heu, maxHeu = double.NegativeInfinity, x, maxx;
 			maxDim = 0x00;
 			maxx = CalculateOptimalSplit(items, bb, totalSurface, out maxHeu, 0x00);
@@ -81,6 +82,7 @@ namespace Renderer {
 			double x0, x1;
 			int nleft = 0x00;
 			int ntotal = items.Count;
+			double lsf = 0.0d;
 			bb.GetDimensionBounds(dim, out x0, out x1);
 			maxHeur = double.PositiveInfinity;
 			double xheu = double.NaN, heu;
@@ -95,13 +97,18 @@ namespace Renderer {
 				}
 				else {
 					nleft++;
+					lsf += items[index].Surface();
 					if(!activ.Remove(index)) {
 						torem.Add(index);
 					}
 				}
 				if(x0 < x && x < x1) {
 					//Console.WriteLine("Inside");
-					heu = Math.Max((nleft+activ.Count), (ntotal-nleft));
+					double lssf = 0.0d;
+					foreach(int id in activ) {
+						lssf += items[id].SplitSurface(x, dim);
+					}
+					heu = (nleft+activ.Count)*(lsf+lssf)+(ntotal-nleft)*(totalSurface-lsf-lssf);
 					if(heu < maxHeur) {
 						maxHeur = heu;
 						xheu = x;
@@ -125,15 +132,19 @@ namespace Renderer {
 			}
 		}
 
-		private static void Split (List<RenderItem> inp, int dim, double x, List<RenderItem> left, List<RenderItem> right, BoundingBox bbl, BoundingBox bbr) {
+		private static void Split (List<RenderItem> inp, int dim, double x, List<RenderItem> left, List<RenderItem> right, BoundingBox bbl, BoundingBox bbr, out double leftsf, out double rightsf) {
 			double x0, x1;
+			leftsf = 0.0d;
+			rightsf = 0.0d;
 			foreach(RenderItem ir in inp) {
 				ir.GetDimensionBounds(dim, out x0, out x1);
 				if(x0 < x && ir.InBox(bbl)) {
 					left.Add(ir);
+					leftsf += ir.Surface();
 				}
 				if(x1 > x && ir.InBox(bbr)) {
 					right.Add(ir);
+					rightsf += ir.Surface();
 				}
 			}
 		}
@@ -181,7 +192,7 @@ namespace Renderer {
 				}
 			}
 			public void Hit (Ray ray, Point3 inter, ref double t, ref double tHit, ref RenderItem ri) {
-				double tt, tt2;
+				double tt;
 				if(this.tri != null) {
 					foreach(RenderItem rit in tri) {
 						tt = rit.HitAt(ray);
@@ -194,15 +205,20 @@ namespace Renderer {
 				else if(t < tHit) {
 					int cur = Math.Sign(inter[dim]-x);
 					if(cur*Maths.SoftSign(ray.Direction[dim]) < 0.0d) {//with migration
-						tt2 = tHit;
-						tHit = t+(x-inter[dim])/ray.Direction[dim];
-						HitChild(cur, ray, inter, ref t, ref tHit, ref ri);
-						tt2 = tHit;
-						t = tt;
-						if(t < tHit) {
-							ray.PointAt(t, inter);
+						tt = t+(x-inter[dim])/ray.Direction[dim];
+						double tt2 = Math.Min(tt, tHit);
+						HitChild(cur, ray, inter, ref t, ref tt2, ref ri);
+						if(tt <= tt2) {
+							t = tt;
+							ray.PointAt(tt, inter);
 							HitChild(-cur, ray, inter, ref t, ref tHit, ref ri);
 						}
+						else {
+							tHit = tt2;
+						}
+					}
+					else {
+						HitChild(cur, ray, inter, ref t, ref tHit, ref ri);
 					}
 				}
 			}
