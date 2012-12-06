@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5161718C-11FB-42E2-B42C-E95510626A5B}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>MonoRenderer</RootNamespace>
+    <RootNamespace>Renderer</RootNamespace>
     <AssemblyName>MonoRenderer</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -86,6 +86,7 @@
     <Compile Include="Triangle.cs" />
     <Compile Include="Triangle3.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="BinarySpacePartitionAccelerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

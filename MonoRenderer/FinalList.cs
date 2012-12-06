@@ -22,8 +22,7 @@ using System;
 using System.Collections.Generic;
 
 namespace Renderer {
-	public sealed class FinalList
-	{
+	public sealed class FinalList {
 
 		public List<int> list = new List<int>();
 
@@ -34,8 +33,9 @@ namespace Renderer {
 			foreach(SubList sl in list) {
 				if(freqTable.TryGetValue(sl, out val)) {
 					sl.Representative = val.Item1;
-					freqTable [val.Item1] = new Tuple<SubList, int>(val.Item1, val.Item2+1);
-				} else {
+					freqTable[val.Item1] = new Tuple<SubList, int>(val.Item1, val.Item2+1);
+				}
+				else {
 					freqTable.Add(sl, new Tuple<SubList, int>(sl, 1));
 				}
 			}
@@ -44,8 +44,9 @@ namespace Renderer {
 				kvp.Key.Frequency = kvp.Value.Item2;
 				if(kvp.Key.Indices.Count > 0x01) {
 					sorted.Add(kvp.Key);
-				} else if(!kvp.Key.Empty) {
-					singles.Add(kvp.Key.Indices [0x00], kvp.Key);
+				}
+				else if(!kvp.Key.Empty) {
+					singles.Add(kvp.Key.Indices[0x00], kvp.Key);
 				}
 			}
 			freqTable.Clear();
@@ -53,12 +54,12 @@ namespace Renderer {
 			SubList slb;
 			int best, bestj, tmp;
 			for(int i = 0; i < sorted.Count; i++) {
-				sla = sorted [i];
+				sla = sorted[i];
 				if(sla != null) {
 					best = -0x01;
 					bestj = i;
 					for(int j = i+1; j < sorted.Count; j++) {
-						slb = sorted [j];
+						slb = sorted[j];
 						if(slb != null) {
 							tmp = CombinedList.CalculateReduction(sla, slb);
 							if(tmp > best) {
@@ -68,42 +69,36 @@ namespace Renderer {
 						}
 					}
 					if(bestj > i) {
-						CombinedList cl = new CombinedList(sla, sorted [bestj]);
-						//Console.WriteLine("Adding A with count {0}/{1}/{2}", cl.CountA, cl.CountB, cl.CountC);
-						sorted [bestj] = null;
+						CombinedList cl = new CombinedList(sla, sorted[bestj]);
+						sorted[bestj] = null;
 						for(int j = 0x00; j < sorted.Count; j++) {
-							slb = sorted [j];
+							slb = sorted[j];
 							if(slb != null && cl.AddSubList(slb)) {
-								sorted [j] = null;
+								sorted[j] = null;
 							}
 						}
 						cl.Fill(this.list.Count);
 						this.list.AddRange(cl.GetItems());
-					} else {
+					}
+					else {
 						CombinedList cl = new CombinedList(sla);
-						//Console.WriteLine("Adding B with count {0}/{1}/{2}", cl.CountA, cl.CountB, cl.CountC);
 						cl.Fill(this.list.Count);
 						this.list.AddRange(cl.GetItems());
 					}
-					sorted [i] = null;
+					sorted[i] = null;
 				}
 			}
 			foreach(KeyValuePair<int,SubList> s in singles) {
 				int index = this.list.FindIndex(x => x == s.Key);
 				if(index > 0x00) {
 					s.Value.Offset = index;
-				} else {
+				}
+				else {
 					s.Value.Offset = this.list.Count;
 					this.list.Add(s.Key);
 				}
 			}
-			//Console.WriteLine("FINAL LIST HAS LENGTH {0}", this.list.Count);
-		}
-
-		private void addAndAccept (SortedSet<SubList> sl, Dictionary<int,SubList> singles) {//TODO: make smarter
-
 		}
 
 	}
 }
-
