@@ -42,7 +42,10 @@ namespace Renderer {
 			}
 			int dim;
 			double sweep = CalculateOptimalSplit(items, bb, 0.0d, out dim);
-			return new BinarySpaceNode(Subdivide(), Subdivide(), sweep, dim);
+
+			BoundingBox bbleft, bbright;
+			bb.SplitAt(sweep, dim, out bbleft, out bbright);
+			return new BinarySpaceNode(Subdivide(maxdepth, maxsize, bbleft, depth+0x01), Subdivide(), sweep, dim);
 		}
 
 		private static double CalculateOptimalSplit<T> (List<T> items, BoundingBox bb, double totalSurface, out int maxDim) {
