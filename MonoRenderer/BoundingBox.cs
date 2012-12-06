@@ -77,6 +77,14 @@ namespace Renderer {
 			double d = xyz1.Z-xyz0.Z;
 			return 2.0d*(w*h+w*d+h*d);
 		}
+		public void OutParam (out double x0, out double x1, out double y0, out double y1, out double z0, out double z1) {
+			x0 = this.xyz0.X;
+			x1 = this.xyz1.X;
+			y0 = this.xyz0.Y;
+			y1 = this.xyz1.Y;
+			z0 = this.xyz0.Z;
+			z1 = this.xyz1.Z;
+		}
 		public override double SplitSurface (double sweep, int dim) {
 			double[] whd = {xyz1.X-xyz0.X,xyz1.Y-xyz0.Y,xyz1.Z-xyz0.Z};
 			whd[dim] = sweep-xyz0[dim];
