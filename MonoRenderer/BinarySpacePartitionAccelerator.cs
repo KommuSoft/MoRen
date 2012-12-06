@@ -28,10 +28,36 @@ namespace Renderer {
 		private readonly BinarySpaceNode root;
 
 		public BinarySpacePartitionAccelerator (List<RenderItem> items) {
+			BoundingBox bb = new BoundingBox();
+			Utils.CalculateBoundingBox(items, bb);
 		}
 
-		public BinarySpaceNode Subdivide () {
+		private static BinarySpaceNode Subdivide<T> (int maxdepth, int maxsize, int depth, List<T> items) where T : IRenderable {
+			CalculateOptimalSplit(0x00);
+			return null;
+		}
 
+		private static double CalculateOptimalSplit (int dim) {
+			return 0.00d;
+		}
+
+		private void Split (List<IRenderable> inp, int dim, double x, List<IRenderable> left, List<IRenderable> right) {
+			double x0, x1;
+			Tuple<ProxyRenderItem[],ProxyRenderItem[]> splitted;
+			foreach(IRenderable ir in inp) {
+				ir.GetDimensionBounds(dim, out x0, out x1);
+				if(x1 < x) {
+					left.Add(ir);
+				}
+				else if(x < x0) {
+					right.Add(ir);
+				}
+				else {
+					splitted = ir.SplitAt(x, dim);
+					left.AddRange(splitted.Item1);
+					right.AddRange(splitted.Item2);
+				}
+			}
 		}
 
 		public RenderItem CalculateHit (Ray ray, out double tHit, double maxT) {
@@ -39,7 +65,25 @@ namespace Renderer {
 			return null;
 		}
 
-		private class BinarySpaceNode {
+		private sealed class BinarySpaceNode {
+
+			public readonly double x;
+			public readonly int dim;
+			public readonly BinarySpaceNode left;
+			public readonly BinarySpaceNode right;
+			public readonly Triangle[] tri;
+
+			public BinarySpaceNode (Triangle[] tris) {
+				this.tri = tris;
+				this.left = this.right = null;
+				this.x = double.NaN;
+			}
+			public BinarySpaceNode (BinarySpaceNode left, BinarySpaceNode right, double x, int dim) {
+				this.left = left;
+				this.right = right;
+				this.x = x;
+				this.dim = dim;
+			}
 
 		}
 

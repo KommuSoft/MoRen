@@ -84,57 +84,6 @@ namespace Renderer {
 				yield return new Tuple<ushort, ushort, ushort, ushort>(k, (ushort)(k+0x01), (ushort)(k+0x02), 0x00);
 			}
 		}
-		public static double CalculateOptimalDivision<T> (List<T> items, double x0, double x1, int dim, out double heuristic) where T : IRenderable {
-			heuristic = double.NegativeInfinity;
-			SortedSet<AddRemoveEvent> events = new SortedSet<AddRemoveEvent>();
-			double xa, xr;
-			double totalSurface = 0.0d;
-			int i = 0x00;
-			foreach(T item in items) {
-				item.GetDimensionBounds(dim, out xa, out xr);
-				events.Add(new AddRemoveEvent(i, xa, true));
-				events.Add(new AddRemoveEvent(i, xr, false));
-				totalSurface += item.Surface();
-			}
-			HashSet<int> activ = new HashSet<int>();
-			HashSet<int> toRem = new HashSet<int>();
-			double sl = 0.0d, sls = 0.0d;//surface left, surface left soft
-			double xold = x0, x, xheu = double.NaN, tempheu;
-			int index;
-			foreach(AddRemoveEvent are in events) {
-				index = are.Index;
-				x = are.X;
-				if(are.Remove) {
-					if(!activ.Remove(index)) {
-						toRem.Add(index);
-					}
-					sl += items[index].Surface();
-				}
-				else {
-					if(!toRem.Remove(index)) {
-						activ.Add(index);
-					}
-				}
-				if(x > xold && x < x1) {
-					xold = x;
-					sls = 0.0d;
-					foreach(int ind in activ) {
-						sls += items[ind].SplitSurface(x, dim);
-					}
-					tempheu = (sl+sls)/(x-x0)+(totalSurface-sl-sls)/(x1-x);
-					if(tempheu > heuristic) {
-						heuristic = tempheu;
-						xheu = x;
-					}
-				}
-			}
-			if(double.IsNaN(xheu)) {
-				return 0.5d*(x0+x1);
-			}
-			else {
-				return xheu;
-			}
-		}
 		public static Matrix4 ReadMatrixChunk (BinaryReader br) {
 			float t0 = br.ReadSingle();
 			float t1 = br.ReadSingle();
@@ -227,6 +176,26 @@ namespace Renderer {
 		}
 
 		public static void CalculateBoundingBox (IEnumerable<RenderItem> items, out double xtm, out double xtM, out double ytm, out double ytM, out double ztm, out double ztM) {
+			xtm = double.PositiveInfinity;
+			xtM = double.NegativeInfinity;
+			ytm = xtm;
+			ytM = xtM;
+			ztm = xtm;
+			ztM = xtM;
+			double xm, xM, ym, yM, zm, zM;
+			foreach(RenderItem ri in items) {
+				ri.GetBounds(out xm, out xM, out ym, out yM, out zm, out zM);
+				xtm = Math.Min(xtm, xm);
+				xtM = Math.Max(xtM, xM);
+				ytm = Math.Min(ytm, ym);
+				ytM = Math.Max(ytM, yM);
+				ztm = Math.Min(ztm, zm);
+				ztM = Math.Max(ztM, zM);
+			}
+		}
+
+		public static void CalculateBoundingBox (IEnumerable<RenderItem> items, BoundingBox box) {
+			double xtm, xtM, ytm, ytM, ztm, ztM;
 			xtm = double.PositiveInfinity;
 			xtM = double.NegativeInfinity;
 			ytm = xtm;

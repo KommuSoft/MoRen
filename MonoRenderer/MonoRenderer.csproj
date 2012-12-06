@@ -84,9 +84,9 @@
     <Compile Include="SubList.cs" />
     <Compile Include="Texture.cs" />
     <Compile Include="Triangle.cs" />
-    <Compile Include="Triangle3.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="BinarySpacePartitionAccelerator.cs" />
+    <Compile Include="BoundingBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
