@@ -29,7 +29,7 @@ namespace Renderer {
 		private readonly BinarySpaceNode root;
 		private readonly double x0, x1, y0, y1, z0, z1;
 
-		public BinarySpacePartitionAccelerator (List<RenderItem> items) : this(items,(int) Math.Ceiling(2.0d*Math.Log(Math.Max(1.0d,items.Count),2))) {
+		public BinarySpacePartitionAccelerator (List<RenderItem> items) : this(items,(int) Math.Ceiling(1.25d*Math.Log(Math.Max(1.0d,items.Count),2))) {
 		}
 		public BinarySpacePartitionAccelerator (List<RenderItem> items, int maxdepth, int maxsize = 6) {
 			BoundingBox bb = new BoundingBox();
@@ -39,16 +39,11 @@ namespace Renderer {
 		}
 
 		private static BinarySpaceNode Subdivide (int maxdepth, int maxsize, BoundingBox bb, int depth, List<RenderItem> items) {
-			//Console.WriteLine("enter {0}", String.Join(",", items.Select(r => r.Root)));
-			//HashSet<RenderItem> hs = new HashSet<RenderItem>(items.Select(x => x.Root));
-			//HashSet<RenderItem> hri = new HashSet<RenderItem>(items.Select(x => x.Root));
-			Console.WriteLine("Subdiv({0}, {1}, {2}, {3}, {4} ({5}))", maxdepth, maxsize, null, depth, items, items.Count);
 			if(depth >= maxdepth || items.Count <= maxsize) {
 				return new BinarySpaceNode(items.ToArray());
 			}
 			int dim;
 			double sweep = CalculateOptimalSplit(items, bb, out dim);
-			Console.WriteLine("Optimal split: {0}/{1}", sweep, dim);
 			BoundingBox bbleft, bbright;
 			bb.SplitAt(sweep, dim, out bbleft, out bbright);
 			List<RenderItem> left = new List<RenderItem>(), right = new List<RenderItem>();
@@ -61,29 +56,23 @@ namespace Renderer {
 			double heu, maxHeu = double.NegativeInfinity, x, maxx;
 			maxDim = 0x00;
 			maxx = CalculateOptimalSplit(items, bb, totalSurface, out maxHeu, 0x00);
-			//Console.WriteLine("X split {0}/{1}", maxx, maxHeu);
-			//maxHeu /= bb.DimensionSurface(0x00);
 			x = CalculateOptimalSplit(items, bb, totalSurface, out heu, 0x01);
-			//Console.WriteLine("Y split {0}/{1}", x, heu);
-			//heu /= bb.DimensionSurface(0x01);
 			if(heu < maxHeu) {
 				maxx = x;
 				maxHeu = heu;
 				maxDim = 0x01;
 			}
-			//heu /= bb.DimensionSurface(0x02);
 			x = CalculateOptimalSplit(items, bb, totalSurface, out heu, 0x02);
-			//Console.WriteLine("Z split {0}/{1}", x, heu);
 			if(heu < maxHeu) {
 				maxx = x;
 				maxHeu = heu;
 				maxDim = 0x02;
 			}
-			//Console.WriteLine("Optimal split {0}/{1}", maxDim, maxx);
 			return maxx;
 		}
 
 		private static double CalculateOptimalSplit (List<RenderItem> items, BoundingBox bb, double totalSurface, out double maxHeur, int dim) {
+			//Console.WriteLine("nr");
 			SortedSet<AddRemoveEvent> events = new SortedSet<AddRemoveEvent>(GenerateEvents(items, dim));
 			IEnumerator<AddRemoveEvent> aree = events.GetEnumerator();
 			HashSet<int> activ = new HashSet<int>();
@@ -93,14 +82,11 @@ namespace Renderer {
 			int nleft = 0x00;
 			int ntotal = items.Count;
 			bb.GetDimensionBounds(dim, out x0, out x1);
-			/*double leftSurface = 0.0d;
-			double activeSurface;*/
 			maxHeur = double.PositiveInfinity;
 			double xheu = double.NaN, heu;
 			while(aree.MoveNext()) {
 				are = aree.Current;
 				double x = are.X;
-				//Console.WriteLine("try {1}<{0}<{2}", x, x0, x1);
 				int index = are.Index;
 				if(are.Add) {
 					if(!torem.Remove(index)) {
@@ -112,26 +98,18 @@ namespace Renderer {
 					if(!activ.Remove(index)) {
 						torem.Add(index);
 					}
-					//leftSurface += items[index].Surface();
 				}
 				if(x0 < x && x < x1) {
-					//Console.WriteLine("check {0}", x);
-					/*activeSurface = 0.0d;
-					foreach(int ai in activ) {
-						activeSurface += items[ai].SplitSurface(x, dim);
-					}*/
-					//Console.WriteLine("{0} vs {1}", (nleft+activ.Count), (ntotal-nleft));
+					//Console.WriteLine("Inside");
 					heu = Math.Max((nleft+activ.Count), (ntotal-nleft));
-					//heu = ((leftSurface+activeSurface)*(nleft*activ.Count)/totalSurface+(totalSurface-leftSurface-activeSurface)*((ntotal-nleft)*activ.Count)/totalSurface);
 					if(heu < maxHeur) {
-						//Console.WriteLine("better {0}/{1}", x, heu);
 						maxHeur = heu;
 						xheu = x;
 					}
 				}
 			}
 			if(double.IsNaN(xheu)) {
-				Console.WriteLine("KERNEL PANIC {0}", bb);//string.Join(",", items)
+				//Console.WriteLine("KERNEL PANIC {0} {2} {1}", bb, string.Join(",", items), dim);
 				return 0.5d*(x0+x1);
 			}
 			return xheu;
@@ -151,25 +129,26 @@ namespace Renderer {
 			double x0, x1;
 			foreach(RenderItem ir in inp) {
 				ir.GetDimensionBounds(dim, out x0, out x1);
-				if(x0 < x && ir.BoxOverlap(bbl)) {
+				if(x0 < x && ir.InBox(bbl)) {
 					left.Add(ir);
 				}
-				if(x1 > x && ir.BoxOverlap(bbr)) {
+				if(x1 > x && ir.InBox(bbr)) {
 					right.Add(ir);
 				}
-				/*if(ir.BoxOverlap(bbl)) {
-					left.Add(ir);
-				}
-				if(ir.BoxOverlap(bbr)) {
-					right.Add(ir);
-				}*/
 			}
-			//Console.WriteLine("{0}/{1}/{2}", left.Count, s, right.Count);
 		}
 
 		public RenderItem CalculateHit (Ray ray, out double tHit, double maxT) {
-			tHit = 0.0d;
-			return null;
+			Point3 inter = new Point3();
+			tHit = maxT;
+			double t;
+			Utils.CalculateBoxHitpoint(ray, inter, out t, this.x0, this.x1, this.y0, this.y1, this.z0, this.z1);
+			if(t > maxT) {
+				return null;
+			}
+			RenderItem ri = null;
+			this.root.Hit(ray, inter, ref t, ref tHit, ref ri);
+			return ri;
 		}
 
 		private sealed class BinarySpaceNode {
@@ -186,10 +165,46 @@ namespace Renderer {
 				this.x = double.NaN;
 			}
 			public BinarySpaceNode (BinarySpaceNode left, BinarySpaceNode right, double x, int dim) {
+				this.tri = null;
 				this.left = left;
 				this.right = right;
 				this.x = x;
 				this.dim = dim;
+			}
+
+			private void  HitChild (int c, Ray ray, Point3 inter, ref double t, ref double tHit, ref RenderItem ri) {
+				if(c < 0x00) {
+					this.left.Hit(ray, inter, ref t, ref tHit, ref ri);
+				}
+				else {
+					this.right.Hit(ray, inter, ref t, ref tHit, ref ri);
+				}
+			}
+			public void Hit (Ray ray, Point3 inter, ref double t, ref double tHit, ref RenderItem ri) {
+				double tt, tt2;
+				if(this.tri != null) {
+					foreach(RenderItem rit in tri) {
+						tt = rit.HitAt(ray);
+						if(tt < tHit) {
+							tHit = tt;
+							ri = rit;
+						}
+					}
+				}
+				else if(t < tHit) {
+					int cur = Math.Sign(inter[dim]-x);
+					if(cur*Maths.SoftSign(ray.Direction[dim]) < 0.0d) {//with migration
+						tt2 = tHit;
+						tHit = t+(x-inter[dim])/ray.Direction[dim];
+						HitChild(cur, ray, inter, ref t, ref tHit, ref ri);
+						tt2 = tHit;
+						t = tt;
+						if(t < tHit) {
+							ray.PointAt(t, inter);
+							HitChild(-cur, ray, inter, ref t, ref tHit, ref ri);
+						}
+					}
+				}
 			}
 
 		}
