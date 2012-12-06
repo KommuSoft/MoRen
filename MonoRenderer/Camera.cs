@@ -25,8 +25,7 @@ using System.Xml.Serialization;
 
 namespace Renderer {
 	[XmlType("Camera")]
-	public sealed class Camera : NameBase
-	{
+	public sealed class Camera : NameBase {
 
 		private readonly Point3 position = new Point3(0.0d, 0.0d, 0.0d);
 		private readonly Point3 lookAt = new Point3(0.0d, 0.0d, 1.0d);
@@ -113,12 +112,6 @@ namespace Renderer {
 				this.foVH = value;
 			}
 		}
-		/*[XmlIgnore]
-		public double FieldOfViewWidth {
-			get {
-				
-			}
-		}*/
 
 		[XmlIgnore]
 		public Texture Raster {
@@ -199,15 +192,11 @@ namespace Renderer {
 					ray.Direction.SetValues(xg, -yg, this.screenDistance);
 					ray.NormalizeDirection();
 					ray.Transform(this.matrix);
-					pixel [k++] = rt.CalculateColor(ray, 0);
+					pixel[k++] = rt.CalculateColor(ray, 0);
 					xg += dwh;
 				}
 				yg += dwh;
 			}
-			/*if(this.aaTec == AntiAliasingTechnique.Sobel) {
-				Texture sobel = new SobelGenerator(this.Raster).texture;
-				//TODO: intensify generation
-			}*/
 		}
 		
 		public unsafe Bitmap ToBitmap () {
@@ -217,19 +206,6 @@ namespace Renderer {
 		public unsafe void Save (string filename) {
 			this.raster.Save(filename);
 		}
-		/*Point3 forward = this.lookAt-this.position;
-			Point3 right = new Point3(-forward.Z,0.0d,forward.X);
-			right.Normalize();
-			Point3 up = Point3.CrossNormalize(forward,right);
-			forward.Normalize();
-			this.normalMatrix.LoadColumns(right,up,forward);
-			this.normalMatrix.RotateZ(this.roll);
-			this.matrix.LoadMatrix(this.normalMatrix);
-			this.matrix.Shift(this.position);
-			this.normalMatrix.Invert();
-			this.matrix.Invert();
-		
-			}*/
 	}
 }
 

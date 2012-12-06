@@ -21,8 +21,7 @@
 using System;
 
 namespace Renderer {
-	public static class PerlinCache
-	{
+	public static class PerlinCache {
 
 		private static readonly int[] p = new int[512];
 		private static readonly int[] permutation = { 151,160,137,91,90,15,
@@ -43,138 +42,6 @@ namespace Renderer {
 		private static readonly uint[] marbleGradient = Color.MakeGradient(0x0400, 0xff111111, 0xff696070, 0xffffffff);
 		private static readonly uint[] skyGradient = Color.MakeGradient(0x0400, 0x003399, 0xffffff);
 
-		/*private static readonly float[] noiseBuffer = new float[0x08000];
-
-		private static float interpolatedNoise2 (float x, float y, int octave) {
-			octave &= 0x03;
-			int intx = (int)x;
-			int inty = (int)y;
-			float fracx = x-(float)intx;
-			float fracy = y-(float)inty;
-			float i1 = Maths.Interpolate(noise(intx, inty, octave), noise(intx+1, inty++, octave), fracx);
-			float i2 = Maths.Interpolate(noise(intx, inty, octave), noise(intx+1, inty, octave), fracx);
-			return Maths.Interpolate(i1, i2, fracy);
-		}
-		private static float interpolatedNoise3 (double x, double y, double z, int octave) {
-			octave &= 0x03;
-			int intx = (int)x;
-			int inty = (int)y;
-			int intz = (int)z;
-			double fracx = x-(float)intx;
-			double fracy = y-(float)inty;
-			double fracz = y-(float)intz;
-			float i1, i2, iz;
-			i1 = Maths.Interpolate(noise(intx, inty, intz, octave), noise(intx+1, inty+1, intz, octave), fracx);
-			i2 = Maths.Interpolate(noise(intx, inty+1, intz, octave), noise(intx+1, inty+1, intz, octave), fracx);
-			iz = Maths.Interpolate(i1, i2, fracy);
-			i1 = Maths.Interpolate(noise(intx, inty, intz+1, octave), noise(intx+1, inty+1, intz+1, octave), fracx);
-			i2 = Maths.Interpolate(noise(intx, inty+1, intz+1, octave), noise(intx+1, inty+1, intz+1, octave), fracx);
-			return Maths.Interpolate(iz, Maths.Interpolate(i1, i2, fracy), fracz);
-		}
-		private static float noise (int x, int y, int octave) {
-			return noiseBuffer [(((x+y*0x57)&0x01fff)<<0x02)|octave];
-		}
-		private static float noise (int x, int y, int z, int octave) {
-			return noiseBuffer [(((x+y*0x57+0x1d91*z)&0x01fff)<<0x02)|octave];
-		}
-		private static float noise (int seed) {
-			int id = seed&0x03;
-			seed &= 0x7ffc;
-			int n = (seed<<0x0b)^(seed>>0x02);
-			if(id == 0)
-				return (float)(1.0f-((n*(n*n*0x3d73+0x0c0ae5)+0x5208dd0d)&0x7FFFFFFF)*0.000000000931322574615478515625f);
-			if(id == 1)
-				return (float)(1.0f-((n*(n*n*0x30d1+0x093a37)+0x50356ebf)&0x7FFFFFFF)*0.000000000931322574615478515625f);
-			if(id == 2)
-				return (float)(1.0f-((n*(n*n*0x4a8f+0x0a0e67)+0x5035710b)&0x7FFFFFFF)*0.000000000931322574615478515625f);
-			return (float)(1.0f-((n*(n*n*0x3f8b+0x0a990d)+0x5035708d)&0x7FFFFFFF)*0.000000000931322574615478515625f);
-		}
-		public static Texture Sky (int width, int height, float density) {
-			return Perlin(width, height, 0.5f, 2.8f*density, 0x08, 0x0400).Colorize(Color.MakeGradient(0x0400, 0x003399, 0xffffff));
-		}
-		private static float Perlin2d (float x, float y, float wavelength, float persistence, int samples) {
-			float sum = 0.0f;
-			float xfreq = 1.0f/wavelength;
-			float yfreq = y*xfreq;
-			xfreq = x*xfreq;
-			float amp = persistence;
-			for(int i = 0x00; i < samples; i++) {
-				sum += amp*interpolatedNoise2(xfreq, yfreq, i);
-				amp *= persistence;
-				xfreq *= 2.0f;
-				yfreq *= 2.0f;
-			}
-			return Maths.Border(0.0f, sum/persistence*0.5f+0.5f, 1.0f);
-		}
-		private static float Perlin3d (float x, float y, float z, float wavelength, float persistence, int samples) {
-			float sum = 0.0f;
-			float xfreq = 1.0f/wavelength;
-			float yfreq = y*xfreq;
-			float zfreq = z*xfreq;
-			xfreq = x*xfreq;
-			float amp = persistence;
-			for(int i = 0x00; i < samples; i++) {
-				sum += amp*interpolatedNoise3(xfreq, yfreq, zfreq, i);
-				amp *= persistence;
-				xfreq *= 2.0f;
-				yfreq *= 2.0f;
-			}
-			return Maths.Border(0.0f, sum/persistence*0.5f+0.5f, 1.0f);
-		}
-		public static Texture Marble (int width, int height, float density) {
-			return Wave(width, height, 0.5f, 0.64f*density, 0x08, 0x0400).Colorize(Color.MakeGradient(0x00000400, 0xff111111, 0xff696070, 0xffffffff));
-		}
-		public static Texture Perlin (int width, int height, float persistency, float density, int samples, int scale) {
-			Texture t = new Texture(width, height);
-			int pos = 0x00;
-			float wavelength = (float)System.Math.Max(width, height)/density;
-			float sc = (float)scale;
-			int x;
-			for(int y = 0x00; y < height; y++) {
-				for(x = 0x00; x < width; x++) {
-					t.Pixel [pos++] = (uint)(sc*Perlin2d(x, y, wavelength, persistency, samples));
-				}
-			}
-			return t;
-		}
-		public static Texture Wave (int width, int height, float persistency, float density, int samples, int scale) {
-			Texture t = new Texture(width, height);
-			int pos = 0x00;
-			float wavelength = (float)System.Math.Max(width, height)/density;
-			double sc = (double)scale;
-			int x;
-			for(int y = 0x00; y < height; y++) {
-				for(x = 0x00; x < width; x++) {
-					t.Pixel [pos++] = (uint)(sc*wave2dFuncion(x, y, wavelength, persistency, samples));
-				}
-			}
-			return t;
-		}
-		private static double wave2dFuncion (int x, int y, float wavelength, float persistency, int samples) {
-			return (0.5d*System.Math.Sin(Perlin2d(x, y, wavelength, persistency, samples))+0.5d);
-		}
-		private static double wave3dFuncion (int x, int y, int z, float wavelength, float persistency, int samples) {
-			return (0.5d*System.Math.Sin(Perlin3d(x, y, z, wavelength, persistency, samples))+0.5d);
-		}
-		public static Texture Wood (int width, int height, float density) {
-			return Grain(width, height, 0.5f, 3.0f*density, 0x03, 0x08, 0x0400).Colorize(Color.MakeGradient(0x0400, 0x332211, 0x523121, 0x996633));
-		}
-		public static Texture Grain (int width, int height, float persistency, float density, int samples, int levels, int scale) {
-			Texture t = new Texture(width, height);
-			int pos = 0x00;
-			float wavelength = (float)System.Math.Max(width, height)/density;
-			float perlin;
-			float sc = (float)scale;
-			float le = (float)levels;
-			int x;
-			for(int y = 0x00; y < height; y++) {
-				for(x = 0x00; x < width; x++) {
-					perlin = le*Perlin2d(x, y, wavelength, persistency, samples);
-					t.Pixel [pos++] = (uint)(sc*(perlin-(float)(int)perlin));
-				}
-			}
-			return t;
-		}*/
 		public static double perlin (double xf, double yf, double zf) {
 			int xi = (int)Math.Floor(xf)&255;
 			int yi = (int)Math.Floor(yf)&255;
@@ -185,18 +52,18 @@ namespace Renderer {
 			double u = fade(xf);
 			double v = fade(yf);
 			double w = fade(zf);
-			int A = p [xi]+yi, AA = p [A]+zi, AB = p [A+1]+zi,
-			B = p [xi+1]+yi, BA = p [B]+zi, BB = p [B+1]+zi;
+			int A = p[xi]+yi, AA = p[A]+zi, AB = p[A+1]+zi,
+			B = p[xi+1]+yi, BA = p[B]+zi, BB = p[B+1]+zi;
 
-			return lerp(w, lerp(v, lerp(u, grad(p [AA], xf, yf, zf),
-                                     grad(p [BA], xf-1, yf, zf)),
-                             lerp(u, grad(p [AB], xf, yf-1, zf),
-                                     grad(p [BB], xf-1, yf-1, zf))
+			return lerp(w, lerp(v, lerp(u, grad(p[AA], xf, yf, zf),
+                                     grad(p[BA], xf-1, yf, zf)),
+                             lerp(u, grad(p[AB], xf, yf-1, zf),
+                                     grad(p[BB], xf-1, yf-1, zf))
 			),
-                     lerp(v, lerp(u, grad(p [AA+1], xf, yf, zf-1),
-                                     grad(p [BA+1], xf-1, yf, zf-1)),
-                             lerp(u, grad(p [AB+1], xf, yf-1, zf-1),
-                                     grad(p [BB+1], xf-1, yf-1, zf-1))
+                     lerp(v, lerp(u, grad(p[AA+1], xf, yf, zf-1),
+                                     grad(p[BA+1], xf-1, yf, zf-1)),
+                             lerp(u, grad(p[AB+1], xf, yf-1, zf-1),
+                                     grad(p[BB+1], xf-1, yf-1, zf-1))
 			)
 			);
 		}
@@ -249,9 +116,7 @@ namespace Renderer {
 		}
 		public static void InitializeNoiseBuffer () {
 			for(int i=0; i < 256; i++)
-				p [256+i] = p [i] = permutation [i];
-			/*for(int i = 0; i < 0x7fff;)
-				noiseBuffer [i++] = noise(i);*/
+				p[256+i] = p[i] = permutation[i];
 		}
 
 	}

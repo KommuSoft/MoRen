@@ -37,8 +37,6 @@
     <Compile Include="Accelerator.cs" />
     <Compile Include="AddRemoveEvent.cs" />
     <Compile Include="AntiAliasingTechnique.cs" />
-    <Compile Include="BinarySpaceTree.cs" />
-    <Compile Include="Blob.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CastResult.cs" />
     <Compile Include="Color.cs" />
@@ -69,11 +67,9 @@
     <Compile Include="OctTreeAccelerator.cs" />
     <Compile Include="OrderingRenderItem.cs" />
     <Compile Include="Perlin.cs" />
-    <Compile Include="Point2.cs" />
     <Compile Include="Point3.cs" />
     <Compile Include="ProxyRenderItem.cs" />
     <Compile Include="ProxyTriangle.cs" />
-    <Compile Include="Rasterizer.cs" />
     <Compile Include="Ray.cs" />
     <Compile Include="RayTracer.cs" />
     <Compile Include="RenderItem.cs" />

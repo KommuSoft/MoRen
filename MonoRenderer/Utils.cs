@@ -25,8 +25,7 @@ using System.IO;
 using System.Text;
 
 namespace Renderer {
-	public static class Utils
-	{
+	public static class Utils {
 
 		public static string ReadZeroEndByteString (BinaryReader br) {
 			StringBuilder sb = new StringBuilder();
@@ -59,7 +58,7 @@ namespace Renderer {
 
 		public static T FloatIndex<T> (T[] values, double val) {
 			val = Maths.Border(0.0d, val, 1.0d);
-			return values [(int)Math.Floor(val*(values.Length-0x01))];
+			return values[(int)Math.Floor(val*(values.Length-0x01))];
 		}
 
 		public static uint ReadColorChunk (BinaryReader br) {
@@ -109,8 +108,9 @@ namespace Renderer {
 					if(!activ.Remove(index)) {
 						toRem.Add(index);
 					}
-					sl += items [index].Surface();
-				} else {
+					sl += items[index].Surface();
+				}
+				else {
 					if(!toRem.Remove(index)) {
 						activ.Add(index);
 					}
@@ -119,7 +119,7 @@ namespace Renderer {
 					xold = x;
 					sls = 0.0d;
 					foreach(int ind in activ) {
-						sls += items [ind].SplitSurface(x, dim);
+						sls += items[ind].SplitSurface(x, dim);
 					}
 					tempheu = (sl+sls)/(x-x0)+(totalSurface-sl-sls)/(x1-x);
 					if(tempheu > heuristic) {
@@ -130,58 +130,10 @@ namespace Renderer {
 			}
 			if(double.IsNaN(xheu)) {
 				return 0.5d*(x0+x1);
-			} else {
+			}
+			else {
 				return xheu;
 			}
-		}
-		public static double CalculateOptimalDivision<U,T> (List<Tuple<U,T>> items, double x0, double x1, int dim, out double heuristic) where T : IRenderable {
-			heuristic = double.NegativeInfinity;
-			return 0.5d*(x0+x1);
-			/*heuristic = double.PositiveInfinity;
-			SortedSet<AddRemoveEvent> events = new SortedSet<AddRemoveEvent>();
-			double xa, xr;
-			double totalSurface = 0.0d;
-			int i = 0x00;
-			foreach(Tuple<U,T> item in items) {
-				item.Item2.GetDimensionBounds(dim, out xa, out xr);
-				events.Add(new AddRemoveEvent(i, xa, true));
-				events.Add(new AddRemoveEvent(i++, xr, false));
-				totalSurface += item.Item2.Surface();
-			}
-			HashSet<int> activ = new HashSet<int>();
-			HashSet<int> toRem = new HashSet<int>();
-			//double sl = 0.0d, sls = 0.0d;//surface left, surface left soft
-			int N = items.Count;
-			int ln = 0x00;
-			double xold = x0, x, xheu = double.NaN, tempheu;
-			int index;
-			foreach(AddRemoveEvent are in events) {
-				index = are.Index;
-				x = are.X;
-				if(are.Remove) {
-					if(!activ.Remove(index)) {
-						toRem.Add(index);
-					}
-					ln++;
-				} else {
-					if(!toRem.Remove(index)) {
-						activ.Add(index);
-					}
-				}
-				if(x > x0 && x < x1) {
-					int lm = activ.Count;
-					tempheu = Math.Max((ln+3*lm)/(x-x0), (N-ln+2*lm)/(x1-x));
-					if(tempheu < heuristic) {
-						heuristic = tempheu;
-						xheu = x;
-					}
-				}
-			}
-			if(double.IsNaN(xheu)) {
-				return 0.5d*(x0+x1);
-			} else {
-				return xheu;
-			}*/
 		}
 		public static Matrix4 ReadMatrixChunk (BinaryReader br) {
 			float t0 = br.ReadSingle();
@@ -196,44 +148,7 @@ namespace Renderer {
 			float t9 = br.ReadSingle();
 			float ta = br.ReadSingle();
 			float tb = br.ReadSingle();
-			/*Matrix4 m = new Matrix4(t0, t3, t6, -t9,//Point3.Dot(t0, t3, t6, t9, t9, t9)
-			                        t1, t4, t7, -ta,//Point3.Dot(t1, t4, t7, ta, ta, ta)
-			                        t2, t5, t8, -tb);//Point3.Dot(t2, t5, t8, tb, tb, tb)*/
-			//Matrix4 m = new Matrix4(t0, t1, t2, t0*t9+t1*ta+t2*tb,//
-			//                        t3, t4, t5, t3*t9+t4*ta+t5*tb,//
-			//                        t6, t7, t8, t6*t9+t7*ta+t8*tb);//
-			//m.Invert();
-			//p.Transform(m);
-			Matrix4 m = new Matrix4();
-			//m.Shift(Point3.Dot(t0, t3, t6, t9, ta, tb), Point3.Dot(t1, t4, t7, t9, ta, tb), Point3.Dot(t2, t5, t8, t9, ta, tb));
-			//m.Shift(-Point3.Dot(t0, t3, t6, t9, ta, tb), -Point3.Dot(t1, t4, t7, t9, ta, tb), -Point3.Dot(t2, t5, t8, t9, ta, tb));
-			//m.Shift(Point3.Dot(t0, t1, t2, t9, t9, t9), Point3.Dot(t3, t4, t5, t9, ta, tb), Point3.Dot(t6, t7, t8, t9, ta, tb));
-			//m.Shift(-Point3.Dot(t0, t1, t2, t9, t9, t9), -Point3.Dot(t3, t4, t5, t9, ta, tb), -Point3.Dot(t6, t7, t8, t9, ta, tb));
-			//m.Shift(Point3.Dot(t0, t3, t6, t9, t9, t9), Point3.Dot(t1, t4, t7, ta, ta, ta), Point3.Dot(t2, t5, t8, tb, tb, tb));
-			//m.Shift(-Point3.Dot(t0, t3, t6, t9, t9, t9), -Point3.Dot(t1, t4, t7, ta, ta, ta), -Point3.Dot(t2, t5, t8, tb, tb, tb));
-			//m.Shift(Point3.Dot(t0, t1, t2, t9, t9, t9), Point3.Dot(t3, t4, t5, ta, ta, ta), Point3.Dot(t6, t7, t8, t9, tb, tb));
-			//m.Shift(-Point3.Dot(t0, t1, t2, t9, t9, t9), -Point3.Dot(t3, t4, t5, ta, ta, ta), -Point3.Dot(t6, t7, t8, tb, tb, tb));
-			return m;
-			/*Console.WriteLine("[{0}\t{1}\t{2}]", m00.ToString("0.000"), m10.ToString("0.000"), m20.ToString("0.000"));
-			Console.WriteLine("[{0}\t{1}\t{2}]", m01.ToString("0.000"), m11.ToString("0.000"), m21.ToString("0.000"));
-			Console.WriteLine("[{0}\t{1}\t{2}]", m02.ToString("0.000"), m12.ToString("0.000"), m22.ToString("0.000"));
-			Console.WriteLine("[{0}\t{1}\t{2}]", m03.ToString("0.000"), m13.ToString("0.000"), m23.ToString("0.000"));//*/
-			//return new Matrix4(m02, m01, m00, m03, m12, m11, m10, m13, m20, m21, m20, m03);
-			/*Matrix4 m = new Matrix4(new Point3(m00, m10, m20), new Point3(m01, m11, m21), new Point3(m02, m12, m22));
-			Point3 p = new Point3(m03, m13, m23);*/
-			//m.Invert();
-			/*p.Transform(m);
-			m.Reset();
-			m.Shift(p);*/
-			//delta.TransformNonShift(m);
-			//Console.WriteLine(m);
-			//return new Matrix4();
-			//return new Matrix4(new Point3(1.0d, 0.0d, 0.0d), new Point3(0.0d, 1.0d, 0.0d), new Point3(0.0d, 0.0d, 1.0d), delta);
-			//m.Invert();*/
-			//return new Matrix4(1.0d, 0.0d, 0.0d, 0.0d, 0.0d, 1.0d, 0.0d, 0.0d, 0.0d, 0.0d, 1.0d, 0.0d);
-			//return m;
-			//return new Matrix4(m00, m01, m02, -m00*m03-m10*m13-m20*m23, m10, m11, m12, -m01*m03-m11*m13-m21*m23, m20, m21, m22, -m02*m03-m12*m13-m22*m23);
-			//return new Matrix4(1.0d, 0.0d, 0.0d, -m03, 0.0d, 1.0d, 0.0d, -m13, 0.0d, 0.0d, 1.0d, -m23);
+			return new Matrix4();
 		}
 		public static double ReadPercentageChunk (BinaryReader br) {
 			ushort type = br.ReadUInt16();
@@ -290,12 +205,12 @@ namespace Renderer {
 		}
 
 		private static void calculateOffset (Ray ray, Point3 inter, Point3 other, ref double t, int xdim, double x0, double x1, int ydim, double y0, double y1, int zdim, double z0, double z1) {
-			if(Math.Abs(ray.Direction [xdim]) >= Maths.GlobalEpsilon) {
-				double dinv = 1.0d/ray.Direction [xdim];
-				double tt = Maths.MinPos((x0-ray.Offset [xdim])*dinv, (x1-ray.Offset [xdim])*dinv);
+			if(Math.Abs(ray.Direction[xdim]) >= Maths.GlobalEpsilon) {
+				double dinv = 1.0d/ray.Direction[xdim];
+				double tt = Maths.MinPos((x0-ray.Offset[xdim])*dinv, (x1-ray.Offset[xdim])*dinv);
 				if(tt >= 0.0d && tt < t) {
 					ray.PointAt(tt, other);
-					double y = other [ydim], z = other [zdim];
+					double y = other[ydim], z = other[zdim];
 					if(y0 <= y && y <= y1 && z0 <= z && z <= z1) {
 						t = tt;
 						inter.SetValues(other);

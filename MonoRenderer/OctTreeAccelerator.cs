@@ -26,8 +26,7 @@ namespace Renderer {
 
 	using MarkedItem = Tuple<int,RenderItem>;
 
-	public sealed class OctTreeAccelerator : Accelerator
-	{
+	public sealed class OctTreeAccelerator : Accelerator {
 
 		private readonly double x0, x1, y0, y1, z0, z1;
 		private readonly int maxDepth, maxNodeItems;
@@ -43,7 +42,7 @@ namespace Renderer {
 			OctTreeNode otn = Order(items.Mark(), 0x00, x0, x1, y0, y1, z0, z1);
 			FinalList fl = new FinalList(otn.PropagateSubLists());
 			this.root = new FastOctTreeNode(otn);
-			this.ris = fl.list.Select(x => items [x]).ToArray();
+			this.ris = fl.list.Select(x => items[x]).ToArray();
 		}
 
 		public RenderItem CalculateHit (Ray ray, out double tHit, double maxT) {
@@ -84,14 +83,15 @@ namespace Renderer {
 					//checktile
 					long end = refs>>0x20;
 					for(refs &= 0xffffffff; refs < end; refs++) {
-						tt = ris [refs].HitAt(ray);
+						tt = ris[refs].HitAt(ray);
 						if(tt < tHit) {
 							tHit = tt;
-							ri = ris [refs];
+							ri = ris[refs];
 						}
 					}
 				}
-			} else if(t < tHit) {
+			}
+			else if(t < tHit) {
 				int[] xyzis = new int[] {
 					Maths.BinarySign(inter.X-fotn.x),
 					Maths.BinarySign(inter.Y-fotn.y),
@@ -100,27 +100,28 @@ namespace Renderer {
 				double xt, yt, zt;
 				int nextdim = 0x00;
 				do {
-					seqxyz [0x04] = fotn.x;
-					seqxyz [0x07] = fotn.y;
-					seqxyz [0x0a] = fotn.z;
+					seqxyz[0x04] = fotn.x;
+					seqxyz[0x07] = fotn.y;
+					seqxyz[0x0a] = fotn.z;
 					tt = double.PositiveInfinity;
-					calcDim(ref tt, ref nextdim, ray.X0, seqxyz [xyzis [0x00]+dxyzis [0x00]+0x03], seqxyz [0x00], 0x00);//seqxyz [0x00]
-					calcDim(ref tt, ref nextdim, ray.Y0, seqxyz [xyzis [0x01]+dxyzis [0x01]+0x06], seqxyz [0x01], 0x01);
-					calcDim(ref tt, ref nextdim, ray.Z0, seqxyz [xyzis [0x02]+dxyzis [0x02]+0x09], seqxyz [0x02], 0x02);
-					xt = seqxyz [0x05-2*xyzis [0x00]];
-					yt = seqxyz [0x08-2*xyzis [0x01]];
-					zt = seqxyz [0x0b-2*xyzis [0x02]];
-					seqxyz [0x05-2*xyzis [0x00]] = fotn.x;
-					seqxyz [0x08-2*xyzis [0x01]] = fotn.y;
-					seqxyz [0x0b-2*xyzis [0x02]] = fotn.z;
-					proceedSubTree(ray, dxyzis, inter, ref ri, ref t, ref tHit, fotn.node [(xyzis [0x00]<<0x02)|(xyzis [0x01]<<0x01)|xyzis [0x02]], seqxyz);
-					seqxyz [0x05-2*xyzis [0x00]] = xt;
-					seqxyz [0x08-2*xyzis [0x01]] = yt;
-					seqxyz [0x0b-2*xyzis [0x02]] = zt;
+					calcDim(ref tt, ref nextdim, ray.X0, seqxyz[xyzis[0x00]+dxyzis[0x00]+0x03], seqxyz[0x00], 0x00);//seqxyz [0x00]
+					calcDim(ref tt, ref nextdim, ray.Y0, seqxyz[xyzis[0x01]+dxyzis[0x01]+0x06], seqxyz[0x01], 0x01);
+					calcDim(ref tt, ref nextdim, ray.Z0, seqxyz[xyzis[0x02]+dxyzis[0x02]+0x09], seqxyz[0x02], 0x02);
+					xt = seqxyz[0x05-2*xyzis[0x00]];
+					yt = seqxyz[0x08-2*xyzis[0x01]];
+					zt = seqxyz[0x0b-2*xyzis[0x02]];
+					seqxyz[0x05-2*xyzis[0x00]] = fotn.x;
+					seqxyz[0x08-2*xyzis[0x01]] = fotn.y;
+					seqxyz[0x0b-2*xyzis[0x02]] = fotn.z;
+					proceedSubTree(ray, dxyzis, inter, ref ri, ref t, ref tHit, fotn.node[(xyzis[0x00]<<0x02)|(xyzis[0x01]<<0x01)|xyzis[0x02]], seqxyz);
+					seqxyz[0x05-2*xyzis[0x00]] = xt;
+					seqxyz[0x08-2*xyzis[0x01]] = yt;
+					seqxyz[0x0b-2*xyzis[0x02]] = zt;
 					t = tt;
 					ray.PointAt(t, inter);
-					xyzis [nextdim] += 2*dxyzis [nextdim]-1;
-				} while(t < tHit && (xyzis[nextdim]&Maths.NotBinaryIntMask) == 0x00);
+					xyzis[nextdim] += 2*dxyzis[nextdim]-1;
+				}
+				while(t < tHit && (xyzis[nextdim]&Maths.NotBinaryIntMask) == 0x00);
 			}
 		}
 
@@ -135,38 +136,31 @@ namespace Renderer {
 		private OctTreeNode Order (IEnumerable<MarkedItem> items, int depth, double x0, double x1, double y0, double y1, double z0, double z1) {
 			List<MarkedItem> itemCache = new List<MarkedItem>(items);
 			if(itemCache.Count > maxNodeItems && (depth < maxDepth || depth <= 0x00)) {
-				//we need to subdivide the items
-				double x2 = 0.5d*(x0+x1), y2 = 0.5d*(y0+y1), z2 = 0.5d*(z0+z1);/*
-				/*double dummyx, dummyy, dummyz;
-				double x2 = Utils.CalculateOptimalDivision(itemCache, x0, x1, 0x00, out dummyx);
-				double y2 = Utils.CalculateOptimalDivision(itemCache, y0, y1, 0x01, out dummyy);
-				double z2 = Utils.CalculateOptimalDivision(itemCache, z0, z1, 0x02, out dummyz);
-				//Console.WriteLine("{0}={3}/{1}={4}/{2}={5}", x2, y2, z2, dummyx, dummyy, dummyz);//*/
+				double x2 = 0.5d*(x0+x1), y2 = 0.5d*(y0+y1), z2 = 0.5d*(z0+z1);
 				OctTreeNode[] children = new OctTreeNode[0x08];
-				children [0x00] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x0, x2, y0, y2, z0, z2) && x.Item2.InBox(x0, x2, y0, y2, z0, z2)), depth+0x01, x0, x2, y0, y2, z0, z2);
-				children [0x01] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x0, x2, y0, y2, z2, z1) && x.Item2.InBox(x0, x2, y0, y2, z2, z1)), depth+0x01, x0, x2, y0, y2, z2, z1);
-				children [0x02] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x0, x2, y2, y1, z0, z2) && x.Item2.InBox(x0, x2, y2, y1, z0, z2)), depth+0x01, x0, x2, y2, y1, z0, z2);
-				children [0x03] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x0, x2, y2, y1, z2, z1) && x.Item2.InBox(x0, x2, y2, y1, z2, z1)), depth+0x01, x0, x2, y2, y1, z2, z1);
-				children [0x04] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x2, x1, y0, y2, z0, z2) && x.Item2.InBox(x2, x1, y0, y2, z0, z2)), depth+0x01, x2, x1, y0, y2, z0, z2);
-				children [0x05] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x2, x1, y0, y2, z2, z1) && x.Item2.InBox(x2, x1, y0, y2, z2, z1)), depth+0x01, x2, x1, y0, y2, z2, z1);
-				children [0x06] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x2, x1, y2, y1, z0, z2) && x.Item2.InBox(x2, x1, y2, y1, z0, z2)), depth+0x01, x2, x1, y2, y1, z0, z2);
-				children [0x07] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x2, x1, y2, y1, z2, z1) && x.Item2.InBox(x2, x1, y2, y1, z2, z1)), depth+0x01, x2, x1, y2, y1, z2, z1);
+				children[0x00] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x0, x2, y0, y2, z0, z2) && x.Item2.InBox(x0, x2, y0, y2, z0, z2)), depth+0x01, x0, x2, y0, y2, z0, z2);
+				children[0x01] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x0, x2, y0, y2, z2, z1) && x.Item2.InBox(x0, x2, y0, y2, z2, z1)), depth+0x01, x0, x2, y0, y2, z2, z1);
+				children[0x02] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x0, x2, y2, y1, z0, z2) && x.Item2.InBox(x0, x2, y2, y1, z0, z2)), depth+0x01, x0, x2, y2, y1, z0, z2);
+				children[0x03] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x0, x2, y2, y1, z2, z1) && x.Item2.InBox(x0, x2, y2, y1, z2, z1)), depth+0x01, x0, x2, y2, y1, z2, z1);
+				children[0x04] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x2, x1, y0, y2, z0, z2) && x.Item2.InBox(x2, x1, y0, y2, z0, z2)), depth+0x01, x2, x1, y0, y2, z0, z2);
+				children[0x05] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x2, x1, y0, y2, z2, z1) && x.Item2.InBox(x2, x1, y0, y2, z2, z1)), depth+0x01, x2, x1, y0, y2, z2, z1);
+				children[0x06] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x2, x1, y2, y1, z0, z2) && x.Item2.InBox(x2, x1, y2, y1, z0, z2)), depth+0x01, x2, x1, y2, y1, z0, z2);
+				children[0x07] = Order(itemCache.Where(x => x.Item2.BoxOverlap(x2, x1, y2, y1, z2, z1) && x.Item2.InBox(x2, x1, y2, y1, z2, z1)), depth+0x01, x2, x1, y2, y1, z2, z1);
 				return new OctTreeInnerNode(x2, y2, z2, children);
 
-			} else {
+			}
+			else {
 				return new OctTreeLeaf(itemCache.Select(x => x.Item1));
 			}
 		}
 
-		private abstract class OctTreeNode
-		{
+		private abstract class OctTreeNode {
 
 			public abstract IEnumerable<SubList> PropagateSubLists ();
 
 		}
 
-		private sealed class OctTreeInnerNode : OctTreeNode
-		{
+		private sealed class OctTreeInnerNode : OctTreeNode {
 
 			public readonly double x, y, z;
 			public readonly OctTreeNode[] children;
@@ -188,8 +182,7 @@ namespace Renderer {
 
 		}
 
-		private sealed class OctTreeLeaf : OctTreeNode
-		{
+		private sealed class OctTreeLeaf : OctTreeNode {
 
 			public readonly SubList sl = new SubList();
 
@@ -205,8 +198,7 @@ namespace Renderer {
 
 		}
 
-		private sealed class FastOctTreeNode
-		{
+		private sealed class FastOctTreeNode {
 
 			public readonly FastOctTreeNode[] node;
 			public readonly double x, y, z;
@@ -226,9 +218,10 @@ namespace Renderer {
 					this.z = otin.z;
 					this.node = new FastOctTreeNode[0x08];
 					for(int i = 0; i < 0x08; i++) {
-						this.node [i] = new FastOctTreeNode(otin.children [i]);
+						this.node[i] = new FastOctTreeNode(otin.children[i]);
 					}
-				} else {
+				}
+				else {
 					this.node = null;
 					this.data = ((OctTreeLeaf)node).sl.ToLongRepresentation();
 				}

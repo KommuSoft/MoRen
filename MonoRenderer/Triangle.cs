@@ -3,8 +3,7 @@ using System.Collections.Generic;
 
 namespace Renderer {
 	
-	public sealed class Triangle : RenderItem
-	{
+	public sealed class Triangle : RenderItem {
 		
 		private readonly Point3 p0, p1, p2, n0, n1, n2;
 		private readonly Point3 t0, t1, t2;
@@ -18,7 +17,8 @@ namespace Renderer {
 				Point3.Cross(p1.X-p0.X, p1.Y-p0.Y, p1.Z-p0.Z, p2.X-p0.X, p2.Y-p0.Y, p2.Z-p0.Z, out norm.X, out norm.Y, out norm.Z);
 				norm.Normalize();
 				this.n0 = this.n1 = this.n2 = norm;
-			} else {
+			}
+			else {
 				this.n0 = na;
 				this.n1 = nb;
 				this.n2 = nc;
@@ -27,7 +27,8 @@ namespace Renderer {
 				this.t0 = Point3.DummyPoint;
 				this.t1 = Point3.DummyPoint;
 				this.t2 = Point3.DummyPoint;
-			} else {
+			}
+			else {
 				this.t0 = ta;
 				this.t1 = tb;
 				this.t2 = tc;
@@ -43,8 +44,8 @@ namespace Renderer {
 			zM = Maths.Max(p0.Z, p1.Z, p2.Z);
 		}
 		public override void GetDimensionBounds (int dim, out double x0, out double x1) {
-			x0 = Maths.Min(p0 [dim], p1 [dim], p2 [dim]);
-			x1 = Maths.Max(p0 [dim], p1 [dim], p2 [dim]);
+			x0 = Maths.Min(p0[dim], p1[dim], p2[dim]);
+			x1 = Maths.Max(p0[dim], p1[dim], p2[dim]);
 		}
 		public override bool InBox (double xm, double xM, double ym, double yM, double zm, double zM) {
 			double v0x, v0y, v0z, v1x, v1y, v1z, v2x, v2y, v2z;
@@ -82,9 +83,6 @@ namespace Renderer {
 				invAxisTestYZ(bhx, bhy, e0y, e0x, fey, fex, v2x, v2y, v1x, v1y)) {
 				return false;
 			}
-			/*AXISTEST_X01(e0 [Z], e0 [Y], fez, fey);
-			AXISTEST_Y02(e0 [Z], e0 [X], fez, fex);
-			AXISTEST_Z12(e0 [Y], e0 [X], fey, fex);*/
 
 			fex = Math.Abs(e1x);
 			fey = Math.Abs(e1y);
@@ -94,9 +92,6 @@ namespace Renderer {
 				invAxisTestYZ(bhx, bhy, e1y, e1x, fey, fex, v0x, v0y, v1x, v1y)) {
 				return false;
 			}
-			/*AXISTEST_X01(e1 [Z], e1 [Y], fez, fey);
-			AXISTEST_Y02(e1 [Z], e1 [X], fez, fex);
-			AXISTEST_Z0(e1 [Y], e1 [X], fey, fex);*/
 
 			fex = Math.Abs(e2x);
 			fey = Math.Abs(e2y);
@@ -106,42 +101,13 @@ namespace Renderer {
 				invAxisTestYZ(bhx, bhy, e2y, e2x, fey, fex, v2x, v2y, v1x, v1y)) {
 				return false;
 			}
-			/*AXISTEST_X2(e2 [Z], e2 [Y], fez, fey);
-			AXISTEST_Y1(e2 [Z], e2 [X], fez, fex);
-			AXISTEST_Z12(e2 [Y], e2 [X], fey, fex);*/
-
-/* Bullet 1: */
-/*  first test overlap in the {x,y,z}-directions */
-/*  find min, max of the triangle each direction, and test for overlap in */
-/*  that direction -- this is equivalent to testing a minimal AABB around */
-/*  the triangle against the AABB */
-
-/* test in X-direction */
 			if(invMinMaxBound(bhx, v0x, v1x, v2x) ||
 				invMinMaxBound(bhy, v0y, v1y, v2y) ||
 				invMinMaxBound(bhz, v0z, v1z, v2z)) {
 				return false;
 			}
-			/*FINDMINMAX(v0 [X], v1 [X], v2 [X], min, max);
-			if(min > boxhalfsize [X] || max < -boxhalfsize [X])
-				return 0;
-			FINDMINMAX(v0 [Y], v1 [Y], v2 [Y], min, max);
-			if(min > boxhalfsize [Y] || max < -boxhalfsize [Y])
-				return 0;
-			FINDMINMAX(v0 [Z], v1 [Z], v2 [Z], min, max);
-			if(min > boxhalfsize [Z] || max < -boxhalfsize [Z])
-				return 0;*/
-
-/* Bullet 2: */
-/*  test if the box intersects the plane of the triangle */
-/*  compute plane equation of triangle: normal*x+d=0 */
 			Point3.Cross(e0x, e0y, e0z, e1x, e1y, e1z, out normalx, out normaly, out normalz);	
 			return invPlaneBoxOverlap(normalx, normaly, normalz, v0x, v0y, v0z, bhx, bhy, bhz);
-			/* plane eq: normal.x+d=0 */
-			/*CROSS(normal, e0, e1);
-			d = -DOT(normal, v0);
-			if(!planeBoxOverlap(normal, d, boxhalfsize))
-				return false;*/
 		}
 		private bool invPlaneBoxOverlap (double normalx, double normaly, double normalz, double v0x, double v0y, double v0z, double bhx, double bhy, double bhz) {
 			int q;
@@ -197,7 +163,8 @@ namespace Renderer {
 			double t = -(dx01*(dz02*k-dy02*l)+dx02*(dy01*l-dz01*k)+(dy02*dz01-dy01*dz02)*j)*M;
 			if(t <= 0.0d) {
 				return double.PositiveInfinity;
-			} else {
+			}
+			else {
 				return t;
 			}
 		}
@@ -241,20 +208,21 @@ namespace Renderer {
 			return TriangleSplitSurface(p0, p1, p2, sweep, dim);
 		}
 		public static double TriangleSplitSurface (Point3 pa, Point3 pb, Point3 pc, double sweep, int dim) {
-			IComparer<Point3> co = Point3.Comparers [dim];
+			IComparer<Point3> co = Point3.Comparers[dim];
 			Maths.Order(co, ref pa, ref pb);
 			Maths.Order(co, ref pa, ref pc);
 			Maths.Order(co, ref pb, ref pc);
 			double sf = TriangleSurface(pa, pb, pc);
-			if(pb [dim] >= sweep) {
-				double fac = (sweep-pa [dim]);
+			if(pb[dim] >= sweep) {
+				double fac = (sweep-pa[dim]);
 				fac *= fac;
-				fac /= (pb [dim]-pa [dim])*(pc [dim]-pa [dim]);
+				fac /= (pb[dim]-pa[dim])*(pc[dim]-pa[dim]);
 				return fac*sf;
-			} else {
-				double fac = (pc [dim]-sweep);
+			}
+			else {
+				double fac = (pc[dim]-sweep);
 				fac *= fac;
-				fac /= (pc [dim]-pb [dim])*(pc [dim]-pa [dim]);
+				fac /= (pc[dim]-pb[dim])*(pc[dim]-pa[dim]);
 				return (1.0d-fac)*sf;
 			}
 		}
@@ -262,40 +230,42 @@ namespace Renderer {
 			return TriangleSplitAt(this, this.p0, this.p1, this.p2, sweep, dim);
 		}
 		public static Tuple<ProxyRenderItem[], ProxyRenderItem[]> TriangleSplitAt (RenderItem parent, Point3 pa, Point3 pb, Point3 pc, double sweep, int dim) {
-			IComparer<Point3> co = Point3.Comparers [dim];
+			IComparer<Point3> co = Point3.Comparers[dim];
 			Maths.Order(co, ref pa, ref pb);
 			Maths.Order(co, ref pa, ref pc);
 			Maths.Order(co, ref pb, ref pc);
 			ProxyRenderItem[] la = new ProxyRenderItem[1], lb;
-			double fac = (sweep-pa [dim])/(pc [dim]-pa [dim]);
+			double fac = (sweep-pa[dim])/(pc[dim]-pa[dim]);
 			double fad = 1.0d-fac;
 			Point3 pac = new Point3(fac*pc.X+fad*pa.X, fac*pc.Y+fad*pa.Y, fac*pc.Z+fad*pa.Z), pabc;
-			if(pb [dim] != sweep) {
+			if(pb[dim] != sweep) {
 				lb = new ProxyRenderItem[2];
-				if(pb [dim] > sweep) {
+				if(pb[dim] > sweep) {
 					//left 1/right 2
-					fac = (sweep-pa [dim])/(pb [dim]-pa [dim]);
+					fac = (sweep-pa[dim])/(pb[dim]-pa[dim]);
 					fad = 1.0d-fac;
 					pabc = new Point3(fac*pb.X+fad*pa.X, fac*pb.Y+fad*pa.Y, fac*pb.Z+fad*pa.Z);
-					la [0x00] = new ProxyTriangle(parent, pa, pac, pabc);
-					lb [0x00] = new ProxyTriangle(parent, pac, pb, pabc);
-					lb [0x01] = new ProxyTriangle(parent, pac, pc, pb);
+					la[0x00] = new ProxyTriangle(parent, pa, pac, pabc);
+					lb[0x00] = new ProxyTriangle(parent, pac, pb, pabc);
+					lb[0x01] = new ProxyTriangle(parent, pac, pc, pb);
 					return new Tuple<ProxyRenderItem[],ProxyRenderItem[]>(la, lb);
-				} else {
+				}
+				else {
 					//left 2/right 1
-					fac = (sweep-pb [dim])/(pc [dim]-pb [dim]);
+					fac = (sweep-pb[dim])/(pc[dim]-pb[dim]);
 					fad = 1.0d-fac;
 					pabc = new Point3(fac*pc.X+fad*pb.X, fac*pc.Y+fad*pb.Y, fac*pc.Z+fad*pb.Z);
-					la [0x00] = new ProxyTriangle(parent, pc, pac, pabc);
-					lb [0x00] = new ProxyTriangle(parent, pac, pb, pabc);
-					lb [0x01] = new ProxyTriangle(parent, pac, pa, pb);
+					la[0x00] = new ProxyTriangle(parent, pc, pac, pabc);
+					lb[0x00] = new ProxyTriangle(parent, pac, pb, pabc);
+					lb[0x01] = new ProxyTriangle(parent, pac, pa, pb);
 					return new Tuple<ProxyRenderItem[],ProxyRenderItem[]>(lb, la);
 				}
 
-			} else {
+			}
+			else {
 				lb = new ProxyRenderItem[1];
-				la [0x00] = new ProxyTriangle(parent, pa, pac, pb);
-				lb [0x00] = new ProxyTriangle(parent, pac, pc, pb);
+				la[0x00] = new ProxyTriangle(parent, pa, pac, pb);
+				lb[0x00] = new ProxyTriangle(parent, pac, pc, pb);
 				return new Tuple<ProxyRenderItem[],ProxyRenderItem[]>(la, lb);
 			}
 		}

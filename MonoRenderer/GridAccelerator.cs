@@ -24,8 +24,7 @@ using System.Text;
 using System.Collections.Generic;
 
 namespace Renderer {
-	public sealed class GridAccelerator : Accelerator
-	{
+	public sealed class GridAccelerator : Accelerator {
 
 		private readonly RenderItem[] ris;
 		private readonly long[] grid;
@@ -67,12 +66,12 @@ namespace Renderer {
 			};
 			RenderItem current = null;
 			SortedSet<MigrationEvent> migrations = new SortedSet<MigrationEvent>();
-			addMigrations(migrations, t, 0x00, inter.X, ixyz [0x00], x0, dx, ray.DX);
-			addMigrations(migrations, t, 0x01, inter.Y, ixyz [0x01], y0, dy, ray.DY);
-			addMigrations(migrations, t, 0x02, inter.Z, ixyz [0x02], z0, dz, ray.DZ);
-			int tile = nextSlice*ixyz [0x00]+nextLine*ixyz [0x01]+ixyz [0x02];
+			addMigrations(migrations, t, 0x00, inter.X, ixyz[0x00], x0, dx, ray.DX);
+			addMigrations(migrations, t, 0x01, inter.Y, ixyz[0x01], y0, dy, ray.DY);
+			addMigrations(migrations, t, 0x02, inter.Z, ixyz[0x02], z0, dz, ray.DZ);
+			int tile = nextSlice*ixyz[0x00]+nextLine*ixyz[0x01]+ixyz[0x02];
 			while(t < tHit) {
-				long g = grid [tile];
+				long g = grid[tile];
 				if(g != 0x00) {
 					checkTile(ray, ref current, ref tHit, g);
 				}
@@ -80,9 +79,9 @@ namespace Renderer {
 				migrations.Remove(me);
 				t = me.t;
 				me.Update();
-				tile += me.sgn*dtile [me.dim];
-				ixyz [me.dim] += me.sgn;
-				if(t >= tHit || ixyz [me.dim] >= ixyzM [me.dim] || ixyz [me.dim] < 0x00) {
+				tile += me.sgn*dtile[me.dim];
+				ixyz[me.dim] += me.sgn;
+				if(t >= tHit || ixyz[me.dim] >= ixyzM[me.dim] || ixyz[me.dim] < 0x00) {
 					return current;
 				}
 				migrations.Add(me);
@@ -94,10 +93,10 @@ namespace Renderer {
 		private void checkTile (Ray ray, ref RenderItem current, ref double maxT, long refs) {
 			long end = refs>>0x20;
 			for(refs &= 0xffffffff; refs < end; refs++) {
-				double t = this.ris [refs].HitAt(ray);
+				double t = this.ris[refs].HitAt(ray);
 				if(t < maxT) {
 					maxT = t;
-					current = this.ris [refs];
+					current = this.ris[refs];
 				}
 			}		
 		}
@@ -127,12 +126,9 @@ namespace Renderer {
 			dx /= xn;
 			dy /= yn;
 			dz /= zn;
-			/*double dxinv = 1.0d/dx;
-			double dyinv = 1.0d/dy;
-			double dzinv = 1.0d/dz;*/
 			SubList[] perms = new SubList[xn*yn*zn];
 			for(int i = 0; i < xn*yn*zn; i++) {
-				perms [i] = new SubList();
+				perms[i] = new SubList();
 			}
 			int ixm, ixM, iym, iyM, izm, izM;
 			double rix0, riy0, riz0;
@@ -146,7 +142,7 @@ namespace Renderer {
 					for(int iy = iym; iy <= iyM; iy++) {
 						for(int iz = izm; iz <= izM; iz++) {
 							if(ri.InBox(x0+ix*dx, x0+ix*dx+dx, y0+iy*dy, y0+iy*dy+dy, z0+iz*dz, z0+iz*dz+dz)) {
-								perms [ix*nextSlice+iy*nextLine+iz].Add(rii);
+								perms[ix*nextSlice+iy*nextLine+iz].Add(rii);
 							}
 						}
 					}
@@ -154,7 +150,7 @@ namespace Renderer {
 				rii++;
 			}
 			FinalList fl = new FinalList(perms);
-			ris = fl.list.Select(x => items [x]).ToArray();
+			ris = fl.list.Select(x => items[x]).ToArray();
 			return perms.Select(x => x.ToLongRepresentation()).ToArray();
 		}
 
@@ -166,20 +162,19 @@ namespace Renderer {
 			for(int i = 0; i < XN; i++) {
 				for(int j = 0; j < YN; j++) {
 					for(int k = 0; k < ZN; k++) {
-						sb.AppendLine(string.Format("{0}/{1}/{2}: {3}|{4}", i, j, k, grid [l]>>0x20, grid [l]&0xffffffff));
+						sb.AppendLine(string.Format("{0}/{1}/{2}: {3}|{4}", i, j, k, grid[l]>>0x20, grid[l]&0xffffffff));
 						l++;
 					}
 				}
 			}
 			sb.AppendLine("Data");
 			for(int i = 0; i < ris.Length; i++) {
-				sb.AppendLine(string.Format("{0}: {1}", i, ris [i]));
+				sb.AppendLine(string.Format("{0}: {1}", i, ris[i]));
 			}
 			return sb.ToString();
 		}
 
-		private struct MigrationEvent : IComparable<MigrationEvent>
-		{
+		private struct MigrationEvent : IComparable<MigrationEvent> {
 
 			public double t;
 			public readonly double dt;

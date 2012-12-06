@@ -26,8 +26,7 @@ using System.Xml.Serialization;
 namespace Renderer {
 	
 	[XmlType("Point3")]
-	public sealed class Point3
-	{
+	public sealed class Point3 {
 		
 		[XmlIgnore]
 		public static readonly Point3
@@ -94,12 +93,7 @@ namespace Renderer {
 				return X*X+Y*Y+Z*Z;
 			}
 		}
-		
-		/*public Point3 () {
-			this.X = 0.0d;
-			this.Y = 0.0d;
-			this.Z = 0.0d;
-		}*/
+
 		public Point3 () {
 			this.X = 0.0d;
 			this.Y = 0.0d;
@@ -239,9 +233,8 @@ namespace Renderer {
 		public static int Order (double x, double y, double z, double a, double b, double c, double d) {
 			return (3+(int)Math.Sign(x*a+b*y+c*z+d))>>1;
 		}
-		//assumption: both vectors are normalized
 		public static double CosAngleNorm (Point3 pa, Point3 pb) {
-			return pa.X*pb.X+pa.Y*pb.Y+pa.Z*pb.Z;
+			return pa.X*pb.X+pa.Y*pb.Y+pa.Z*pb.Z;//assumption: both vectors are normalized
 		}
 		public static Point3 operator + (Point3 a, Point3 b) {
 			return new Point3(a.X+b.X, a.Y+b.Y, a.Z+b.Z);
@@ -252,18 +245,11 @@ namespace Renderer {
 		public static double operator * (Point3 a, Point3 b) {
 			return a.X*b.X+a.Y*b.Y+a.Z*b.Z;
 		}
-		/*public static Point3 operator * (double s, Point3 p) {
-			return new Point3(s*p.X, s*p.Y, s*p.Z);
-		}
-		public static Point3 operator * (Point3 p, double s) {
-			return new Point3(s*p.X, s*p.Y, s*p.Z);
-		}*/
 		public override string ToString () {
 			return string.Format("({0};{1};{2})", X.ToString("0.000"), Y.ToString("0.000"), Z.ToString("0.000"));
 		}
 
-		private class XComp : IComparer<Point3>
-		{
+		private class XComp : IComparer<Point3> {
 
 			public int Compare (Point3 pa, Point3 pb) {
 				return pa.X.CompareTo(pb.X);
@@ -271,8 +257,7 @@ namespace Renderer {
 
 		}
 
-		private class YComp : IComparer<Point3>
-		{
+		private class YComp : IComparer<Point3> {
 
 			public int Compare (Point3 pa, Point3 pb) {
 				return pa.Y.CompareTo(pb.Y);
@@ -280,8 +265,7 @@ namespace Renderer {
 
 		}
 
-		private class ZComp : IComparer<Point3>
-		{
+		private class ZComp : IComparer<Point3> {
 
 			public int Compare (Point3 pa, Point3 pb) {
 				return pa.Z.CompareTo(pb.Z);
@@ -289,8 +273,7 @@ namespace Renderer {
 
 		}
 
-		private class FaceComp : IComparer<Point3>
-		{
+		private class FaceComp : IComparer<Point3> {
 
 			public readonly double A, B, C;
 

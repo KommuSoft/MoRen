@@ -2,8 +2,7 @@ using System;
 
 namespace Renderer {
 	
-	public sealed class Sphere : RenderItem
-	{
+	public sealed class Sphere : RenderItem {
 		
 		public Point3 Center;
 		public readonly double Radius;
@@ -26,8 +25,8 @@ namespace Renderer {
 			zM = Center.Z+Radius;
 		}
 		public override void GetDimensionBounds (int dim, out double x0, out double x1) {
-			x0 = Center [dim]-Radius;
-			x1 = Center [dim]+Radius;
+			x0 = Center[dim]-Radius;
+			x1 = Center[dim]+Radius;
 		}
 		public override bool InBox (double xm, double xM, double ym, double yM, double zm, double zM) {
 			double x0 = Math.Max(xm, Center.X-Radius);
@@ -51,10 +50,12 @@ namespace Renderer {
 				double t = Maths.MinGeqZero(-D_4-b_2, D_4-b_2);
 				if(t > 0.0d) {
 					return t;
-				} else {
+				}
+				else {
 					return double.PositiveInfinity;
 				}
-			} else {
+			}
+			else {
 				return double.PositiveInfinity;
 			}
 		}
@@ -73,27 +74,19 @@ namespace Renderer {
 				D_4 = Math.Sqrt(D_4);
 				double t = Maths.MinGeqZero(-D_4-b_2, D_4-b_2);
 				if(t > 0.0d) {
-					//Point3 hp = ray.PointAt(t);
-					//double rinv = 1.0d/Radius;
-					/*if(Id == 7) {
-						DebugFile.WriteEntry(string.Format("{0} -> {1} -> {2}",ray,hp,new Point3(rinv*(hp.X-Center.X),rinv*(hp.Y-Center.Y),rinv*(hp.Z-Center.Z))));
-					}*/
 					Point3 norm = new Point3(Rinv*(x0+t*dx), Rinv*(y0+t*dy), Rinv*(z0+t*dz));
-					//double tu = 0.5d*Math.Acos(Math.Abs(norm.X))/Math.PI;
-					//double tv = 0.5d*Math.Acos(Math.Abs(norm.Y))/Math.PI;
-					//double tu = 1.0d-0.5d*Math.Asin(norm.Y)/Math.PI-0.75d;
-					//double tv = 1.0d-0.5d*Math.Asin(norm.X)/Math.PI-0.75d;
 					double tu = 0.5d*Math.Atan2(norm.Z, norm.X)/Math.PI-0.5d+0.3d;
 					if(tu >= 1.0d) {
 						tu -= 1.0d;
 					}
-					double tv = 0.5d-Math.Asin(norm.Y)/Math.PI;//-Math.Asin(norm.Y)/Math.PI;
-					//double phi = 0.5d*Math.Atan2(norm.Y,norm.X)/Math.PI+0.5d;
-					cr.Copy(t, norm, tu, tv);//this.Clr,20,235,1.490d
-				} else {
+					double tv = 0.5d-Math.Asin(norm.Y)/Math.PI;
+					cr.Copy(t, norm, tu, tv);
+				}
+				else {
 					cr.SetNull();
 				}
-			} else {
+			}
+			else {
 				cr.SetNull();
 			}
 		}
@@ -102,7 +95,7 @@ namespace Renderer {
 			return Maths.PI4*Radius*Radius;
 		}
 		public override double SplitSurface (double sweep, int dim) {
-			return Maths.PI2*Radius*(sweep-Radius-this.Center [dim]);
+			return Maths.PI2*Radius*(sweep-Radius-this.Center[dim]);
 		}
 		public override Tuple<ProxyRenderItem[], ProxyRenderItem[]> SplitAt (double sweep, int dimension) {
 			return null;

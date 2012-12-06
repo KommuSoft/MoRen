@@ -26,8 +26,7 @@ using System.IO;
 using System.Text;
 
 namespace Renderer {
-	public class Loader3ds : MeshLoader
-	{
+	public class Loader3ds : MeshLoader {
 		
 		private ushort currentJunk;
 		private int nextJunkOffset;
@@ -65,60 +64,51 @@ namespace Renderer {
 
 		private void readJunk (BinaryReader br, Stream st, Junk3ds parent, ParsingContext ctx) {
 			this.readHeader(br, st);
-			//Console.WriteLine("{0}: {1}", this.currentJunk.ToString("X"), this.nextJunkOffset);
 			string f;
 			double pct;
 			long until = st.Position+this.nextJunkOffset-6;
 			Junk3ds child;
 			switch(this.currentJunk) {
-			/*0x4000 family*/
-				case 0x4000://new object
+				case 0x4000:
 					f = Utils.ReadZeroEndByteString(br);
 #if DEBUG
-//					Console.WriteLine("Loaded \"{0}\"", f);
+					Console.WriteLine("Loaded \"{0}\"", f);
 #endif
 					child = new ObjectJunk(f);
 					break;
-				case 0x4100://trianglemesh
+				case 0x4100:
 					child = new LoadModeJunk(LoadMode.Triangle);
 					break;
-				case 0x4110://vertex list
+				case 0x4110:
 					List<Point3> vertexList = new List<Point3>();
 					Utils.ReadPoint3DFloatList(br, vertexList);
 					child = new ListJunk<Point3>(vertexList, ListPurpose.Vertex);
 					break;
-				case 0x4120://index list
+				case 0x4120:
 					List<ushort> indices = new List<ushort>();
 					Utils.ReadUShortList(br, indices, 4);
 					child = new IndexJunk(indices);
 					break;
-				case 0x4130://material chunk
+				case 0x4130:
 					f = Utils.ReadZeroEndByteString(br);
 					List<ushort> faces = new List<ushort>();
 					Utils.ReadUShortList(br, faces, 0x01);
 					child = new UseMaterialJunk(f, faces);
-					break;//*/
-				case 0x4140://texture coordinate list
+					break;
+				case 0x4140:
 					List<Point3> textureList = new List<Point3>();
 					Utils.ReadPoint2DFloatList(br, textureList);
 					child = new ListJunk<Point3>(textureList, ListPurpose.Texture);
 					break;
-			/*case 0x4150:
-					this.smoothGroup.Clear();
-					//Console.WriteLine("sg chunk is {0}/{1}/{2} @ {3}", this.currentJunk.ToString("X"), this.nextJunkOffset, this.nextJunkOffset.ToString("X"),st.Position.ToString("X"));
-					Utils.ReadShortListLength(br, this.smoothGroup, (this.nextJunkOffset-6)/2);
-					break;//*/
 				case 0x4160:
 					child = new MatrixJunk(Utils.ReadMatrixChunk(br));
-					break;//*/
-			/*0x3000 family*/
+					break;
 				case 0x3d3d:
 					child = new MeshJunk();
 					break;
-			/*0xa0000 family*/
 				case 0xafff:
 					child = new MaterialJunk();
-					break;//mesh
+					break;
 				case 0xa000:
 					f = Utils.ReadZeroEndByteString(br);
 					child = new MaterialNameJunk(f);
@@ -153,10 +143,7 @@ namespace Renderer {
 				case 0x351:
 					child = new TextureFlagsJunk(br.ReadUInt16());
 					break;
-			/*0x???? family*/
 				default :
-					//we don't know the meaning of the chunk -> skip
-					//read to the next junk
 #if DEBUG
 					Console.Error.WriteLine("unknown chunk is {0}/{1}/{2} @ {3}", this.currentJunk.ToString("X"), this.nextJunkOffset, this.nextJunkOffset.ToString("X"), st.Position.ToString("X"));
 #endif
@@ -168,8 +155,7 @@ namespace Renderer {
 			child.Resolve(ctx);
 		}
 
-		private class ParsingContext
-		{
+		private class ParsingContext {
 
 			public readonly string activedir;
 			public readonly Dictionary<string,Material> material = new Dictionary<string, Material>();
@@ -184,13 +170,16 @@ namespace Renderer {
 #endif
 				if(name == null || name == string.Empty) {
 					return null;
-				} else if(activedir == null) {
+				}
+				else if(activedir == null) {
 					return new Texture(name);
-				} else {
+				}
+				else {
 					string path = Path.GetDirectoryName(activedir)+Path.DirectorySeparatorChar+name;
 					if(File.Exists(path)) {
 						return new Texture(path);
-					} else {
+					}
+					else {
 #if DEBUG
 						Console.Error.WriteLine("Cannot open \"{0}\": file doesn't exist!", path);
 #endif
@@ -201,8 +190,7 @@ namespace Renderer {
 
 		}
 
-		private abstract class Junk3ds
-		{
+		private abstract class Junk3ds {
 
 			private List<Junk3ds> children = new List<Junk3ds>();
 
@@ -230,14 +218,16 @@ namespace Renderer {
 			protected IEnumerable<T> FindChild<T> (Func<T,bool> predicate) where T : Junk3ds {
 				if(this.children != null) {
 					return children.Where(x => typeof(T).IsAssignableFrom(x.GetType())).Cast<T>().Where(predicate);
-				} else {
+				}
+				else {
 					return null;
 				}
 			}
 			protected IEnumerable<T> FindChild<T> () where T : Junk3ds {
 				if(this.children != null) {
 					return children.Where(x => typeof(T).IsAssignableFrom(x.GetType())).Cast<T>();
-				} else {
+				}
+				else {
 					return null;
 				}
 			}
@@ -255,8 +245,7 @@ namespace Renderer {
 
 		}
 
-		private class UseMaterialJunk : NameJunk
-		{
+		private class UseMaterialJunk : NameJunk {
 
 			public List<ushort> faces;
 
@@ -270,8 +259,7 @@ namespace Renderer {
 
 		}
 
-		private class MaterialPercentageJunk : Junk3ds
-		{
+		private class MaterialPercentageJunk : Junk3ds {
 
 			public double percentage;
 			public MaterialPercentageType type;
@@ -287,14 +275,12 @@ namespace Renderer {
 
 		}
 
-		private enum MaterialPercentageType
-		{
+		private enum MaterialPercentageType {
 			Shininess,
 			Transparency
 		}
 
-		private class ListJunk<T> : Junk3ds
-		{
+		private class ListJunk<T> : Junk3ds {
 
 			public List<T> list;
 			public ListPurpose purpose;
@@ -310,8 +296,7 @@ namespace Renderer {
 
 		}
 
-		private class IndexJunk : ListJunk<ushort>
-		{
+		private class IndexJunk : ListJunk<ushort> {
 
 			public List<string> materials;
 			public List<Tuple<ushort,ushort,ushort,ushort>> tris;
@@ -331,13 +316,13 @@ namespace Renderer {
 					foreach(ushort it in umj.faces) {
 						todo.Remove(it);
 						int k = 4*it;
-						this.tris.Add(new Tuple<ushort, ushort, ushort, ushort>(l [k], l [k+1], l [k+2], i));
+						this.tris.Add(new Tuple<ushort, ushort, ushort, ushort>(l[k], l[k+1], l[k+2], i));
 					}
 					i++;
 				}
 				foreach(ushort it in todo) {
 					int k = 4*it;
-					this.tris.Add(new Tuple<ushort, ushort, ushort, ushort>(l [k], l [k+1], l [k+2], i));
+					this.tris.Add(new Tuple<ushort, ushort, ushort, ushort>(l[k], l[k+1], l[k+2], i));
 				}
 				this.Collapse();
 			}
@@ -348,15 +333,13 @@ namespace Renderer {
 
 		}
 
-		private enum ListPurpose
-		{
+		private enum ListPurpose {
 			Vertex,
 			Texture,
 			Index
 		}
 
-		private abstract class NameJunk : Junk3ds
-		{
+		private abstract class NameJunk : Junk3ds {
 
 			public string name;
 
@@ -370,8 +353,7 @@ namespace Renderer {
 
 		}
 
-		private class ObjectJunk : NameJunk
-		{
+		private class ObjectJunk : NameJunk {
 
 			public ObjectJunk (string name) : base(name) {
 			}
@@ -392,16 +374,14 @@ namespace Renderer {
 
 		}
 
-		private class TextureNameJunk : NameJunk
-		{
+		private class TextureNameJunk : NameJunk {
 
 			public TextureNameJunk (string name) : base(name) {
 			}
 
 		}
 
-		private class TextureFlagsJunk : Junk3ds
-		{
+		private class TextureFlagsJunk : Junk3ds {
 
 			public ushort flags;
 
@@ -415,8 +395,7 @@ namespace Renderer {
 
 		}
 
-		private class MaterialColorJunk : Junk3ds
-		{
+		private class MaterialColorJunk : Junk3ds {
 
 			public uint color;
 			public MaterialColorType type;
@@ -432,15 +411,13 @@ namespace Renderer {
 
 		}
 
-		private enum MaterialColorType
-		{
+		private enum MaterialColorType {
 			Ambient,
 			Diffuse,
 			Specular
 		}
 
-		private class MaterialTextureJunk : Junk3ds
-		{
+		private class MaterialTextureJunk : Junk3ds {
 
 			public MaterialTextureType type;
 			public double percentage;
@@ -462,8 +439,7 @@ namespace Renderer {
 
 		}
 
-		private class MatrixJunk : Junk3ds
-		{
+		private class MatrixJunk : Junk3ds {
 
 			public Matrix4 mat;
 
@@ -477,23 +453,20 @@ namespace Renderer {
 
 		}
 
-		private enum MaterialTextureType
-		{
+		private enum MaterialTextureType {
 			Texture,
 			Reflection,
 			Bump
 		}
 
-		private class MaterialNameJunk : NameJunk
-		{
+		private class MaterialNameJunk : NameJunk {
 
 			public MaterialNameJunk (string name) : base(name) {
 			}
 
 		}
 
-		private class RootJunk : Junk3ds
-		{
+		private class RootJunk : Junk3ds {
 
 			public IEnumerable<RenderItem> GetItems (Matrix4 mat) {
 				foreach(MeshJunk oj in this.FindChild<MeshJunk>()) {
@@ -506,8 +479,7 @@ namespace Renderer {
 		}
 
 
-		private class MaterialJunk : Junk3ds
-		{
+		private class MaterialJunk : Junk3ds {
 
 			public string name;
 			public Material material;
@@ -561,8 +533,7 @@ namespace Renderer {
 
 		}
 
-		private class MeshJunk : Junk3ds
-		{
+		private class MeshJunk : Junk3ds {
 
 			public override void Resolve (ParsingContext ctx) {
 				foreach(MaterialJunk mj in this.FindChild<MaterialJunk>()) {
@@ -584,8 +555,7 @@ namespace Renderer {
 
 		}
 
-		private class LoadModeJunk : Junk3ds
-		{
+		private class LoadModeJunk : Junk3ds {
 
 			public LoadMode lm;
 			public List<Point3> vertices;
@@ -608,9 +578,6 @@ namespace Renderer {
 				MatrixJunk mj;
 				this.vertices = this.FindChild<ListJunk<Point3>>(x => x.purpose == ListPurpose.Vertex).First().list;
 				mj = this.FindChild<MatrixJunk>().FirstOrDefault();
-				double x0, x1, y0, y1, z0, z1;
-				//Utils.CalculateBoundingBox(this.vertices, out x0, out x1, out y0, out y1, out z0, out z1);
-				//Console.WriteLine("0.5*({0},{2},{4})+0.5*({1},{3},{5})", x0, x1, y0, y1, z0, z1);
 				Matrix4 M;
 				if(mj != null) {
 					M = mj.mat;
@@ -621,14 +588,16 @@ namespace Renderer {
 				plj = this.FindChild<ListJunk<Point3>>(x => x.purpose == ListPurpose.Texture).FirstOrDefault();
 				if(plj != null) {
 					this.texture = plj.list;
-				} else {
+				}
+				else {
 					this.texture = Utils.GenerateNormalizedCopies(this.vertices).ToList();
 				}
 				IndexJunk ij = this.FindChild<IndexJunk>().FirstOrDefault();
 				if(ij != null) {
 					this.indices = ij.tris;
 					this.materialstr = ij.materials;
-				} else {
+				}
+				else {
 					this.indices = Utils.GenerateIndicesRange(this.vertices.Count).ToList();
 					this.materialstr = new List<string>();
 				}
@@ -639,16 +608,16 @@ namespace Renderer {
 				Point3 normi = new Point3();
 				double dxa, dya, dza, dxb, dyb, dzb;
 				foreach(Tuple<ushort,ushort,ushort,ushort> tri in this.indices) {
-					dxa = this.vertices [tri.Item2].X-this.vertices [tri.Item1].X;
-					dya = this.vertices [tri.Item2].Y-this.vertices [tri.Item1].Y;
-					dza = this.vertices [tri.Item2].Z-this.vertices [tri.Item1].Z;
-					dxb = this.vertices [tri.Item3].X-this.vertices [tri.Item1].X;
-					dyb = this.vertices [tri.Item3].Y-this.vertices [tri.Item1].Y;
-					dzb = this.vertices [tri.Item3].Z-this.vertices [tri.Item1].Z;
+					dxa = this.vertices[tri.Item2].X-this.vertices[tri.Item1].X;
+					dya = this.vertices[tri.Item2].Y-this.vertices[tri.Item1].Y;
+					dza = this.vertices[tri.Item2].Z-this.vertices[tri.Item1].Z;
+					dxb = this.vertices[tri.Item3].X-this.vertices[tri.Item1].X;
+					dyb = this.vertices[tri.Item3].Y-this.vertices[tri.Item1].Y;
+					dzb = this.vertices[tri.Item3].Z-this.vertices[tri.Item1].Z;
 					Point3.CrossNormalize(dxa, dya, dza, dxb, dyb, dzb, out normi.X, out normi.Y, out normi.Z);
-					this.normals [tri.Item1].AddDirect(normi);
-					this.normals [tri.Item2].AddDirect(normi);
-					this.normals [tri.Item3].AddDirect(normi);
+					this.normals[tri.Item1].AddDirect(normi);
+					this.normals[tri.Item2].AddDirect(normi);
+					this.normals[tri.Item3].AddDirect(normi);
 				}
 				foreach(Point3 p in this.normals) {
 					p.Normalize();
@@ -657,7 +626,7 @@ namespace Renderer {
 			}
 
 			public void CacheMaterial (ParsingContext pc) {
-				this.materials = this.materialstr.Select(x => pc.material [x]).ToList();
+				this.materials = this.materialstr.Select(x => pc.material[x]).ToList();
 				this.materials.Add(Material.DefaultMaterial);
 				this.materialstr = null;
 			}
@@ -671,7 +640,7 @@ namespace Renderer {
 				}
 				List<Point3> texturc = this.texture.Select(x => new Point3(x)).ToList();
 				foreach(Tuple<ushort,ushort,ushort,ushort> tri in this.indices) {
-					yield return new Triangle(vertexc [tri.Item1], vertexc [tri.Item2], vertexc [tri.Item3], normalc [tri.Item1], normalc [tri.Item2], normalc [tri.Item3], texturc [tri.Item1], texturc [tri.Item2], texturc [tri.Item3], materials [tri.Item4]);
+					yield return new Triangle(vertexc[tri.Item1], vertexc[tri.Item2], vertexc[tri.Item3], normalc[tri.Item1], normalc[tri.Item2], normalc[tri.Item3], texturc[tri.Item1], texturc[tri.Item2], texturc[tri.Item3], materials[tri.Item4]);
 				}
 			}
 
@@ -684,96 +653,10 @@ namespace Renderer {
 			}
 		}
 
-		private enum LoadMode : byte
-		{
+		private enum LoadMode : byte {
 			None		= 0x00,
 			Triangle	= 0x01
 		}
-		
-		/*private void FlushMaterial () {
-			if(this.lm != null) {
-				this.materials.Add(this.lm.Name, this.lm.ConvertToMaterial(this.dir));
-				this.lm = null;
-			}
-		}
-
-		private void Flush () {
-			this.FlushMaterial();
-			this.FlushObject();
-		}
-
-		private void FlushObject () {
-			this.FlushMaterial();
-			if(this.loadMode == LoadMode.Triangle && this.currentObject != null) {
-				//normalize
-				int n = this.vertexList.Count;
-				double x0 = double.PositiveInfinity, x1 = double.NegativeInfinity;
-				double y0 = x0, y1 = x1, z0 = x0, z1 = x1;
-				for(int i = 0; i < n; i++) {
-					x0 = Math.Min(x0, vertexList [i].X);
-					x1 = Math.Max(x1, vertexList [i].X);
-					y0 = Math.Min(y0, vertexList [i].Y);
-					y1 = Math.Max(y1, vertexList [i].Y);
-					z0 = Math.Min(z0, vertexList [i].Z);
-					z1 = Math.Max(z1, vertexList [i].Z);
-				}
-				x1 = 1.0d/(x1-x0);
-				y1 = 1.0d/(y1-y0);
-				z1 = 1.0d/(z1-z0);
-				for(int i = 0; i < n; i++) {
-					vertexList [i].X = 5.0d*x1*(vertexList [i].X-x0);
-					vertexList [i].Y = 5.0d*y1*(vertexList [i].Y-y0);
-					vertexList [i].Z = 5.0d*z1*(vertexList [i].Z-z0)+10.0d;
-				}
-				//store
-				short i1, i2, i3;
-				Material m;
-				string mn;
-				Point3 pta, ptb, ptc;
-				short j = 0;
-				for(int i = 0; i < this.indexList.Count; i++,j++) {
-					i1 = this.indexList [i++];
-					i2 = this.indexList [i++];
-					i3 = this.indexList [i++];
-					if(!this.materialMapping.TryGetValue(j, out mn) || !this.materials.TryGetValue(mn, out m)) {
-						m = Material.DefaultMaterial;
-					}
-					if(this.textureList.Count <= Maths.Max(i1, i2, i3)) {
-						pta = Point3.DummyPoint;
-						ptb = Point3.DummyPoint;
-						ptc = Point3.DummyPoint;
-					} else {
-						pta = textureList [i1];
-						ptb = textureList [i2];
-						ptc = textureList [i3];
-					}
-					this.currentObject.Add(new Triangle(vertexList [i1], vertexList [i2], vertexList [i3], null, null, null, pta, ptb, ptc, m));
-				}
-				this.currentObject = null;
-			}
-		}*/
-
-		/*private class LoadingMaterial
-		{
-
-			public string Name;
-			public uint Ambient;
-			public uint Diffuse;
-			public uint Specular;
-			public double Shininess;
-			public double Transparency;
-			public string[] Maps = new string[0x03];//tex,refl,bump
-			public ushort[] Flags = new ushort[0x03];
-			public int CurrentMap = 0x00;
-
-			public Material ConvertToMaterial (string dir) {
-				return new Material(this.Ambient, this.Specular, this.Diffuse, this.Shininess, this.Transparency, dir, Maps [0x00], Maps [0x01], Maps [0x02], 1.0d);
-			}
-
-		}
-
-		*/
-		
 	}
 	
 }

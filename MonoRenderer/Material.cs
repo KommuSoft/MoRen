@@ -3,8 +3,7 @@ using System.IO;
 
 namespace Renderer {
 	
-	public sealed class Material
-	{
+	public sealed class Material {
 		
 		public static readonly Material DefaultMaterial = new Material();
 		public readonly uint Ambient;
@@ -48,23 +47,6 @@ namespace Renderer {
 				specular = Color.Multiply(specular, tex);
 			}
 		}
-
-		/*public Material (string filename) {
-			FileStream fs = File.Open(filename, FileMode.Open, FileAccess.Read);
-			BinaryReader sr = new BinaryReader(fs);
-			this.Ambient = readInt(sr);
-			this.Diffuse = this.Ambient;
-			this.Specular = this.Ambient;
-			sr.ReadByte();
-			this.Specular = Color.Scale(this.Specular, sr.ReadByte());
-			sr.ReadBoolean();
-			this.NFactor = 1.0d;
-			this.Shininess = 15.0d;
-			this.Texture = ReadTexture(sr);
-			this.Envmap = ReadTexture(sr);
-			sr.Close();
-			fs.Close();
-		}*/
 		
 		private uint readInt (BinaryReader br) {
 			uint bd = (uint)br.ReadByte()<<0x18;
@@ -76,44 +58,12 @@ namespace Renderer {
 
 		private float readFloat (BinaryReader br) {
 			byte[] data = new byte[4];
-			data [3] = br.ReadByte();
-			data [2] = br.ReadByte();
-			data [1] = br.ReadByte();
-			data [0] = br.ReadByte();
+			data[3] = br.ReadByte();
+			data[2] = br.ReadByte();
+			data[1] = br.ReadByte();
+			data[0] = br.ReadByte();
 			return BitConverter.ToSingle(data, 0x00);
 		}
-
-		/*public Texture ReadTexture (BinaryReader sr) {
-			byte id = sr.ReadByte();
-			if(id == 0x01) {
-				return new Texture(sr.ReadString());
-			} else if(id == 0x02) {
-				int w = (int)readInt(sr);
-				int h = (int)readInt(sr);
-				byte type = sr.ReadByte();
-				float persistency = readFloat(sr);
-				float density = readFloat(sr);
-				int samples = sr.ReadByte();
-				int numColors = sr.ReadByte();
-				uint[] colors = new uint[numColors];
-				for(int i = 0; i < numColors; i++) {
-					colors [i] = readInt(sr);
-				}
-				uint[] gradient = Color.MakeGradient(1024, colors);
-				switch(type) {
-					case 0x01:
-						return Texture.Perlin(w, h, persistency, density, samples, 1024).Colorize(gradient);
-					case 0x02:
-						return Texture.Wave(w, h, persistency, density, samples, 1024).Colorize(gradient);
-					case 0x03:
-						return Texture.Grain(w, h, persistency, density, samples, 20, 1024).Colorize(gradient);
-					default :
-						return null;
-				}
-			} else {
-				return null;
-			}
-		}*/
 		
 	}
 }
