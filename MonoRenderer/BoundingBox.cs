@@ -24,8 +24,8 @@ namespace Renderer {
 
 	public sealed class BoundingBox : ProxyRenderItem {
 
-		public Point3 xyz0;
-		public Point3 xyz1;
+		public readonly Point3 xyz0 = new Point3();
+		public readonly Point3 xyz1 = new Point3();
 		public double X0 {
 			get {
 				return this.xyz0.X;
@@ -82,7 +82,17 @@ namespace Renderer {
 			whd[dim] = sweep-xyz0[dim];
 			return 2.0d*(whd[0x00]*whd[0x01]+whd[0x00]*whd[0x02]+whd[0x01]*whd[0x02]);
 		}
-		public override void SplitAt (double sweep, int dim, out BoundingBox left, out BoundingBox right) {
+		public double DimensionSurface (int dim) {
+			switch(dim) {
+				case 0x00:
+					return (xyz1.Y-xyz0.Y)*(xyz1.Z-xyz0.Z);
+				case 0x01:
+					return (xyz1.X-xyz0.X)*(xyz1.Z-xyz0.Z);
+				default:
+					return (xyz1.Y-xyz0.Y)*(xyz1.Z-xyz0.Z);
+			}
+		}
+		public void SplitAt (double sweep, int dim, out BoundingBox left, out BoundingBox right) {
 			left = new BoundingBox();
 			left.xyz0.SetValues(this.xyz0);
 			left.xyz1.SetValues(this.xyz1);

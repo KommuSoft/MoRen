@@ -37,33 +37,46 @@ namespace Renderer {
 		}
 
 		private static BinarySpaceNode Subdivide<T> (int maxdepth, int maxsize, BoundingBox bb, int depth, List<T> items) where T : IRenderable {
-			if(depth >= maxdepth || items.Count <= maxsize) {
-				return new BinarySpaceNode(items.Select(x => x.Root).ToArray());
+			//Console.WriteLine("enter {0}", String.Join(",", items.Select(r => r.Root)));
+			//HashSet<RenderItem> hs = new HashSet<RenderItem>(items.Select(x => x.Root));
+			HashSet<RenderItem> hri = new HashSet<RenderItem>(items.Select(x => x.Root));
+			Console.WriteLine("Subdiv({0}, {1}, {2}, {3}, {4} ({5}u{6}))", maxdepth, maxsize, bb, depth, items, items.Count, hri.Count);
+			if(depth >= maxdepth || hri.Count <= maxsize) {
+				return new BinarySpaceNode(hri.ToArray());
 			}
 			int dim;
-			double sweep = CalculateOptimalSplit(items, bb, 0.0d, out dim);
-
+			double sweep = CalculateOptimalSplit(items, bb, out dim);
 			BoundingBox bbleft, bbright;
+			List<IRenderable> left = new List<IRenderable>(), right = new List<IRenderable>();
 			bb.SplitAt(sweep, dim, out bbleft, out bbright);
-			return new BinarySpaceNode(Subdivide(maxdepth, maxsize, bbleft, depth+0x01), Subdivide(), sweep, dim);
+			Split(items, dim, sweep, left, right);
+			return new BinarySpaceNode(Subdivide(maxdepth, maxsize, bbleft, depth+0x01, left), Subdivide(maxdepth, maxsize, bbright, depth+0x01, right), sweep, dim);
 		}
 
-		private static double CalculateOptimalSplit<T> (List<T> items, BoundingBox bb, double totalSurface, out int maxDim) {
+		private static double CalculateOptimalSplit<T> (List<T> items, BoundingBox bb, out int maxDim) where T : IRenderable {
+			double totalSurface = items.Sum(ri => ri.Surface());
 			double heu, maxHeu = double.NegativeInfinity, x, maxx;
 			maxDim = 0x00;
 			maxx = CalculateOptimalSplit(items, bb, totalSurface, out maxHeu, 0x00);
+			//Console.WriteLine("X split {0}/{1}", maxx, maxHeu);
+			maxHeu /= bb.DimensionSurface(0x00);
 			x = CalculateOptimalSplit(items, bb, totalSurface, out heu, 0x01);
+			//Console.WriteLine("Y split {0}/{1}", x, heu);
+			heu /= bb.DimensionSurface(0x01);
 			if(heu > maxHeu) {
 				maxx = x;
 				maxHeu = heu;
 				maxDim = 0x01;
 			}
+			heu /= bb.DimensionSurface(0x02);
 			x = CalculateOptimalSplit(items, bb, totalSurface, out heu, 0x02);
+			//Console.WriteLine("Z split {0}/{1}", x, heu);
 			if(heu > maxHeu) {
 				maxx = x;
 				maxHeu = heu;
 				maxDim = 0x02;
 			}
+			//Console.WriteLine("Optimal split {0}/{1}", maxDim, maxx);
 			return maxx;
 		}
 
@@ -82,6 +95,7 @@ namespace Renderer {
 			while(aree.MoveNext()) {
 				are = aree.Current;
 				double x = are.X;
+				//Console.WriteLine("try {1}<{0}<{2}", x, x0, x1);
 				int index = are.Index;
 				if(are.Add) {
 					if(!torem.Remove(index)) {
@@ -95,6 +109,7 @@ namespace Renderer {
 					leftSurface += items[index].Surface();
 				}
 				if(x0 < x && x < x1) {
+					//Console.WriteLine("check {0}", x);
 					activeSurface = 0.0d;
 					foreach(int ai in activ) {
 						activeSurface += items[ai].SplitSurface(x, dim);
@@ -106,7 +121,7 @@ namespace Renderer {
 					}
 				}
 			}
-			if(double.IsNaN(xheu)) {
+			if(xheu == double.NaN) {
 				return 0.5d*(x0+x1);
 			}
 			return xheu;
@@ -122,8 +137,9 @@ namespace Renderer {
 			}
 		}
 
-		private void Split (List<IRenderable> inp, int dim, double x, List<IRenderable> left, List<IRenderable> right) {
+		private static void Split<T> (List<T> inp, int dim, double x, List<IRenderable> left, List<IRenderable> right) where T : IRenderable {
 			double x0, x1;
+			int s = 0x00;
 			Tuple<ProxyRenderItem[],ProxyRenderItem[]> splitted;
 			foreach(IRenderable ir in inp) {
 				ir.GetDimensionBounds(dim, out x0, out x1);
@@ -134,11 +150,13 @@ namespace Renderer {
 					right.Add(ir);
 				}
 				else {
+					s++;
 					splitted = ir.SplitAt(x, dim);
 					left.AddRange(splitted.Item1);
 					right.AddRange(splitted.Item2);
 				}
 			}
+			Console.WriteLine("{0}/{1}/{2}", left.Count, s, right.Count);
 		}
 
 		public RenderItem CalculateHit (Ray ray, out double tHit, double maxT) {

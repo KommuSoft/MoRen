@@ -6,7 +6,7 @@ namespace Renderer {
 		
 		public RenderItem Root {
 			get {
-				return this.Root;
+				return this;
 			}
 		}
 		public readonly int Id = 0;
