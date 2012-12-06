@@ -44,7 +44,7 @@ namespace Renderer {
 				return new BinarySpaceNode(items.ToArray());
 			}
 			int dim;
-			double sweep = CalculateOptimalSplit(items, bb, out dim, total);
+			double sweep = CalculateOptimalSplit(items, depth%0x03, bb, out dim, total);
 			BoundingBox bbleft, bbright;
 			bb.SplitAt(sweep, dim, out bbleft, out bbright);
 			List<RenderItem> left = new List<RenderItem>(), right = new List<RenderItem>();
@@ -53,21 +53,21 @@ namespace Renderer {
 			return new BinarySpaceNode(Subdivide(maxdepth, maxsize, bbleft, depth+0x01, left, leftsf), Subdivide(maxdepth, maxsize, bbright, depth+0x01, right, rightsf), sweep, dim);
 		}
 
-		private static double CalculateOptimalSplit (List<RenderItem> items, BoundingBox bb, out int maxDim, double totalSurface) {
+		private static double CalculateOptimalSplit (List<RenderItem> items, int depth3, BoundingBox bb, out int maxDim, double totalSurface) {
 			double heu, maxHeu = double.NegativeInfinity, x, maxx;
 			maxDim = 0x00;
-			maxx = CalculateOptimalSplit(items, bb, totalSurface, out maxHeu, 0x00);
-			x = CalculateOptimalSplit(items, bb, totalSurface, out heu, 0x01);
+			maxx = CalculateOptimalSplit(items, bb, totalSurface, out maxHeu, depth3);
+			x = CalculateOptimalSplit(items, bb, totalSurface, out heu, (depth3+0x01)%0x03);
 			if(heu < maxHeu) {
 				maxx = x;
 				maxHeu = heu;
-				maxDim = 0x01;
+				maxDim = (depth3+0x01)%0x03;
 			}
-			x = CalculateOptimalSplit(items, bb, totalSurface, out heu, 0x02);
+			x = CalculateOptimalSplit(items, bb, totalSurface, out heu, (depth3+0x02)%0x03);
 			if(heu < maxHeu) {
 				maxx = x;
 				maxHeu = heu;
-				maxDim = 0x02;
+				maxDim = (depth3+0x02)%0x03;
 			}
 			return maxx;
 		}
@@ -166,59 +166,51 @@ namespace Renderer {
 
 			public readonly double x;
 			public readonly int dim;
-			public readonly BinarySpaceNode left;
-			public readonly BinarySpaceNode right;
+			public readonly BinarySpaceNode[] children;
 			public readonly RenderItem[] tri;
 
 			public BinarySpaceNode (RenderItem[] tris) {
 				this.tri = tris;
-				this.left = this.right = null;
+				this.children = null;
 				this.x = double.NaN;
 			}
 			public BinarySpaceNode (BinarySpaceNode left, BinarySpaceNode right, double x, int dim) {
 				this.tri = null;
-				this.left = left;
-				this.right = right;
+				this.children = new BinarySpaceNode[0x02] {left,right};
 				this.x = x;
 				this.dim = dim;
 			}
 
-			private void  HitChild (int c, Ray ray, Point3 inter, ref double t, ref double tHit, ref RenderItem ri) {
-				if(c < 0x00) {
-					this.left.Hit(ray, inter, ref t, ref tHit, ref ri);
-				}
-				else {
-					this.right.Hit(ray, inter, ref t, ref tHit, ref ri);
-				}
-			}
 			public void Hit (Ray ray, Point3 inter, ref double t, ref double tHit, ref RenderItem ri) {
 				double tt;
-				if(this.tri != null) {
+				if(this.tri == null) {
+					if(t < tHit) {
+						int cur = Math.Sign(inter[dim]-x);
+						if(cur*Maths.SoftSign(ray.Direction[dim]) < 0.0d) {//with migration
+							tt = t+(x-inter[dim])/ray.Direction[dim];
+							double tt2 = Math.Min(tt, tHit);
+							this.children[(cur+0x01)>>0x01].Hit(ray, inter, ref t, ref tt2, ref ri);
+							if(tt <= tt2) {
+								t = tt;
+								ray.PointAt(tt, inter);
+								this.children[(0x01-cur)>>0x01].Hit(ray, inter, ref t, ref tHit, ref ri);
+							}
+							else {
+								tHit = tt2;
+							}
+						}
+						else {
+							this.children[(cur+0x01)>>0x01].Hit(ray, inter, ref t, ref tHit, ref ri);
+						}
+					}
+				}
+				else {
 					foreach(RenderItem rit in tri) {
 						tt = rit.HitAt(ray);
 						if(tt < tHit) {
 							tHit = tt;
 							ri = rit;
 						}
-					}
-				}
-				else if(t < tHit) {
-					int cur = Math.Sign(inter[dim]-x);
-					if(cur*Maths.SoftSign(ray.Direction[dim]) < 0.0d) {//with migration
-						tt = t+(x-inter[dim])/ray.Direction[dim];
-						double tt2 = Math.Min(tt, tHit);
-						HitChild(cur, ray, inter, ref t, ref tt2, ref ri);
-						if(tt <= tt2) {
-							t = tt;
-							ray.PointAt(tt, inter);
-							HitChild(-cur, ray, inter, ref t, ref tHit, ref ri);
-						}
-						else {
-							tHit = tt2;
-						}
-					}
-					else {
-						HitChild(cur, ray, inter, ref t, ref tHit, ref ri);
 					}
 				}
 			}
