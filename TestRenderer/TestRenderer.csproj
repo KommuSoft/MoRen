@@ -36,10 +36,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Test.cs" />
     <Compile Include="GridAcceleratorTest.cs" />
     <Compile Include="OctTreeAcceleratorTest.cs" />
     <Compile Include="TriangleTest.cs" />
+    <Compile Include="BinarySpacePartitionAcceleratorTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\MonoRenderer\MonoRenderer.csproj">
+      <Project>{5161718C-11FB-42E2-B42C-E95510626A5B}</Project>
+      <Name>MonoRenderer</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>
