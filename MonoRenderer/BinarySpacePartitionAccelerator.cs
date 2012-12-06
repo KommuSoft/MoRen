@@ -27,18 +27,32 @@ namespace Renderer {
 
 		private readonly BinarySpaceNode root;
 
-		public BinarySpacePartitionAccelerator (List<RenderItem> items) {
+		public BinarySpacePartitionAccelerator (List<RenderItem> items, int maxdepth, int maxsize = 2) : base(items,(int) Math.Ceiling(Math.Log(Math.Max(1.0d,items.Count),2.0d))) {
+		}
+		public BinarySpacePartitionAccelerator (List<RenderItem> items, int maxdepth, int maxsize = 2) {
 			BoundingBox bb = new BoundingBox();
 			Utils.CalculateBoundingBox(items, bb);
+			root = Subdivide(maxdepth, maxsize, bb, 0x00, items);
 		}
 
-		private static BinarySpaceNode Subdivide<T> (int maxdepth, int maxsize, int depth, List<T> items) where T : IRenderable {
-			CalculateOptimalSplit(0x00);
+		private static BinarySpaceNode Subdivide<T> (int maxdepth, int maxsize, BoundingBox bb, int depth, List<T> items) where T : IRenderable {
+			CalculateOptimalSplit(items, bb, 0x00);
 			return null;
 		}
 
-		private static double CalculateOptimalSplit (int dim) {
-			return 0.00d;
+		private static double CalculateOptimalSplit<T> (List<T> items, BoundingBox bb, int dim) where T : IRenderable {
+			SortedSet<AddRemoveEvent> events = new SortedSet<AddRemoveEvent>(GenerateEvents(items, dim));
+			return 0.0d;
+		}
+
+		private static IEnumerable<AddRemoveEvent> GenerateEvents<T> (IEnumerable<T> items, int dim) where T :IRenderable {
+			double x0, x1;
+			int i = 0x00;
+			foreach(T t in items) {
+				t.GetDimensionBounds(dim, out x0, out x1);
+				yield return new AddRemoveEvent(i, x0, true);
+				yield return new AddRemoveEvent(i, x1, false);
+			}
 		}
 
 		private void Split (List<IRenderable> inp, int dim, double x, List<IRenderable> left, List<IRenderable> right) {

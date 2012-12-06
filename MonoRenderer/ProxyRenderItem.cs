@@ -22,8 +22,7 @@ using System;
 
 namespace Renderer {
 
-	public abstract class ProxyRenderItem : IRenderable
-	{
+	public abstract class ProxyRenderItem : IRenderable {
 
 		public readonly RenderItem Source;
 
@@ -34,7 +33,11 @@ namespace Renderer {
 		public abstract double Surface ();
 		public abstract double SplitSurface (double sweep, int dimension);
 		public abstract Tuple<ProxyRenderItem[],ProxyRenderItem[]> SplitAt (double sweep, int dimension);
-		public abstract void GetBounds (out double x0, out double x1, out double y0, out double y1, out double z0, out double z1);
+		public virtual void GetBounds (out double x0, out double x1, out double y0, out double y1, out double z0, out double z1) {
+			this.GetDimensionBounds(0x00, out x0, out x1);
+			this.GetDimensionBounds(0x00, out y0, out y1);
+			this.GetDimensionBounds(0x00, out z0, out z1);
+		}
 		public abstract void GetDimensionBounds (int dim, out double x0, out double x1);
 
 	}

@@ -22,31 +22,80 @@ using System;
 
 namespace Renderer {
 
-	public sealed class BoundingBox {
+	public sealed class BoundingBox : ProxyRenderItem {
 
-		public double X0;
-		public double X1;
-		public double Y0;
-		public double Y1;
-		public double Z0;
-		public double Z1;
+		public Point3 xyz0;
+		public Point3 xyz1;
+		public double X0 {
+			get {
+				return this.xyz0.X;
+			}
+		}
+		public double Y0 {
+			get {
+				return this.xyz0.Y;
+			}
+		}
+		public double Z0 {
+			get {
+				return this.xyz0.Z;
+			}
+		}
+		public double X1 {
+			get {
+				return this.xyz1.X;
+			}
+		}
+		public double Y1 {
+			get {
+				return this.xyz1.Y;
+			}
+		}
+		public double Z1 {
+			get {
+				return this.xyz1.Z;
+			}
+		}
 
 		public BoundingBox () : this(double.PositiveInfinity,double.NegativeInfinity,double.PositiveInfinity,double.NegativeInfinity,double.PositiveInfinity,double.NegativeInfinity) {
 
 		}
 
-		public BoundingBox (double x0, double x1, double y0, double y1, double z0, double z1) {
+		public BoundingBox (double x0, double x1, double y0, double y1, double z0, double z1) : base(null) {
 			this.SetValues(x0, x1, y0, y1, z0, z1);
 		}
 
 		public void SetValues (double x0, double x1, double y0, double y1, double z0, double z1) {
-			this.X0 = x0;
-			this.X1 = x1;
-			this.Y0 = y0;
-			this.Y1 = y1;
-			this.Z0 = z0;
-			this.Z1 = z1;
+			this.xyz0.SetValues(x0, y0, z0);
+			this.xyz1.SetValues(x1, y1, z1);
+		}
+
+
+		public override double Surface () {
+			double w = xyz1.X-xyz0.X;
+			double h = xyz1.Y-xyz0.Y;
+			double d = xyz1.Z-xyz0.Z;
+			return 2.0d*(w*h+w*d+h*d);
+		}
+		public override double SplitSurface (double sweep, int dim) {
+			double[] whd = {xyz1.X-xyz0.X,xyz1.Y-xyz0.Y,xyz1.Z-xyz0.Z};
+			whd[dim] = sweep-xyz0[dim];
+			return 2.0d*(whd[0x00]*whd[0x01]+whd[0x00]*whd[0x02]+whd[0x01]*whd[0x02]);
+		}
+		public override Tuple<ProxyRenderItem[],ProxyRenderItem[]> SplitAt (double sweep, int dim) {
+			BoundingBox left = new BoundingBox();
+			left.xyz0.SetValues(this.xyz0);
+			left.xyz1.SetValues(this.xyz1);
+			left.xyz1[dim] = sweep;
+			BoundingBox right = new BoundingBox();
+			right.xyz0.SetValues(this.xyz0);
+			right.xyz1.SetValues(this.xyz1);
+			right.xyz0[dim] = sweep;
+			return new Tuple<ProxyRenderItem[], ProxyRenderItem[]>(new ProxyRenderItem[] {left}, new ProxyRenderItem[] {right});
+		}
+		public override void GetDimensionBounds (int dim, out double x0, out double x1) {
+			x0 = xyz0[dim];
+			x1 = xyz1[dim];
 		}
 	}
 }
-
