@@ -29,7 +29,7 @@ namespace Renderer {
 		private readonly BinarySpaceNode root;
 		private readonly double x0, x1, y0, y1, z0, z1;
 
-		public BinarySpacePartitionAccelerator (List<RenderItem> items) : this(items,(int) Math.Ceiling(2.0d*Math.Log(Math.Max(1.0d,items.Count),2))) {
+		public BinarySpacePartitionAccelerator (List<RenderItem> items) : this(items,(int) Math.Ceiling(3.0d*Math.Log(Math.Max(1.0d,items.Count),2))) {
 		}
 		public BinarySpacePartitionAccelerator (List<RenderItem> items, int maxdepth, int maxsize = 6) {
 			BoundingBox bb = new BoundingBox();
