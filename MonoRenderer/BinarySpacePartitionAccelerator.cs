@@ -42,12 +42,13 @@ namespace Renderer {
 			//Console.WriteLine("enter {0}", String.Join(",", items.Select(r => r.Root)));
 			//HashSet<RenderItem> hs = new HashSet<RenderItem>(items.Select(x => x.Root));
 			//HashSet<RenderItem> hri = new HashSet<RenderItem>(items.Select(x => x.Root));
-			Console.WriteLine("Subdiv({0}, {1}, {2}, {3}, {4} ({5}))", maxdepth, maxsize, bb, depth, items, items.Count);
+			Console.WriteLine("Subdiv({0}, {1}, {2}, {3}, {4} ({5}))", maxdepth, maxsize, null, depth, items, items.Count);
 			if(depth >= maxdepth || items.Count <= maxsize) {
 				return new BinarySpaceNode(items.ToArray());
 			}
 			int dim;
 			double sweep = CalculateOptimalSplit(items, bb, out dim);
+			Console.WriteLine("Optimal split: {0}/{1}", sweep, dim);
 			BoundingBox bbleft, bbright;
 			bb.SplitAt(sweep, dim, out bbleft, out bbright);
 			List<RenderItem> left = new List<RenderItem>(), right = new List<RenderItem>();
@@ -60,10 +61,10 @@ namespace Renderer {
 			double heu, maxHeu = double.NegativeInfinity, x, maxx;
 			maxDim = 0x00;
 			maxx = CalculateOptimalSplit(items, bb, totalSurface, out maxHeu, 0x00);
-			Console.WriteLine("X split {0}/{1}", maxx, maxHeu);
+			//Console.WriteLine("X split {0}/{1}", maxx, maxHeu);
 			//maxHeu /= bb.DimensionSurface(0x00);
 			x = CalculateOptimalSplit(items, bb, totalSurface, out heu, 0x01);
-			Console.WriteLine("Y split {0}/{1}", x, heu);
+			//Console.WriteLine("Y split {0}/{1}", x, heu);
 			//heu /= bb.DimensionSurface(0x01);
 			if(heu < maxHeu) {
 				maxx = x;
@@ -72,18 +73,17 @@ namespace Renderer {
 			}
 			//heu /= bb.DimensionSurface(0x02);
 			x = CalculateOptimalSplit(items, bb, totalSurface, out heu, 0x02);
-			Console.WriteLine("Z split {0}/{1}", x, heu);
+			//Console.WriteLine("Z split {0}/{1}", x, heu);
 			if(heu < maxHeu) {
 				maxx = x;
 				maxHeu = heu;
 				maxDim = 0x02;
 			}
-			Console.WriteLine("Optimal split {0}/{1}", maxDim, maxx);
+			//Console.WriteLine("Optimal split {0}/{1}", maxDim, maxx);
 			return maxx;
 		}
 
 		private static double CalculateOptimalSplit (List<RenderItem> items, BoundingBox bb, double totalSurface, out double maxHeur, int dim) {
-			Console.WriteLine("new round");
 			SortedSet<AddRemoveEvent> events = new SortedSet<AddRemoveEvent>(GenerateEvents(items, dim));
 			IEnumerator<AddRemoveEvent> aree = events.GetEnumerator();
 			HashSet<int> activ = new HashSet<int>();
@@ -93,8 +93,8 @@ namespace Renderer {
 			int nleft = 0x00;
 			int ntotal = items.Count;
 			bb.GetDimensionBounds(dim, out x0, out x1);
-			double leftSurface = 0.0d;
-			double activeSurface;
+			/*double leftSurface = 0.0d;
+			double activeSurface;*/
 			maxHeur = double.PositiveInfinity;
 			double xheu = double.NaN, heu;
 			while(aree.MoveNext()) {
@@ -108,11 +108,11 @@ namespace Renderer {
 					}
 				}
 				else {
+					nleft++;
 					if(!activ.Remove(index)) {
 						torem.Add(index);
 					}
-					leftSurface += items[index].Surface();
-					nleft++;
+					//leftSurface += items[index].Surface();
 				}
 				if(x0 < x && x < x1) {
 					//Console.WriteLine("check {0}", x);
@@ -120,6 +120,7 @@ namespace Renderer {
 					foreach(int ai in activ) {
 						activeSurface += items[ai].SplitSurface(x, dim);
 					}*/
+					//Console.WriteLine("{0} vs {1}", (nleft+activ.Count), (ntotal-nleft));
 					heu = Math.Max((nleft+activ.Count), (ntotal-nleft));
 					//heu = ((leftSurface+activeSurface)*(nleft*activ.Count)/totalSurface+(totalSurface-leftSurface-activeSurface)*((ntotal-nleft)*activ.Count)/totalSurface);
 					if(heu < maxHeur) {
@@ -129,7 +130,8 @@ namespace Renderer {
 					}
 				}
 			}
-			if(xheu == double.NaN) {
+			if(double.IsNaN(xheu)) {
+				Console.WriteLine("KERNEL PANIC {0}", bb);//string.Join(",", items)
 				return 0.5d*(x0+x1);
 			}
 			return xheu;
@@ -141,7 +143,7 @@ namespace Renderer {
 			foreach(T t in items) {
 				t.GetDimensionBounds(dim, out x0, out x1);
 				yield return new AddRemoveEvent(i, x0, true);
-				yield return new AddRemoveEvent(i, x1, false);
+				yield return new AddRemoveEvent(i++, x1, false);
 			}
 		}
 
@@ -149,12 +151,18 @@ namespace Renderer {
 			double x0, x1;
 			foreach(RenderItem ir in inp) {
 				ir.GetDimensionBounds(dim, out x0, out x1);
-				if(ir.BoxOverlap(bbl) && ir.InBox(bbl)) {
+				if(x0 < x && ir.BoxOverlap(bbl)) {
 					left.Add(ir);
 				}
-				else if(ir.BoxOverlap(bbr) && ir.InBox(bbr)) {
+				if(x1 > x && ir.BoxOverlap(bbr)) {
 					right.Add(ir);
 				}
+				/*if(ir.BoxOverlap(bbl)) {
+					left.Add(ir);
+				}
+				if(ir.BoxOverlap(bbr)) {
+					right.Add(ir);
+				}*/
 			}
 			//Console.WriteLine("{0}/{1}/{2}", left.Count, s, right.Count);
 		}

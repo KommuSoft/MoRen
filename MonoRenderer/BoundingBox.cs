@@ -119,5 +119,8 @@ namespace Renderer {
 			x0 = xyz0[dim];
 			x1 = xyz1[dim];
 		}
+		public override string ToString () {
+			return string.Format("[BoundingBox: X0={0}, Y0={1}, Z0={2}, X1={3}, Y1={4}, Z1={5}]", X0, Y0, Z0, X1, Y1, Z1);
+		}
 	}
 }

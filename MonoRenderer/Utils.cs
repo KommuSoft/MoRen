@@ -212,7 +212,8 @@ namespace Renderer {
 				ztm = Math.Min(ztm, zm);
 				ztM = Math.Max(ztM, zM);
 			}
-			box.SetValues(xtm, ytm, ztm, xtM, ytM, ztM);
+			box.SetValues(xtm, xtM, ytm, ytM, ztm, ztM);
+			Console.WriteLine("left with {0}", box);
 		}
 
 		public static void CalculateBoundingBox (IEnumerable<Point3> items, out double xtm, out double xtM, out double ytm, out double ytM, out double ztm, out double ztM) {
