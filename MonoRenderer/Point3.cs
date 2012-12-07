@@ -123,6 +123,15 @@ namespace Renderer {
 		}
 		public Point3 (Point3 frm, Point3 to) : this(to.X-frm.X,to.Y-frm.Y,to.Z-frm.Z) {
 		}
+		public Point3 (double x, double y, double z, double r) {//generate a random point on a sphere with radius r
+			double dx = Maths.Random();
+			double dy = Maths.Random();
+			double dz = Maths.Random();
+			double rinv = r/Math.Sqrt(dx*dx+dy*dy+dz*dz);
+			this.X = rinv*dx+x;
+			this.Y = rinv*dx+y;
+			this.Z = rinv*dx+z;
+		}
 		
 		public void Transform (Matrix4 M) {
 			double nx = M.M00*X+M.M01*Y+M.M02*Z+M.M03;
@@ -211,6 +220,15 @@ namespace Renderer {
 			this.X = to.X-frm.X;
 			this.Y = to.Y-frm.Y;
 			this.Z = to.Z-frm.Z;
+		}
+		public void SetValues (Point3 mid, double r) {//set to a random point on a sphere with radius r
+			double dx = Maths.Random();
+			double dy = Maths.Random();
+			double dz = Maths.Random();
+			double rinv = r/Math.Sqrt(dx*dx+dy*dy+dz*dz);
+			this.X = rinv*dx+mid.X;
+			this.Y = rinv*dx+mid.Y;
+			this.Z = rinv*dx+mid.Z;
 		}
 		public static void Reflect (Point3 init, Point3 normal, Point3 result) {
 			double factor = -2.0d*(init.X*normal.X+init.Y*normal.Y+init.Z*normal.Z);

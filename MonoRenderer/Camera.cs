@@ -196,7 +196,7 @@ namespace Renderer {
 			DateTime stop = DateTime.Now;
 			Console.WriteLine("Rendered in {0}", stop-start);
 		}
-		public void CalculateImage (int yfrom, int yto) {
+		private void CalculateImage (int yfrom, int yto) {
 			double sd = this.screenDistance;
 			double sh = sd*Math.Tan(0.5d*this.foVH);
 			int w = this.Width;

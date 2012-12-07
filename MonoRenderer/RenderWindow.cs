@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Renderer {
@@ -30,12 +31,30 @@ namespace Renderer {
 		
 		public RenderWindow (Camera cam) {
 			this.cam = cam;
-			this.ClientSize = new Size(cam.Width,cam.Height);
+			this.ClientSize = new Size(cam.Width, cam.Height);
+			Thread t = new Thread(KeepCameraBusy);
+			t.IsBackground = true;
+			t.Start();
+			Thread t2 = new Thread(UpdateForm);
+			t2.IsBackground = true;
+			t2.Start();
+			this.SetStyle(ControlStyles.DoubleBuffer, true);
 		}
 		
 		protected override void OnPaint (PaintEventArgs e) {
-			this.cam.CalculateImage();
-			e.Graphics.DrawImageUnscaledAndClipped(this.cam.ToBitmap(),this.ClientRectangle);
+			e.Graphics.DrawImageUnscaledAndClipped(this.cam.ToBitmap(), this.ClientRectangle);
+		}
+
+		private void KeepCameraBusy () {
+			while(true) {
+				this.cam.CalculateImage();
+			}
+		}
+		private void UpdateForm () {
+			while(true) {
+				Thread.Sleep(0x400);
+				this.Invalidate();
+			}
 		}
 		
 	}

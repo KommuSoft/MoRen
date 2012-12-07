@@ -82,10 +82,14 @@ namespace Renderer {
 					double thetafrac = Math.PI-Math.Asin(li.Radius/len);
 					uint light = 0x00;
 					if(!double.IsNaN(thetafrac)) {
-						for(int i = 0; i < lightTest; i++) {
-							double phi = Math.PI*Maths.RandomGenerator.NextDouble()-Maths.PI_2;
-							thetafrac = 2.0d*Maths.PI*Maths.RandomGenerator.NextDouble();
-							lp.SetValues(Math.Cos(phi)*Math.Sin(thetafrac)*li.Radius+li.Position.X, Math.Cos(phi)*Math.Cos(thetafrac)*li.Radius+li.Position.Y, Math.Sin(phi)*li.Radius+li.Position.Z);
+						dis.SetValues(hp, li.Position);
+						dis.Normalize();
+						sr.SetOffsetWithEpsilon(hp);
+						if(this.acc.CalculateHit(sr, out tdummy, len-li.Radius) == null) {
+							light++;
+						}
+						for(int i = 1; i < lightTest; i++) {
+							lp.SetValues(li.Position, li.Radius);
 							dis.SetValues(hp, lp);
 							dis.Normalize();
 							sr.SetOffsetWithEpsilon(hp);
@@ -132,21 +136,28 @@ namespace Renderer {
 				new Light(0x808080, new Point3(-5.0d, 5.0d, 0.0d)),
 				new Light(0x808080, new Point3(5.0d, -5.0d, 0.0d))
 			};
-			TimeSpan ts = new TimeSpan();
+			Matrix4 M = new Matrix4();
+			M.RotateY(Math.PI);
+			M.Shift(0.0d, 0.0d, 30.0d);
+			Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
+			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x01, 0x08, 0x01);
+			RenderWindow rw = new RenderWindow(cam);
+			rw.ShowDialog();
+			/*TimeSpan ts = new TimeSpan();
 			for(int i = 0x00; alpha < 2.0d*Math.PI; i++, alpha += Math.PI/80) {
 				Matrix4 M = new Matrix4();
 				M.RotateY(1.0d*Math.PI+alpha);
 				M.Shift(0.0d, 0.0d, 30.0d);
 				Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
 				//Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x01, 0x08);
-				Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x01, 0x08, 0x08);
-				DateTime start = DateTime.Now;
+				Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x02, 0x08, 0x08);
+				/*DateTime start = DateTime.Now;
 				cam.CalculateImage();
 				DateTime stop = DateTime.Now;
 				ts = ts.Add(stop-start);
-				cam.Save("venus/result"+i.ToString("000")+".png");
-			}
-			Console.WriteLine("Testcase took {0}", ts);
+				cam.Save("venus/result"+i.ToString("000")+".png");*/
+			//}
+			//Console.WriteLine("Testcase took {0}", ts);
 			return 0x00;
 		}
 		
