@@ -76,7 +76,7 @@ namespace Renderer {
 			return ri;
 		}
 
-		private unsafe void proceedSubTree (Ray ray, int dpos, double[] seqxyz, Point3 inter, ref RenderItem ri, ref double t, ref double tHit, FastOctTreeNode fotn) {
+		private void proceedSubTree (Ray ray, int dpos, double[] seqxyz, Point3 inter, ref RenderItem ri, ref double t, ref double tHit, FastOctTreeNode fotn) {
 			double tt;
 			if(fotn.IsLeaf) {
 				long refs = fotn.data;
@@ -117,7 +117,7 @@ namespace Renderer {
 					seqxyz[0x0b-((pos&0x10)>>0x03)] = zt;
 					t = tt;
 					ray.PointAt(t, inter);
-					pos += (2*((dpos>>nextdim)&0x03)-1)<<nextdim;
+					pos += (0x02*((dpos>>nextdim)&0x03)-0x01)<<nextdim;
 				}
 				while(t < tHit && (pos&ValidPositionMask) == 0x00);
 			}

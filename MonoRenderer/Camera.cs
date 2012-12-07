@@ -40,6 +40,8 @@ namespace Renderer {
 		private readonly Light[] lights;
 		private AntiAliasingTechnique aaTec = AntiAliasingTechnique.Sobel;
 		private int antialiasSqrt = 0x04;
+		private int maxDepth = 0x02;
+		private int lightTests = 0x08;
 
 		[XmlElement("AntialiasSqrt")]
 		public int AntialiasSqrt {
@@ -80,6 +82,13 @@ namespace Renderer {
 			set {
 				this.roll = value;
 				this.dirty = true;
+			}
+		}
+
+		[XmlAttribute("LightTests")]
+		public int LightTests {
+			get {
+				return this.lightTests;
 			}
 		}
 
@@ -153,12 +162,14 @@ namespace Renderer {
 		public Camera () {
 		}
 
-		public Camera (int w, int h, double screenDistance, double foVH, Accelerator acc, Light[] lights, int antialiasing) {
+		public Camera (int w, int h, double screenDistance, double foVH, Accelerator acc, Light[] lights, int antialiasing, int maxDepth = 0x02, int lightTests = 0x08) {
 			this.raster = new Texture(w, h);
 			this.foVH = foVH;
 			this.acc = acc;
 			this.lights = lights;
 			this.antialiasSqrt = antialiasing;
+			this.maxDepth = maxDepth;
+			this.lightTests = lightTests;
 		}
 
 		public void RebuildMatrix () {
@@ -200,7 +211,7 @@ namespace Renderer {
 			int l;
 			int aasqrt = this.antialiasSqrt;
 			uint[] aaCache = new uint[aasqrt*aasqrt];
-			RayTracer rt = new RayTracer(this.acc, this.lights);
+			RayTracer rt = new RayTracer(this.acc, this.lights, this.maxDepth, this.lightTests);
 			int aa = aasqrt*aasqrt, aac;
 			yg = dwh*yfrom-0.5d*(sh+dwh);
 			for(; k < ks;) {
@@ -227,30 +238,6 @@ namespace Renderer {
 				}
 				yg += dwh;
 			}
-			/*for(int y = yfrom; y < yto; y++) {
-				xg = -0.5d*sw;
-				for(int x = 0x00; x < w; x++) {
-					l = 0x00;
-					for(int i = 0x00; i < aasqrt; i++) {
-						for(int j = 0x00; j < aasqrt; j++) {
-							Console.WriteLine("{0} | {1}", xg*dwha, yg*dwha);
-							ray.Offset.SetValues(xg, -yg, 0.0d);
-							ray.Direction.SetValues(xg, -yg, sh);
-							ray.NormalizeDirection();
-							ray.Transform(this.matrix);
-							aaCache[l++] = rt.CalculateColor(ray, 0);
-							xg += dwha;
-						}
-						yg += dwha;
-						xg -= dwh;
-					}
-					Console.WriteLine("New Tile");
-					xg += dwh;
-					yg -= dwh;
-					pixel[k++] = Color.AlphaChannel|Color.Mix(aaCache);
-				}
-				yg += dwh;
-			}*/
 		}
 		
 		public unsafe Bitmap ToBitmap () {

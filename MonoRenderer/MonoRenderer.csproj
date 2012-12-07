@@ -71,7 +71,6 @@
     <Compile Include="NaiveAccelerator.cs" />
     <Compile Include="NameBase.cs" />
     <Compile Include="OctTreeAccelerator.cs" />
-    <Compile Include="OrderingRenderItem.cs" />
     <Compile Include="Perlin.cs" />
     <Compile Include="Point3.cs" />
     <Compile Include="ProxyRenderItem.cs" />

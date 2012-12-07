@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Renderer {
 	public static class Maths {
 		
-		private static readonly Random rand = new Random();
+		public static readonly Random RandomGenerator = new Random();
 		public const double PI = Math.PI;
 		public const double PI2 = 2.0d*PI;
 		public const double PI_2 = 0.5d*PI;
@@ -172,7 +172,7 @@ namespace Renderer {
 			return (byte)((sgn-sgn*sgn)/0x02+0x01);
 		}
 		public static int Random (int n) {
-			return (int)(rand.NextDouble()*n);
+			return (int)(RandomGenerator.NextDouble()*n);
 		}
 		public static double MinPos (double a, double b) {
 			if(a < 0.0d) {
@@ -524,10 +524,10 @@ namespace Renderer {
 			return (float)Math.Sqrt(dx*dx+dy*dy);
 		}
 		public static float Random () {
-			return (float)(2.0d*rand.NextDouble()-1.0d);
+			return (float)(2.0d*RandomGenerator.NextDouble()-1.0d);
 		}
 		public static float Random (float m, float M) {
-			return (float)((M-m)*rand.NextDouble()+m);
+			return (float)((M-m)*RandomGenerator.NextDouble()+m);
 		}
 		public static float RandomWithDelta (float averidge, float delta) {
 			return averidge+Random()*delta;

@@ -26,11 +26,11 @@ namespace Renderer {
 			uint r = ((((color>>0x10)&0xff)*factor)<<0x08)&RedChannel;
 			uint g = (((color>>0x08)&0xff)*factor)&GreenChannel;
 			uint b = ((color&0xff)*factor)>>0x08;
-			return AlphaChannel|r|g|b;
+			return r|g|b;
 		}
 		public static uint FromFrac (double frac) {
 			uint r = (uint)Maths.Border(0x00, (int)Math.Round(0xff*frac), 0xff);
-			return AlphaChannel|(r<<0x10)|(r<<8)|r;
+			return (r<<0x10)|(r<<8)|r;
 		}
 		public static uint Mix (uint[] colors) {
 			uint l = (uint)colors.Length;
@@ -51,7 +51,7 @@ namespace Renderer {
 			uint r = (uint)Maths.Border(0x00, (int)Math.Round(0xff*fr), 0xff);
 			uint g = (uint)Maths.Border(0x00, (int)Math.Round(0xff*fg), 0xff);
 			uint b = (uint)Maths.Border(0x00, (int)Math.Round(0xff*fb), 0xff);
-			return AlphaChannel|(r<<0x10)|(g<<8)|b;
+			return (r<<0x10)|(g<<8)|b;
 		}
 		public static uint Random (uint color, uint delta) {
 			int r = (int)(color>>16)&255;
@@ -66,7 +66,7 @@ namespace Renderer {
 			uint pixel = (color1&Mask7Bit)+(color2&Mask7Bit);
 			uint overflow = pixel&0x01010100;
 			overflow = overflow-(overflow>>0x08);
-			return AlphaChannel|overflow|pixel;
+			return overflow|pixel;
 		}
 		public static uint GetAverage (uint color) {
 			return (((color&RedChannel)>>0x10)+((color&GreenChannel)>>0x08)+(color&BlueChannel))/3;
@@ -75,20 +75,20 @@ namespace Renderer {
 			return color&BlueChannel;
 		}
 		public static uint GetColor (uint red, uint green, uint blue) {
-			return AlphaChannel|(red<<0x10)|(green<<0x08)|blue;
+			return (red<<0x10)|(green<<0x08)|blue;
 		}
 		public static uint GetCropColor (int red, int green, int blue) {
-			return AlphaChannel|((uint)Maths.Border(0x00, red, 0xff)<<0x10)|((uint)Maths.Border(0x00, green, 0xff)<<0x08)|(uint)Maths.Border(0x00, blue, 0xff);
+			return ((uint)Maths.Border(0x00, red, 0xff)<<0x10)|((uint)Maths.Border(0x00, green, 0xff)<<0x08)|(uint)Maths.Border(0x00, blue, 0xff);
 		}
 		public static uint GetCropColor (uint red, uint green, uint blue) {
-			return AlphaChannel|(Maths.Border(0x00, red, 0xff)<<0x10)|(Maths.Border(0x00, green, 0xff)<<0x08)|Maths.Border(0x00, blue, 0xff);
+			return (Maths.Border(0x00, red, 0xff)<<0x10)|(Maths.Border(0x00, green, 0xff)<<0x08)|Maths.Border(0x00, blue, 0xff);
 		}
 		public static uint GetGray (uint color) {
 			uint r = (color&RedChannel)>>0x10;
 			uint g = (color&GreenChannel)>>0x08;
 			uint b = color&BlueChannel;
 			uint t = (0x03*r+0x06*g+b)/0x0a;
-			return AlphaChannel|(t<<0x10)|(t<<0x08)|t;
+			return (t<<0x10)|(t<<0x08)|t;
 		}
 		public static uint GetGreen (uint color) {
 			return (color&GreenChannel)>>0x08;
@@ -97,7 +97,7 @@ namespace Renderer {
 			return (color&RedChannel)>>0x10;
 		}
 		public static uint Inverse (uint color) {
-			return AlphaChannel|(~color);
+			return ~color;
 		}
 		public static uint[] MakeGradient (int size, params uint[] colors) {
 			int n = colors.Length;
@@ -142,7 +142,7 @@ namespace Renderer {
 			return pal;
 		}
 		public static uint Mix (uint color1, uint color2) {
-			return AlphaChannel|(((color1&Mask7Bit)>>0x01)+((color2&Mask7Bit)>>0x01));
+			return (((color1&Mask7Bit)>>0x01)+((color2&Mask7Bit)>>0x01));
 		}
 		public static uint Multiply (uint color1, uint color2) {
 			if((color1&RedGreenBlue) == 0)
@@ -152,19 +152,19 @@ namespace Renderer {
 			uint r = (((color1>>0x10)&0xff)*((color2>>0x10)&0xff))>>0x08;
 			uint g = (((color1>>0x08)&0xff)*((color2>>0x08)&0xff))>>0x08;
 			uint b = ((color1&0xff)*(color2&0xff))>>0x08;
-			return AlphaChannel|(r<<0x10)|(g<<0x08)|b;
+			return (r<<0x10)|(g<<0x08)|b;
 		}
 		public static uint Sub (uint color1, uint color2) {
 			uint pixel = (color1&Mask7Bit)+(~color2&Mask7Bit);
 			uint overflow = ~pixel&0x01010100;
 			overflow = overflow-(overflow>>0x08);
-			return AlphaChannel|(~overflow&pixel);
+			return (~overflow&pixel);
 		}
 		public static uint SubNeg (uint color1, uint color2) {
 			uint pixel = (color1&Mask7Bit)+(color2&Mask7Bit);
 			uint overflow = ~pixel&0x01010100;
 			overflow = overflow-(overflow>>0x08);
-			return AlphaChannel|(~overflow&pixel);
+			return (~overflow&pixel);
 		}
 		public static uint Transparency (uint bkgrd, uint color, uint alpha) {
 			if(alpha == 0x00)
@@ -176,7 +176,7 @@ namespace Renderer {
 			uint r = (alpha*(((bkgrd>>0x10)&0xff)-((color>>0x10)&0xff))>>0x08)+((color>>0x10)&0xff);
 			uint g = (alpha*(((bkgrd>>0x08)&0xff)-((color>>0x08)&0xff))>>0x08)+((color>>0x08)&0xff);
 			uint b = (alpha*((bkgrd&0xff)-(color&0xff))>>0x08)+(color&0xff);
-			return AlphaChannel|(r<<0x10)|(g<<0x08)|b;
+			return (r<<0x10)|(g<<0x08)|b;
 		}
 		
 	}

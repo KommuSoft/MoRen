@@ -37,34 +37,28 @@ namespace Renderer {
 	[XmlType("RayTracer")]
 	public sealed class RayTracer {
 
-		[XmlIgnore]
-		private readonly Accelerator
-			acc;
-		[XmlIgnore]
-		private readonly Light[]
-			lights;
-		[XmlAttribute("AmbientColor")]
-		public uint
-			AmbientColor = 0x00101010;
-		[XmlIgnore]
-		private readonly CastResult
-			nw = new CastResult();
-		[XmlIgnore]
-		private readonly Point3
-			dis = new Point3();
-		[XmlIgnore]
-		private readonly Point3
-			rl = new Point3();
-		[XmlIgnore]
-		private readonly Point3
-			hp = new Point3();
-		[XmlIgnore]
-		private readonly Ray
-			sr;
+		private readonly Accelerator acc;
+		private readonly Light[] lights;
+		public uint AmbientColor = 0x00101010;
+		private readonly CastResult nw = new CastResult();
+		private readonly Point3 dis = new Point3();
+		private readonly Point3 rl = new Point3();
+		private readonly Point3 lp = new Point3();
+		private readonly Point3 hp = new Point3();
+		private readonly Ray sr;
+		private readonly int lightTest;
+		private readonly Ray[] rayCache;
+		private readonly int maxDepth;
 		
-		public RayTracer (Accelerator acc, Light[] lights) {
+		public RayTracer (Accelerator acc, Light[] lights, int maxDepth, int lightTest = 0x08) {
 			this.acc = acc;
+			this.maxDepth = maxDepth;
+			this.rayCache = new Ray[maxDepth];
+			for(int i = 0x00; i < this.maxDepth; i++) {
+				this.rayCache[i] = new Ray(0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d);
+			}
 			this.lights = lights;
+			this.lightTest = lightTest;
 			this.sr = new Ray(new Point3(0.0d, 0.0d, 0.0d), dis);
 		}
 		
@@ -77,34 +71,53 @@ namespace Renderer {
 				Point3 norm = nw.Normal;
 				ray.PointAt(t, hp);
 				Material mat = best.Material;
-				uint ads, dds, sds;
-				mat.ADSAt(nw.TU, out ads, out dds, out sds);
+				uint ambient, diffuse, specular, reflectance;
+				mat.ADSAt(nw.TU, -Point3.CosAngle(ray.Direction, norm), out ambient, out diffuse, out specular, out reflectance);
 				uint clr;
-				clr = Color.Multiply(this.AmbientColor, ads);
+				clr = Color.Multiply(this.AmbientColor, ambient);
 				uint clrl;
 				foreach(Light li in this.lights) {
 					Point3.Reflect(ray.Direction, nw.Normal, rl);
-					dis.SetValues(hp, li.Position);
-					double len = dis.Length;
-					dis.Normalize();
-					sr.SetOffsetWithEpsilon(hp);		
-					if(this.acc.CalculateHit(sr, out tdummy, len) == null) {
-						clrl = Color.Scale(Color.Multiply(li.Color, dds), Point3.CosAngleNorm(dis, norm));
-						clrl = Color.Add(clrl, Color.Scale(Color.Multiply(li.Color, sds), Math.Pow(Point3.CosAngleNorm(rl, dis), mat.Shininess)));
-						clr = Color.Add(clr, Color.loseIntensity(clrl, len));
+					double len = Point3.DiffLength(hp, li.Position);
+					double thetafrac = Math.PI-Math.Asin(li.Radius/len);
+					uint light = 0x00;
+					if(!double.IsNaN(thetafrac)) {
+						for(int i = 0; i < lightTest; i++) {
+							double phi = Math.PI*Maths.RandomGenerator.NextDouble()-Maths.PI_2;
+							thetafrac = 2.0d*Maths.PI*Maths.RandomGenerator.NextDouble();
+							lp.SetValues(Math.Cos(phi)*Math.Sin(thetafrac)*li.Radius+li.Position.X, Math.Cos(phi)*Math.Cos(thetafrac)*li.Radius+li.Position.Y, Math.Sin(phi)*li.Radius+li.Position.Z);
+							dis.SetValues(hp, lp);
+							dis.Normalize();
+							sr.SetOffsetWithEpsilon(hp);
+							if(this.acc.CalculateHit(sr, out tdummy, len-li.Radius) == null) {
+								light++;
+							}
+						}
+						light = Math.Min((uint)((light<<0x08)/lightTest), 0xff);
+						//Console.WriteLine("light resulted in {0}", thetafrac);
+					}
+					else {
+						light = 0xff;
+					}
+					if(light > 0x00) {
+						dis.SetValues(hp, li.Position);
+						dis.Normalize();
+						clrl = Color.Scale(Color.Multiply(li.Color, diffuse), Point3.CosAngleNorm(dis, norm));
+						clrl = Color.Add(clrl, Color.Scale(Color.Multiply(li.Color, specular), Math.Pow(Point3.CosAngleNorm(rl, dis), mat.Shininess)));
+						clr = Color.Add(clr, Color.loseIntensity(Color.Scale(clrl, light), len));
 					}
 				}
-				/*if(depth < 0) {
+				/*if(depth < maxDepth) {
 					Point3 rl, rf;
-					Point3.ReflectRefract(ray.Direction,norm,nw.Material.NFactor,out rl, out rf);
-					srl = Ray.WithEpsilon(hp,rl);
-					srf = Ray.WithEpsilon(hp,rf);
-					clr = Color.Merge(new L<Color,Ray,int>(calculateColor,srl,depth+1),new L<Color,Ray,int>(calculateColor,srf,depth+1),new L<Color>(clr),nw.ReflectionFactor,nw.RefractionFactor);
+					Point3.ReflectRefract(ray.Direction, norm, mat.NFactor, ref rayCache[depth++].Direction);
+					//srl = Ray.WithEpsilon(hp, rl);
+					//srf = Ray.WithEpsilon(hp, rf);
+					//clr = Color.Merge(new L<Color,Ray,int>(calculateColor, srl, depth+1), new L<Color,Ray,int>(calculateColor, srf, depth+1), new L<Color>(clr), nw.ReflectionFactor, nw.RefractionFactor);
 				}*/
-				return Color.loseIntensity(clr, nw.T);
+				return Color.loseIntensity(clr, t);
 			}
 			else {
-				return 0xff000000;
+				return 0x00000000;
 			}
 		}
 		
@@ -125,7 +138,8 @@ namespace Renderer {
 				M.RotateY(1.0d*Math.PI+alpha);
 				M.Shift(0.0d, 0.0d, 30.0d);
 				Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
-				Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x04);
+				//Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x01, 0x08);
+				Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x01, 0x08, 0x08);
 				DateTime start = DateTime.Now;
 				cam.CalculateImage();
 				DateTime stop = DateTime.Now;
