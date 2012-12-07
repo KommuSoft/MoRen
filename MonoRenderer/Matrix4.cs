@@ -27,8 +27,7 @@ namespace Renderer {
 	public delegate void MatrixManipulator (Matrix4 m);
 	
 	[XmlType("Matrix")]
-	public sealed class Matrix4
-	{
+	public sealed class Matrix4 : ITransformable {
 		
 		[XmlAttribute("M00")]
 		public double

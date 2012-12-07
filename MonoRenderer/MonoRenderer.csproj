@@ -92,6 +92,9 @@
     <Compile Include="Utils.cs" />
     <Compile Include="BinarySpacePartitionAccelerator.cs" />
     <Compile Include="BoundingBox.cs" />
+    <Compile Include="ITransformable.cs" />
+    <Compile Include="CameraPostProcessor.cs" />
+    <Compile Include="AddNoisePostProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

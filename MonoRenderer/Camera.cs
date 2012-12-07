@@ -39,6 +39,7 @@ namespace Renderer {
 		private int antiAliasingThreshold = 1;
 		private readonly Light[] lights;
 		private AntiAliasingTechnique aaTec = AntiAliasingTechnique.Sobel;
+		private readonly List<CameraPostProcessor> postProcessors;
 		private int antialiasSqrt = 0x04;
 		private int maxDepth = 0x02;
 		private int lightTests = 0x08;
@@ -162,7 +163,7 @@ namespace Renderer {
 		public Camera () {
 		}
 
-		public Camera (int w, int h, double screenDistance, double foVH, Accelerator acc, Light[] lights, int antialiasing, int maxDepth = 0x02, int lightTests = 0x08) {
+		public Camera (int w, int h, double screenDistance, double foVH, Accelerator acc, Light[] lights, int antialiasing, int maxDepth = 0x02, int lightTests = 0x08, List<CameraPostProcessor> postprocessors = null) {
 			this.raster = new Texture(w, h);
 			this.foVH = foVH;
 			this.acc = acc;
@@ -170,6 +171,12 @@ namespace Renderer {
 			this.antialiasSqrt = antialiasing;
 			this.maxDepth = maxDepth;
 			this.lightTests = lightTests;
+			if(postprocessors != null) {
+				this.postProcessors = postprocessors;
+			}
+			else {
+				this.postProcessors = new List<CameraPostProcessor>();
+			}
 		}
 
 		public void RebuildMatrix () {
@@ -194,6 +201,9 @@ namespace Renderer {
 			System.Threading.Tasks.Parallel.For(0x00, cores, x => CalculateImage(x*Height/cores, (x+1)*Height/cores));
 			//this.CalculateImage(0x00, this.Height);
 			DateTime stop = DateTime.Now;
+			foreach(CameraPostProcessor cpp in this.postProcessors) {
+				cpp.Process(this, this.raster, this.acc);
+			}
 			Console.WriteLine("Rendered in {0}", stop-start);
 		}
 		private void CalculateImage (int yfrom, int yto) {

@@ -53,7 +53,9 @@ namespace Renderer {
 		private void UpdateForm () {
 			while(true) {
 				Thread.Sleep(0x400);
-				this.Invalidate();
+				if(this.Visible) {
+					this.Invalidate();
+				}
 			}
 		}
 		

@@ -128,7 +128,7 @@ namespace Renderer {
 		public static int Main (string[] args) {
 			PerlinCache.InitializeNoiseBuffer();
 			LoaderObj lo = new LoaderObj();
-			double alpha = 0.0d;
+			//double alpha = 0.0d;
 			FileStream fs = File.Open("venus.obj", FileMode.Open, FileAccess.Read);
 			lo.Load(null, fs);
 			fs.Close();
@@ -140,7 +140,9 @@ namespace Renderer {
 			M.RotateY(Math.PI);
 			M.Shift(0.0d, 0.0d, 30.0d);
 			Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
-			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x01, 0x08, 0x01);
+			List<CameraPostProcessor> cpps = new List<CameraPostProcessor>();
+			cpps.Add(new AddNoisePostProcessor(0x10));
+			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x01, 0x08, 0x40, cpps);
 			RenderWindow rw = new RenderWindow(cam);
 			rw.ShowDialog();
 			/*TimeSpan ts = new TimeSpan();

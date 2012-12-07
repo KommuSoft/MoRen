@@ -41,6 +41,7 @@ namespace Renderer {
 			ambient = this.Ambient;
 			diffuse = this.Diffuse;
 			specular = this.Specular;
+			ambient = diffuse = specular = PerlinCache.Marble3(tu);
 			uint tex;
 			if(this.Texture != null) {
 				tex = this.Texture.ColorAt(tu);
