@@ -24,10 +24,9 @@ using System.Collections.Generic;
 using Renderer;
 using NUnit.Framework;
 
-namespace RendererTests {
+namespace TestRenderer {
 	[TestFixture()]
-	public class OctTreeAcceleratorTest
-	{
+	public class OctTreeAcceleratorTest {
 		[Test()]
 		public void TestHit1 () {
 			Matrix4 M = new Matrix4();
@@ -40,7 +39,7 @@ namespace RendererTests {
 			GridAccelerator ga = new GridAccelerator(ris);
 			OctTreeAccelerator oa = new OctTreeAccelerator(ris);
 			double t;
-			for(int i = int.MinValue; i < int.MaxValue; i++) {
+			for(int i = 0x00; i < TestParameters.TriceratopsTest; i++) {
 				Ray ray = Ray.Random();
 				ray.NormalizeDirection();
 				Assert.AreEqual(ga.CalculateHit(ray, out t, double.PositiveInfinity), oa.CalculateHit(ray, out t, double.PositiveInfinity));
@@ -49,7 +48,7 @@ namespace RendererTests {
 
 		[Test()]
 		public void TestHit2 () {
-			for(int i = 0; i < 65536; i++) {
+			for(int i = 0; i < TestParameters.BuildTest; i++) {
 				int nt = Math.Max(2, Maths.Random(i));
 				List<RenderItem> ris = new List<RenderItem>();
 				for(int j = 0x00; j < nt; j++) {
@@ -58,7 +57,7 @@ namespace RendererTests {
 				GridAccelerator ga = new GridAccelerator(ris);
 				OctTreeAccelerator oa = new OctTreeAccelerator(ris);
 				double t;
-				for(int k = 0; k < 65536; k++) {
+				for(int k = 0; k < TestParameters.RayTest; k++) {
 					Ray ray = Ray.Random();
 					RenderItem ria = ga.CalculateHit(ray, out t, double.PositiveInfinity), rib = oa.CalculateHit(ray, out t, double.PositiveInfinity);
 					Assert.AreEqual(ria, rib);

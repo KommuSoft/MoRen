@@ -24,7 +24,7 @@ using System.Collections.Generic;
 using Renderer;
 using NUnit.Framework;
 
-namespace RendererTests {
+namespace TestRenderer {
 	[TestFixture()]
 	public class BinarySpacePartitionAcceleratorTest {
 		[Test()]
@@ -36,10 +36,10 @@ namespace RendererTests {
 			lo.Load(null, fs);
 			fs.Close();
 			List<RenderItem> ris = lo.Inject(M);
-			GridAccelerator ga = new GridAccelerator(ris);
+			OctTreeAccelerator ga = new OctTreeAccelerator(ris);
 			BinarySpacePartitionAccelerator oa = new BinarySpacePartitionAccelerator(ris);
 			double t;
-			for(int i = int.MinValue; i < int.MaxValue; i++) {
+			for(int i = 0x00; i < TestParameters.TriceratopsTest; i++) {
 				Ray ray = Ray.Random();
 				ray.NormalizeDirection();
 				Assert.AreEqual(ga.CalculateHit(ray, out t, double.PositiveInfinity), oa.CalculateHit(ray, out t, double.PositiveInfinity));
@@ -48,16 +48,16 @@ namespace RendererTests {
 
 		[Test()]
 		public void TestHit2 () {
-			for(int i = 0; i < 65536; i++) {
+			for(int i = 0; i < TestParameters.BuildTest; i++) {
 				int nt = Math.Max(2, Maths.Random(i));
 				List<RenderItem> ris = new List<RenderItem>();
 				for(int j = 0x00; j < nt; j++) {
 					ris.Add(new Triangle(Point3.Random(), Point3.Random(), Point3.Random(), null, null, null, null, null, null, null));
 				}
-				GridAccelerator ga = new GridAccelerator(ris);
+				OctTreeAccelerator ga = new OctTreeAccelerator(ris);
 				BinarySpacePartitionAccelerator oa = new BinarySpacePartitionAccelerator(ris);
 				double t;
-				for(int k = 0; k < 65536; k++) {
+				for(int k = 0; k < TestParameters.RayTest; k++) {
 					Ray ray = Ray.Random();
 					RenderItem ria = ga.CalculateHit(ray, out t, double.PositiveInfinity), rib = oa.CalculateHit(ray, out t, double.PositiveInfinity);
 					Assert.AreEqual(ria, rib);

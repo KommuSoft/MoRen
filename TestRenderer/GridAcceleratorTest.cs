@@ -24,10 +24,9 @@ using System.IO;
 using NUnit.Framework;
 using Renderer;
 
-namespace RendererTests {
+namespace TestRenderer {
 	[TestFixture()]
-	public class GridAcceleratorTest
-	{
+	public class GridAcceleratorTest {
 		[Test()]
 		public void TestHit1 () {
 			Matrix4 M = new Matrix4();
@@ -40,7 +39,7 @@ namespace RendererTests {
 			NaiveAccelerator na = new NaiveAccelerator(ris);
 			GridAccelerator ga = new GridAccelerator(ris);
 			double t;
-			for(int i = 0; i < 10000000; i+= 10000) {
+			for(int i = 0; i < TestParameters.TriceratopsTest; i++) {
 				Ray ray = Ray.Random();
 				Assert.AreEqual(na.CalculateHit(ray, out t, double.PositiveInfinity), ga.CalculateHit(ray, out t, double.PositiveInfinity));
 			}
@@ -48,7 +47,7 @@ namespace RendererTests {
 
 		[Test()]
 		public void TestHit2 () {
-			for(int i = 0; i < 6553; i += 1000) {
+			for(int i = 0; i < TestParameters.BuildTest; i++) {
 				int nt = Math.Max(2, Maths.Random(i));
 				List<RenderItem> ris = new List<RenderItem>();
 				for(int j = 0x00; j < nt; j++) {
@@ -57,7 +56,7 @@ namespace RendererTests {
 				NaiveAccelerator na = new NaiveAccelerator(ris);
 				GridAccelerator ga = new GridAccelerator(ris);
 				double t;
-				for(int k = 0; k < 65536; k += 1000) {
+				for(int k = 0; k < TestParameters.RayTest; k++) {
 					Ray ray = Ray.Random();
 					RenderItem ria = na.CalculateHit(ray, out t, double.PositiveInfinity), rib = ga.CalculateHit(ray, out t, double.PositiveInfinity);
 					Assert.AreEqual(ria, rib);

@@ -40,6 +40,8 @@
     <Compile Include="OctTreeAcceleratorTest.cs" />
     <Compile Include="TriangleTest.cs" />
     <Compile Include="BinarySpacePartitionAcceleratorTest.cs" />
+    <Compile Include="MatrixTest.cs" />
+    <Compile Include="TestParameters.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

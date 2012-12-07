@@ -22,10 +22,9 @@ using System;
 using Renderer;
 using NUnit.Framework;
 
-namespace RendererTests {
+namespace TestRenderer {
 	[TestFixture()]
-	public class Test
-	{
+	public class Test {
 		[Test()]
 		public void TestInBox () {
 			Random rnd = new Random();
