@@ -28,8 +28,9 @@ namespace Renderer {
 
 		private readonly BinarySpaceNode root;
 		private readonly double x0, x1, y0, y1, z0, z1;
+		private readonly double[] box;
 
-		public BinarySpacePartitionAccelerator (List<RenderItem> items) : this(items,(int) Math.Ceiling(3.0d*Math.Log(Math.Max(1.0d,items.Count),2))) {
+		public BinarySpacePartitionAccelerator (List<RenderItem> items) : this(items,(int) Math.Ceiling(Math.Log(Math.Max(1.0d,items.Count),2))) {
 		}
 		public BinarySpacePartitionAccelerator (List<RenderItem> items, int maxdepth, int maxsize = 6) {
 			BoundingBox bb = new BoundingBox();
@@ -37,6 +38,7 @@ namespace Renderer {
 			double totalSurface = items.Sum(ri => ri.Surface());
 			root = Subdivide(maxdepth, maxsize, bb, 0x00, items, totalSurface);
 			bb.OutParam(out x0, out x1, out y0, out y1, out z0, out z1);
+			this.box = new double[]{x0,x1,y0,y1,z0,z1};
 		}
 
 		private static BinarySpaceNode Subdivide (int maxdepth, int maxsize, BoundingBox bb, int depth, List<RenderItem> items, double total) {
@@ -119,10 +121,10 @@ namespace Renderer {
 			return xheu;
 		}
 
-		private static IEnumerable<AddRemoveEvent> GenerateEvents<T> (IEnumerable<T> items, int dim) where T :IRenderable {
+		private static IEnumerable<AddRemoveEvent> GenerateEvents (IEnumerable<IRenderable> items, int dim) {
 			double x0, x1;
 			int i = 0x00;
-			foreach(T t in items) {
+			foreach(RenderItem t in items) {
 				t.GetDimensionBounds(dim, out x0, out x1);
 				yield return new AddRemoveEvent(i, x0, true);
 				yield return new AddRemoveEvent(i++, x1, false);
@@ -156,14 +158,21 @@ namespace Renderer {
 					return null;
 				}
 			}
-			Point3 inter2 = new Point3();
-			ray.PointAt(t, inter2);
-			Ray end = new Ray(0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d);
-			end.SetWithEpsilon(inter2, ray.Direction);
-			Utils.CalculateBoxHitpoint(end, inter2, out tHit, this.x0, this.x1, this.y0, this.y1, this.z0, this.z1);
-			tHit = Math.Min(tHit+t, maxT);
+			Point3 inter2 = new Point3(Maths.ZeroInv(ray.DX), Maths.ZeroInv(ray.DY), Maths.ZeroInv(ray.DZ));
+			double tt = Maths.SoftInv(ray.DX)*(box[Maths.BinarySign(ray.DX)]-ray.X0);
+			if(tt < tHit) {
+				tHit = tt;
+			}
+			tt = Maths.SoftInv(ray.DY)*(box[Maths.BinarySign(ray.DY)]-ray.Y0);
+			if(tt < tHit) {
+				tHit = tt;
+			}
+			tt = Maths.SoftInv(ray.DZ)*(box[Maths.BinarySign(ray.DZ)]-ray.Z0);
+			if(tt < tHit) {
+				tHit = tt;
+			}
 			RenderItem ri = null;
-			this.root.Hit(ray, inter, ref t, ref tHit, ref ri);
+			this.root.Hit(ray, inter2, inter, ref t, ref tHit, ref ri);
 			return ri;
 		}
 
@@ -188,27 +197,27 @@ namespace Renderer {
 				this.dim = dim;
 			}
 
-			public void Hit (Ray ray, Point3 inter, ref double t, ref double tHit, ref RenderItem ri) {
+			public void Hit (Ray ray, Point3 rayinv, Point3 inter, ref double t, ref double tHit, ref RenderItem ri) {
 				double tt;
 				if(this.tri == null) {
-					tt = (x0-inter[dim])/ray.Direction[dim];
-					if(t+tt < tHit) {
+					//tt = (x0-inter[dim])/rayinv[dim];
+					if(t < tHit) {
 						int cur = Math.Sign(inter[dim]-x);
-						if(cur*Maths.SoftSign(ray.Direction[dim]) < 0.0d) {//with migration
-							tt = t+(x-inter[dim])/ray.Direction[dim];
+						if(cur*Math.Sign(rayinv[dim]) < 0.0d) {//with migration
+							tt = t+(x-inter[dim])*rayinv[dim];
 							double tt2 = Math.Min(tt, tHit);
-							this.children[(cur+0x01)>>0x01].Hit(ray, inter, ref t, ref tt2, ref ri);
+							this.children[(cur+0x01)>>0x01].Hit(ray, rayinv, inter, ref t, ref tt2, ref ri);
 							if(tt <= tt2) {
 								t = tt;
 								ray.PointAt(tt, inter);
-								this.children[(0x01-cur)>>0x01].Hit(ray, inter, ref t, ref tHit, ref ri);
+								this.children[(0x01-cur)>>0x01].Hit(ray, rayinv, inter, ref t, ref tHit, ref ri);
 							}
 							else {
 								tHit = tt2;
 							}
 						}
 						else {
-							this.children[(cur+0x01)>>0x01].Hit(ray, inter, ref t, ref tHit, ref ri);
+							this.children[(cur+0x01)>>0x01].Hit(ray, rayinv, inter, ref t, ref tHit, ref ri);
 						}
 					}
 				}

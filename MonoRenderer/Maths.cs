@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 
 namespace Renderer {
-	public static class Maths
-	{
+	public static class Maths {
 		
 		private static readonly Random rand = new Random();
 		public const double PI = Math.PI;
@@ -147,14 +146,24 @@ namespace Renderer {
 		public static double SoftInv (double val) {
 			if(Math.Abs(val) < GlobalEpsilon) {
 				return double.NaN;
-			} else {
+			}
+			else {
+				return 1.0d/val;
+			}
+		}
+		public static double ZeroInv (double val) {
+			if(Math.Abs(val) < GlobalEpsilon) {
+				return 0.0d;
+			}
+			else {
 				return 1.0d/val;
 			}
 		}
 		public static int SoftSign (double val) {
 			if(Math.Abs(val) < GlobalEpsilon) {
 				return 0x00;
-			} else {
+			}
+			else {
 				return Math.Sign(val);
 			}
 		}
@@ -168,9 +177,11 @@ namespace Renderer {
 		public static double MinPos (double a, double b) {
 			if(a < 0.0d) {
 				return b;
-			} else if(b < 0.0d) {
+			}
+			else if(b < 0.0d) {
 				return a;
-			} else {
+			}
+			else {
 				return Math.Min(a, b);
 			}
 		}
@@ -493,9 +504,11 @@ namespace Renderer {
 		public static double MinGeqZero (double a, double b) {
 			if(a < 0.0d) {
 				return b;
-			} else if(b < 0.0d) {
+			}
+			else if(b < 0.0d) {
 				return a;
-			} else
+			}
+			else
 				return Math.Min(a, b);
 		}
 		public static double LinEq (double rico, double offset, double y) {
