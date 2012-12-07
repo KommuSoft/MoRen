@@ -73,7 +73,6 @@ namespace Renderer {
 		}
 
 		private static double CalculateOptimalSplit (List<RenderItem> items, BoundingBox bb, double totalSurface, out double maxHeur, int dim) {
-			//Console.WriteLine("nr");
 			SortedSet<AddRemoveEvent> events = new SortedSet<AddRemoveEvent>(GenerateEvents(items, dim));
 			IEnumerator<AddRemoveEvent> aree = events.GetEnumerator();
 			HashSet<int> activ = new HashSet<int>();
@@ -103,7 +102,6 @@ namespace Renderer {
 					}
 				}
 				if(x0 < x && x < x1) {
-					//Console.WriteLine("Inside");
 					double lssf = 0.0d;
 					foreach(int id in activ) {
 						lssf += items[id].SplitSurface(x, dim);
@@ -116,7 +114,6 @@ namespace Renderer {
 				}
 			}
 			if(double.IsNaN(xheu)) {
-				//Console.WriteLine("KERNEL PANIC {0} {2} {1}", bb, string.Join(",", items), dim);
 				return 0.5d*(x0+x1);
 			}
 			return xheu;
@@ -164,13 +161,14 @@ namespace Renderer {
 
 		private sealed class BinarySpaceNode {
 
-			public readonly double x;
-			public readonly int dim;
-			public readonly BinarySpaceNode[] children;
-			public readonly RenderItem[] tri;
+			private readonly double x;
+			private readonly int dim;
+			private readonly BinarySpaceNode[] children;
+			private readonly RenderItem[] tri;
 
 			public BinarySpaceNode (RenderItem[] tris) {
 				this.tri = tris;
+				this.dim = 0x00;
 				this.children = null;
 				this.x = double.NaN;
 			}

@@ -34,7 +34,7 @@
     <additionalargs>-checked- -clscheck- -nostdlib+ -optimize+</additionalargs>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="mono -aot=full ${TargetFile}" workingdir="${TargetDir}" />
+        <Command type="AfterBuild" command="mono --aot=asmonly -O=all ${TargetFile}" workingdir="${TargetDir}" pauseExternalConsole="true" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
