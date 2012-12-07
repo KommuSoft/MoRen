@@ -39,7 +39,17 @@ namespace Renderer {
 		private int antiAliasingThreshold = 1;
 		private readonly List<Light> lights;
 		private AntiAliasingTechnique aaTec = AntiAliasingTechnique.Sobel;
+		private int antialiasSqrt = 0x01;
 
+		[XmlElement("AntialiasSqrt")]
+		public int AntialiasSqrt {
+			get {
+				return this.antialiasSqrt;
+			}
+			set {
+				this.antialiasSqrt = value;
+			}
+		}
 		[XmlElement("Position")]
 		public Point3 Position {
 			get {
@@ -175,29 +185,70 @@ namespace Renderer {
 			Console.WriteLine("Rendered in {0}", stop-start);
 		}
 		public void CalculateImage (int yfrom, int yto) {
-			double sh = ScreenDistance*Math.Tan(0.5d*this.foVH);
+			double sd = this.screenDistance;
+			double sh = sd*Math.Tan(0.5d*this.foVH);
 			int w = this.Width;
 			int h = this.Height;
 			double sw = sh*w/h;
 			double dwh = sw/w;
-			double yg, xg;
+			double dwha = dwh/antialiasSqrt;
+			double yg, xg, ygt, xgt;
 			Ray ray = new Ray(0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 1.0d);
 			uint[] pixel = this.raster.Pixel;
 			int k = Width*yfrom;
+			int l;
+			int aasqrt = this.antialiasSqrt;
+			uint[] aaCache = new uint[aasqrt*aasqrt];
 			RayTracer rt = new RayTracer(this.acc, this.lights);
 			yg = -sh+dwh*yfrom;
 			for(int y = yfrom; y < yto; y++) {
 				xg = -0.5d*sw;
 				for(int x = 0x00; x < w; x++) {
-					ray.Offset.SetValues(xg, -yg, 0.0d);
-					ray.Direction.SetValues(xg, -yg, this.screenDistance);
-					ray.NormalizeDirection();
-					ray.Transform(this.matrix);
-					pixel[k++] = rt.CalculateColor(ray, 0);
+					xgt = xg;
+					ygt = yg;
+					l = 0x00;
+					for(int i = 0x00; i < aasqrt; i++) {
+						for(int j = 0x00; j < aasqrt; j++) {
+							//Console.WriteLine("{0} | {1}", xg*dwha, yg*dwha);
+							ray.Offset.SetValues(xg, -yg, 0.0d);
+							ray.Direction.SetValues(xg, -yg, this.screenDistance);
+							ray.NormalizeDirection();
+							ray.Transform(this.matrix);
+							aaCache[l++] = Color.AlphaChannel|rt.CalculateColor(ray, 0);
+							xgt += dwha;
+						}
+						ygt += dwha;
+						xgt -= dwha;
+					}
+					pixel[k++] = Color.Mix(aaCache);
 					xg += dwh;
 				}
 				yg += dwh;
 			}
+			/*for(int y = yfrom; y < yto; y++) {
+				xg = -0.5d*sw;
+				for(int x = 0x00; x < w; x++) {
+					l = 0x00;
+					for(int i = 0x00; i < aasqrt; i++) {
+						for(int j = 0x00; j < aasqrt; j++) {
+							Console.WriteLine("{0} | {1}", xg*dwha, yg*dwha);
+							ray.Offset.SetValues(xg, -yg, 0.0d);
+							ray.Direction.SetValues(xg, -yg, sh);
+							ray.NormalizeDirection();
+							ray.Transform(this.matrix);
+							aaCache[l++] = rt.CalculateColor(ray, 0);
+							xg += dwha;
+						}
+						yg += dwha;
+						xg -= dwh;
+					}
+					Console.WriteLine("New Tile");
+					xg += dwh;
+					yg -= dwh;
+					pixel[k++] = Color.AlphaChannel|Color.Mix(aaCache);
+				}
+				yg += dwh;
+			}*/
 		}
 		
 		public unsafe Bitmap ToBitmap () {

@@ -3,8 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Renderer {
 	
-	public static class Color
-	{
+	public static class Color {
 		
 		public const uint AlphaChannel = 0xff000000;
 		public const uint RedChannel = 0x00ff0000;
@@ -32,6 +31,21 @@ namespace Renderer {
 		public static uint FromFrac (double frac) {
 			uint r = (uint)Maths.Border(0x00, (int)Math.Round(0xff*frac), 0xff);
 			return AlphaChannel|(r<<0x10)|(r<<8)|r;
+		}
+		public static uint Mix (uint[] colors) {
+			uint l = (uint)colors.Length;
+			uint r = l>>0x01;
+			uint g = r;
+			uint b = r;
+			foreach(uint col in colors) {
+				r += (col>>0x10)&0xff;
+				g += (col>>0x08)&0xff;
+				b += col&0xff;
+			}
+			r /= l;
+			g /= l;
+			b /= l;
+			return (r<<0x010)|(g<<0x08)|b;
 		}
 		public static uint FromFrac (double fr, double fg, double fb) {
 			uint r = (uint)Maths.Border(0x00, (int)Math.Round(0xff*fr), 0xff);
@@ -90,17 +104,18 @@ namespace Renderer {
 			if(n == 0x00)
 				return null;
 			uint[] pal = new uint[size];
-			uint c2 = colors [0x00];
+			uint c2 = colors[0x00];
 			if(n == 0x01) {
 				for(int i = 0; i < size; i++)
-					pal [i] = c2;
-			} else {
+					pal[i] = c2;
+			}
+			else {
 				uint c1, r, g, b, r1, g1, b1, r2, g2, b2;
 				int dr, dg, db, pos1, pos2, range, i = 0;
 				n--;
 				for(int c = 0; c < n; c++) {
 					c1 = c2;
-					c2 = colors [c+0x01];
+					c2 = colors[c+0x01];
 					pos1 = c*size/n;
 					pos2 = (c+0x01)*size/n;
 					range = pos2-pos1;
@@ -117,7 +132,7 @@ namespace Renderer {
 					g = g1;
 					b = b1;
 					for(; i < pos2; i++) {
-						pal [i] = GetColor(r>>0x10, g>>0x10, b>>0x10);
+						pal[i] = GetColor(r>>0x10, g>>0x10, b>>0x10);
 						r = (uint)(r+dr);
 						g = (uint)(g+dg);
 						b = (uint)(b+db);
