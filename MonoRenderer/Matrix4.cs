@@ -32,7 +32,7 @@ namespace Renderer {
 
 		[XmlIgnore]
 		private static readonly Regex
-			rgx = new Regex(string.Format(@"^((?<rotxyz>Rotate ?(?<dim>X|Y|Z) {0})|(?<rotv>Rotate {1} {2} {3} {0})|(?<shift>Shift {1} {2} {3})|(?<scale>Scale {1}( {2} {3})?)|(?<matrix>Matrix {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}))$", ParserUtils.FormGroup(ParserUtils.Real, "ux"), ParserUtils.FormGroup(ParserUtils.Real, "uy"), ParserUtils.FormGroup(ParserUtils.Real, "uz"), ParserUtils.FormGroup(ParserUtils.Real, "m10"), ParserUtils.FormGroup(ParserUtils.Real, "m11"), ParserUtils.FormGroup(ParserUtils.Real, "m12"), ParserUtils.FormGroup(ParserUtils.Real, "m13"), ParserUtils.FormGroup(ParserUtils.Real, "m20"), ParserUtils.FormGroup(ParserUtils.Real, "m21"), ParserUtils.FormGroup(ParserUtils.Real, "m22"), ParserUtils.FormGroup(ParserUtils.Real, "m23")), RegexOptions.Compiled|RegexOptions.CultureInvariant|RegexOptions.IgnoreCase|RegexOptions.Singleline|RegexOptions.ExplicitCapture);
+			rgx = new Regex(string.Format(@"^((?<id>Id(entity)?)|(?<rotxyz>Rotate ?(?<dim>X|Y|Z) {0})|(?<rotv>Rotate {1} {2} {3} {0})|(?<shift>Shift {1} {2} {3})|(?<scale>Scale {1}( {2} {3})?)|(?<matrix>Matrix {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}))$", ParserUtils.FormGroup(ParserUtils.Real, "theta"), ParserUtils.FormGroup(ParserUtils.Real, "ux"), ParserUtils.FormGroup(ParserUtils.Real, "uy"), ParserUtils.FormGroup(ParserUtils.Real, "uz"), ParserUtils.FormGroup(ParserUtils.Real, "m10"), ParserUtils.FormGroup(ParserUtils.Real, "m11"), ParserUtils.FormGroup(ParserUtils.Real, "m12"), ParserUtils.FormGroup(ParserUtils.Real, "m13"), ParserUtils.FormGroup(ParserUtils.Real, "m20"), ParserUtils.FormGroup(ParserUtils.Real, "m21"), ParserUtils.FormGroup(ParserUtils.Real, "m22"), ParserUtils.FormGroup(ParserUtils.Real, "m23")), RegexOptions.Compiled|RegexOptions.CultureInvariant|RegexOptions.IgnoreCase|RegexOptions.Singleline|RegexOptions.ExplicitCapture);
 		
 		[XmlAttribute("M00")]
 		public double
@@ -198,6 +198,9 @@ namespace Renderer {
 				ux*uz*costa-uy*sint, uz*uy*costa+ux*sint, cost+costa*uz*uz, 0.0d
 			);
 		}
+		public static Matrix4 CreateRotateMatrix (Point3 p, double theta) {
+			return CreateRotateMatrix(p.X, p.Y, p.Z, theta);
+		}
 		public void Rotate (double ux, double uy, double uz, double theta) {
 			double cost = Math.Cos(theta);
 			double costa = 1.0d-cost;
@@ -237,6 +240,11 @@ namespace Renderer {
 			this.M12 = N12;
 			this.M13 = N13;
 		}
+		public static Matrix4 CreateRotateXMatrix (double theta) {
+			double cost = Math.Cos(theta);
+			double sint = Math.Sin(theta);
+			return new Matrix4(1.0d, 0.0d, 0.0d, 0.0d, 0.0d, cost, -sint, 0.0d, 0.0d, sint, cost, 0.0d);
+		}
 		public void RotateY (double theta) {
 			double cost = Math.Cos(theta);
 			double sint = Math.Sin(theta);
@@ -249,6 +257,11 @@ namespace Renderer {
 			this.M01 = N01;
 			this.M02 = N02;
 			this.M03 = N03;
+		}
+		public static Matrix4 CreateRotateYMatrix (double theta) {
+			double cost = Math.Cos(theta);
+			double sint = Math.Sin(theta);
+			return new Matrix4(cost, 0.0d, sint, 0.0d, 0.0d, 1.0d, 0.0d, 0.0d, -sint, 0.0d, cost, 0.0d);
 		}
 		public void RotateZ (double theta) {
 			double cost = Math.Cos(theta);
@@ -263,10 +276,21 @@ namespace Renderer {
 			this.M02 = N02;
 			this.M03 = N03;
 		}
+		public static Matrix4 CreateRotateZMatrix (double theta) {
+			double cost = Math.Cos(theta);
+			double sint = Math.Sin(theta);
+			return new Matrix4(cost, -sint, 0.0d, 0.0d, sint, cost, 0.0d, 0.0d, 0.0d, 0.0d, 1.0d, 0.0d);
+		}
 		public void Shift (double dx, double dy, double dz) {
 			this.M03 += dx;
 			this.M13 += dy;
 			this.M23 += dz;
+		}
+		public static Matrix4 CreateShiftMatrix (double dx, double dy, double dz) {
+			return new Matrix4(1.0d, 0.0d, 0.0d, dx, 0.0d, 1.0d, 0.0d, dy, 0.0d, 0.0d, 1.0d, dz);
+		}
+		public static Matrix4 CreateShiftMatrix (Point3 p) {
+			return CreateShiftMatrix(p.X, p.Y, p.Z);
 		}
 		public void Shift (Point3 p) {
 			this.M03 += p.X;
@@ -286,6 +310,15 @@ namespace Renderer {
 			this.M21 *= sz;
 			this.M22 *= sz;
 			this.M23 *= sz;
+		}
+		public static Matrix4 CreateScaleMatrix (double sx, double sy, double sz) {
+			return new Matrix4(sx, 0.0d, 0.0d, 0.0d, 0.0d, sy, 0.0d, 0.0d, 0.0d, 0.0d, sz, 1.0d);
+		}
+		public static Matrix4 CreateScaleMatrix (Point3 p) {
+			return CreateScaleMatrix(p.X, p.Y, p.Z);
+		}
+		public static Matrix4 CreateScaleMatrix (double s) {
+			return CreateScaleMatrix(s, s, s);
 		}
 		public void Transform (Matrix4 N) {
 			double n00 = M00*N.M00+M10*N.M01+M20*N.M02;
@@ -319,22 +352,70 @@ namespace Renderer {
 		public override string ToString () {
 			return string.Format("Matrix {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}", M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23);
 		}
-		private static int ParseDim (string dim) {
-			switch(dim) {
-				case "x":
-					return 0x00;
-				case "y":
-					return 0x01;
-				default :
-					return 0x02;
+		public override bool Equals (object obj) {
+			if(obj is Matrix4) {
+				Matrix4 N = (Matrix4)obj;
+				return (this.M00 == N.M00 && this.M01 == N.M01 && this.M02 == N.M02 && this.M03 == N.M03 &&
+					this.M10 == N.M10 && this.M11 == N.M11 && this.M12 == N.M12 && this.M13 == N.M13 &&
+					this.M20 == N.M20 && this.M21 == N.M21 && this.M22 == N.M22 && this.M23 == N.M23);
+			}
+			else {
+				return false;
 			}
 		}
 		public static Matrix4 Parse (string toParse) {
 			toParse = toParse.Trim().ToLower();
 			Match m = rgx.Match(toParse);
 			if(m.Success) {
-				if(m.Groups["rotxyz"].Captures.Count > 0x00) {
-
+				if(m.Groups["id"].Captures.Count > 0x00) {
+					return new Matrix4();
+				}
+				else if(m.Groups["rotxyz"].Captures.Count > 0x00) {
+					double theta = double.Parse(m.Groups["theta"].Value);
+					switch(m.Groups["dim"].Value) {
+						case "x":
+							return Matrix4.CreateRotateXMatrix(theta);
+						case "y":
+							return Matrix4.CreateRotateYMatrix(theta);
+						default :
+							return Matrix4.CreateRotateZMatrix(theta);
+					}
+				}
+				else if(m.Groups["rotv"].Captures.Count > 0x00) {
+					double theta = double.Parse(m.Groups["theta"].Value);
+					Point3 u = new Point3(double.Parse(m.Groups["ux"].Value), double.Parse(m.Groups["uy"].Value), double.Parse(m.Groups["uz"].Value));
+					u.Normalize();
+					return CreateRotateMatrix(u, theta);
+				}
+				else if(m.Groups["shift"].Captures.Count > 0x00) {
+					Point3 u = new Point3(double.Parse(m.Groups["ux"].Value), double.Parse(m.Groups["uy"].Value), double.Parse(m.Groups["uz"].Value));
+					return CreateShiftMatrix(u);
+				}
+				else if(m.Groups["scale"].Captures.Count > 0x00) {
+					Point3 u;
+					if(m.Groups["uy"].Captures.Count > 0x00) {
+						u = new Point3(double.Parse(m.Groups["ux"].Value), double.Parse(m.Groups["uy"].Value), double.Parse(m.Groups["uz"].Value));
+					}
+					else {
+						double xyz = double.Parse(m.Groups["ux"].Value);
+						u = new Point3(xyz, xyz, xyz);
+					}
+					return CreateScaleMatrix(u);
+				}
+				else if(m.Groups["matrix"].Captures.Count > 0x00) {
+					double m00 = double.Parse(m.Groups["theta"].Value);
+					double m01 = double.Parse(m.Groups["ux"].Value);
+					double m02 = double.Parse(m.Groups["uy"].Value);
+					double m03 = double.Parse(m.Groups["uz"].Value);
+					double m10 = double.Parse(m.Groups["m10"].Value);
+					double m11 = double.Parse(m.Groups["m11"].Value);
+					double m12 = double.Parse(m.Groups["m12"].Value);
+					double m13 = double.Parse(m.Groups["m13"].Value);
+					double m20 = double.Parse(m.Groups["m10"].Value);
+					double m21 = double.Parse(m.Groups["m11"].Value);
+					double m22 = double.Parse(m.Groups["m12"].Value);
+					double m23 = double.Parse(m.Groups["m13"].Value);
+					return new Matrix4(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23);
 				}
 			}
 			return null;
