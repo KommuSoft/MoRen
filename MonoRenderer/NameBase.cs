@@ -39,7 +39,12 @@ namespace Renderer {
 		public NameBase () {
 			this.Name = this.GetType().Name+(idDispatcher++).ToString();
 		}
-		public NameBase (string name) {}
+		public NameBase (string name) {
+		}
+
+		public override int GetHashCode () {
+			return this.name.GetHashCode();
+		}
 	}
 }
 

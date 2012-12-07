@@ -19,15 +19,32 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Text.RegularExpressions;
 
 namespace Renderer {
 
 	public static class ParserUtils {
 
 		public const string Real = @"[0-9]+(\.[0-9]*)?";
+		public static readonly Regex colorRegex = new Regex(@"^#?(<color>[0-9a-fA-F]{6})$", RegexOptions.Compiled|RegexOptions.CultureInvariant|RegexOptions.IgnoreCase|RegexOptions.Singleline|RegexOptions.ExplicitCapture);
 
 		public static string FormGroup (string regex, string name) {
 			return string.Format(@"(?<{0}>{1})", name, regex);
+		}
+
+		public static uint ParseColor (string toParse) {
+			if(toParse == null) {
+				return 0x00;
+			}
+			else {
+				Match m = colorRegex.Match(toParse);
+				if(m.Success) {
+					return Convert.ToUInt32(m.Groups["color"].Value, 0x10);
+				}
+				else {
+					return 0x00;
+				}
+			}
 		}
 	}
 }

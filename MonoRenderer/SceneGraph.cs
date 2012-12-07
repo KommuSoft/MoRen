@@ -1,27 +1,56 @@
+//
+//  SceneGraph.cs
+//
+//  Author:
+//       Willem Van Onsem <vanonsem.willem@gmail.com>
+//
+//  Copyright (c) 2012 Willem Van Onsem
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Renderer {
+namespace Renderer.SceneBuilding {
 	
 	[XmlType("SceneGraph")]
 	public sealed class SceneGraph {
 		
 		[XmlIgnore]
-		public readonly MatrixStack Stack = new MatrixStack();
+		public readonly MatrixStack
+			Stack = new MatrixStack();
+
 		[XmlIgnore]
-		private Guid rootGuid;
+		private readonly Dictionary<string,SceneGraphNode>
+			cachedNodes = new Dictionary<string, SceneGraphNode>();
+		[XmlIgnore]
+		private string
+			rootName;
 		[XmlAttribute("MaxDepth")]
-		public int MaxDepth = 0x25;
+		public int
+			MaxDepth = 0x25;
 		[XmlIgnore]
-		public SceneGraphNode Root;
+		public SceneGraphNode
+			Root;
 		[XmlAttribute("Root")]
-		public Guid RootGuid {
+		public string RootGuid {
 			get {
-				return this.Root.Guid;
+				return this.Root.Name;
 			}
 			set {
-				this.rootGuid = value;
+				this.rootName = value;
 			}
 		}
 		
@@ -47,7 +76,12 @@ namespace Renderer {
 				return nodes;
 			}
 			set {
-				
+				foreach(SceneGraphNode sgn in value) {
+					this.cachedNodes.Add(sgn.Name, sgn);
+				}
+				foreach(SceneGraphNode sgn in this.cachedNodes.Values) {
+					sgn.Resolve(this.cachedNodes);
+				}
 			}
 		}
 		public SceneGraph () {

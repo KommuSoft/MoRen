@@ -364,6 +364,9 @@ namespace Renderer {
 			}
 		}
 		public static Matrix4 Parse (string toParse) {
+			if(toParse == null || toParse == string.Empty) {
+				return null;
+			}
 			toParse = toParse.Trim().ToLower();
 			Match m = rgx.Match(toParse);
 			if(m.Success) {

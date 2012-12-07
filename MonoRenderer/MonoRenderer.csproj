@@ -96,6 +96,8 @@
     <Compile Include="CameraPostProcessor.cs" />
     <Compile Include="NoisePostProcessor.cs" />
     <Compile Include="ParserUtils.cs" />
+    <Compile Include="LightWrapper.cs" />
+    <Compile Include="ColorWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

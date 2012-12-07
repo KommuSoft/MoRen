@@ -23,63 +23,74 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Renderer {
+namespace Renderer.SceneBuilding {
 
 	[XmlType("SceneGraphNode")]
-	public sealed class SceneGraphNode
-	{
-		
-		[XmlAttribute("Guid")]
-		public readonly Guid Guid;
+	public sealed class SceneGraphNode : NameBase {
 		[XmlIgnore]
-		private List<Guid> childGuids = new List<Guid>();
+		private List<string>
+			childGuids = null;
 		[XmlIgnore]
-		public readonly List<SceneGraphNode> SubNodes = new List<SceneGraphNode>();
+		public readonly List<SceneGraphNode>
+			SubNodes = new List<SceneGraphNode>();
+		[XmlIgnore]
+		private Light
+			light;
+		[XmlIgnore]
+		private Matrix4
+			Transformer;
 		[XmlArray("SubNodes")]
 		[XmlArrayItem("SubNode")]
-		public List<Guid> SubNodeGuides {
+		public List<string> SubNodeNames {
 			get {
-				if(this.SubNodes != null) {
-					List<Guid> lg = new List<Guid>();
-					foreach(SceneGraphNode sgn in this.SubNodes) {
-						lg.Add(sgn.Guid);
-					}
-					return lg;
-				} else {
+				if(this.SubNodes.Count <= 0x00) {
 					return null;
 				}
+				List<string> lg = new List<string>();
+				foreach(SceneGraphNode sgn in this.SubNodes) {
+					lg.Add(sgn.Name);
+				}
+				return lg;
 			}
 			set {
 				this.childGuids = value;
 			}
 		}
 		[XmlElement("TransformationMatrix")]
-		public readonly Matrix4 Transformer = null;
+		public string TransformerString {
+			get {
+				return this.Transformer.ToString();
+			}
+			set {
+				this.Transformer = Matrix4.Parse(value);
+			}
+		}
 		[XmlElement("Mesh")]
-		public readonly Mesh Mesh = null;
+		public Mesh
+			Mesh = null;
 		[XmlElement("Light")]
-		public readonly Light Light = null;
+		public LightWrapper
+			LightWrapper = null;
 		
 		public SceneGraphNode () {
-			this.Guid = Guid.NewGuid();
 		}
 		public SceneGraphNode (IEnumerable<SceneGraphNode> subNodes) {
 			foreach(SceneGraphNode sgn in subNodes) {
 				this.SubNodes.Add(sgn);
 			}
 		}
-		public SceneGraphNode (Matrix4 transformer,IEnumerable<SceneGraphNode> subNodes) : this(subNodes) {
+		public SceneGraphNode (Matrix4 transformer, IEnumerable<SceneGraphNode> subNodes) : this(subNodes) {
 			this.Transformer = transformer;
 		}
 		public SceneGraphNode (Mesh mesh) : this() {
 			this.Mesh = mesh;
 		}
 		public SceneGraphNode (Light light) : this() {
-			this.Light = light;
+			this.light = light;
 		}
-		public SceneGraphNode (Matrix4 transformer,IEnumerable<SceneGraphNode> subNodes,Mesh mesh,Light light) : this(transformer,subNodes) {
+		public SceneGraphNode (Matrix4 transformer, IEnumerable<SceneGraphNode> subNodes, Mesh mesh, Light light) : this(transformer,subNodes) {
 			this.Mesh = mesh;
-			this.Light = light;
+			this.light = light;
 		}
 		
 		public void AddChild (SceneGraphNode subNode) {
@@ -87,13 +98,14 @@ namespace Renderer {
 		}
 		
 		public override int GetHashCode () {
-			return this.Guid.GetHashCode();
+			return this.Name.GetHashCode();
 		}
 
-		public void Resolve (Dictionary<Guid,SceneGraphNode> dictionary) {
+		public void Resolve (Dictionary<string,SceneGraphNode> dictionary) {
 			if(this.childGuids != null) {
 				this.SubNodes.AddRange(this.childGuids.Select(x => dictionary[x]));
 			}
+			this.childGuids = null;
 		}
 		
 	}

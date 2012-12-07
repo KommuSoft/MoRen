@@ -20,9 +20,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Xml.Serialization;
 
 namespace Renderer {
-	
+
 	public sealed class Light {
 		
 		public readonly Point3 Position;
