@@ -53,7 +53,7 @@ namespace Renderer {
 		private void UpdateForm () {
 			while(true) {
 				Thread.Sleep(0x400);
-				if(this.Visible) {
+				if(this.Visible && this.Focused && this.WindowState != FormWindowState.Minimized) {
 					this.Invalidate();
 				}
 			}

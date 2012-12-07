@@ -199,12 +199,13 @@ namespace Renderer {
 			this.RebuildMatrix();
 			int cores = Environment.ProcessorCount;
 			System.Threading.Tasks.Parallel.For(0x00, cores, x => CalculateImage(x*Height/cores, (x+1)*Height/cores));
-			//this.CalculateImage(0x00, this.Height);
 			DateTime stop = DateTime.Now;
 			foreach(CameraPostProcessor cpp in this.postProcessors) {
 				cpp.Process(this, this.raster, this.acc);
 			}
+#if DEBUG
 			Console.WriteLine("Rendered in {0}", stop-start);
+#endif
 		}
 		private void CalculateImage (int yfrom, int yto) {
 			double sd = this.screenDistance;

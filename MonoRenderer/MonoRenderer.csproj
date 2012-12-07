@@ -94,7 +94,7 @@
     <Compile Include="BoundingBox.cs" />
     <Compile Include="ITransformable.cs" />
     <Compile Include="CameraPostProcessor.cs" />
-    <Compile Include="AddNoisePostProcessor.cs" />
+    <Compile Include="NoisePostProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -141,7 +141,7 @@ namespace Renderer {
 			M.Shift(0.0d, 0.0d, 30.0d);
 			Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
 			List<CameraPostProcessor> cpps = new List<CameraPostProcessor>();
-			cpps.Add(new AddNoisePostProcessor(0x10));
+			cpps.Add(new NoisePostProcessor());
 			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x01, 0x08, 0x40, cpps);
 			RenderWindow rw = new RenderWindow(cam);
 			rw.ShowDialog();
