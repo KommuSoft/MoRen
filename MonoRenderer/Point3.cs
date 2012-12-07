@@ -45,92 +45,90 @@ namespace Renderer {
 		public static readonly IComparer<Point3>[]
 			Comparers = new IComparer<Point3>[] {XComparator,YComparator,ZComparator};
 
-		[XmlAttribute("X")]
-		public double
-			X;
-		[XmlAttribute("Y")]
-		public double
-			Y;
-		[XmlAttribute("Z")]
-		public double
-			Z;
 		[XmlIgnore]
+		public readonly double[]
+			vals;
+		[XmlIgnore]
+		[Obsolete]
 		public double this [int dim] {
 			get {
-				switch(dim) {
-					case 0x00:
-						return X;
-					case 0x01:
-						return Y;
-					default :
-						return Z;
-				}
+				return this.vals[dim];
 			}
 			set {
-				switch(dim) {
-					case 0x00:
-						X = value;
-						break;
-					case 0x01:
-						Y = value;
-						break;
-					default :
-						Z = value;
-						break;
-				}
+				this.vals[dim] = value;
+			}
+		}
+		[XmlAttribute("X")]
+		[Obsolete]
+		public double X {
+			get {
+				return this.vals[0x00];
+			}
+			set {
+				this.vals[0x00] = value;
+			}
+		}
+		[XmlAttribute("Y")]
+		[Obsolete]
+		public double Y {
+			get {
+				return this.vals[0x01];
+			}
+			set {
+				this.vals[0x01] = value;
+			}
+		}
+		[XmlAttribute("Z")]
+		[Obsolete]
+		public double Z {
+			get {
+				return this.vals[0x02];
+			}
+			set {
+				this.vals[0x02] = value;
 			}
 		}
 		
 		[XmlIgnore]
 		public double Length {
 			get {
-				return Math.Sqrt(X*X+Y*Y+Z*Z);
+				return Math.Sqrt(vals[0x00]*vals[0x00]+vals[0x01]*vals[0x01]+vals[0x02]*vals[0x02]);
 			}
 		}
 		[XmlIgnore]
 		public double SquareLength {
 			get {
-				return X*X+Y*Y+Z*Z;
+				return vals[0x00]*vals[0x00]+vals[0x01]*vals[0x01]+vals[0x02]*vals[0x02];
 			}
 		}
 
 		public Point3 () {
-			this.X = 0.0d;
-			this.Y = 0.0d;
-			this.Z = 0.0d;
+			this.vals = new double[]{0.0d,0.0d,0.0d};
 		}
 		public Point3 (double x, double y, double z) {
-			this.X = x;
-			this.Y = y;
-			this.Z = z;
+			this.vals = new double[]{0.0d,0.0d,0.0d};
 		}
 		public Point3 (Point3 p) {
-			this.X = p.X;
-			this.Y = p.Y;
-			this.Z = p.Z;
+			this.vals = new double[]{p[0x00],p[0x01],p[0x02]};
 		}
 		public Point3 (Point3 p, Matrix4 trans) {
-			this.X = p.X;
-			this.Y = p.Y;
-			this.Z = p.Z;
+			this.vals = new double[]{p[0x00],p[0x01],p[0x02]};
 			this.Transform(trans);
 		}
 		public Point3 (double x, double y, double z, Matrix4 trans) {
-			this.X = x;
-			this.Y = y;
-			this.Z = z;
+			this.vals = new double[]{x,y,z};
 			this.Transform(trans);
 		}
 		public Point3 (Point3 frm, Point3 to) : this(to.X-frm.X,to.Y-frm.Y,to.Z-frm.Z) {
 		}
 		
 		public void Transform (Matrix4 M) {
-			double nx = M.M00*X+M.M01*Y+M.M02*Z+M.M03;
-			double ny = M.M10*X+M.M11*Y+M.M12*Z+M.M13;
-			double nz = M.M20*X+M.M21*Y+M.M22*Z+M.M23;
-			this.X = nx;
-			this.Y = ny;
-			this.Z = nz;
+			double nx = M.M00*vals[0x00]+M.M01*vals[0x01]+M.M02*vals[0x02]+M.M03;
+			double ny = M.M10*vals[0x00]+M.M11*vals[0x01]+M.M12*vals[0x02]+M.M13;
+			double nz = M.M20*vals[0x00]+M.M21*vals[0x01]+M.M22*vals[0x02]+M.M23;
+			this.vals[0x00] = nx;
+			this.vals[0x01] = ny;
+			this.vals[0x02] = nz;
 		}
 		public void TransformNonShift (Matrix4 M) {
 			double nx = M.M00*X+M.M01*Y+M.M02*Z;

@@ -160,14 +160,17 @@ namespace Renderer {
 			}
 			Point3 inter2 = new Point3(Maths.ZeroInv(ray.DX), Maths.ZeroInv(ray.DY), Maths.ZeroInv(ray.DZ));
 			double tt = Maths.SoftInv(ray.DX)*(box[Maths.BinarySign(ray.DX)]-ray.X0);
+			//Console.WriteLine(tt);
 			if(tt < tHit) {
 				tHit = tt;
 			}
-			tt = Maths.SoftInv(ray.DY)*(box[Maths.BinarySign(ray.DY)]-ray.Y0);
+			tt = Maths.SoftInv(ray.DY)*(box[Maths.BinarySign(ray.DY)+0x02]-ray.Y0);
+			//Console.WriteLine(tt);
 			if(tt < tHit) {
 				tHit = tt;
 			}
-			tt = Maths.SoftInv(ray.DZ)*(box[Maths.BinarySign(ray.DZ)]-ray.Z0);
+			tt = Maths.SoftInv(ray.DZ)*(box[Maths.BinarySign(ray.DZ)+0x04]-ray.Z0);
+			//Console.WriteLine(tt);
 			if(tt < tHit) {
 				tHit = tt;
 			}

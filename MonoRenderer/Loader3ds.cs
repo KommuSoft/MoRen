@@ -614,7 +614,7 @@ namespace Renderer {
 					dxb = this.vertices[tri.Item3].X-this.vertices[tri.Item1].X;
 					dyb = this.vertices[tri.Item3].Y-this.vertices[tri.Item1].Y;
 					dzb = this.vertices[tri.Item3].Z-this.vertices[tri.Item1].Z;
-					Point3.CrossNormalize(dxa, dya, dza, dxb, dyb, dzb, out normi.X, out normi.Y, out normi.Z);
+					Point3.CrossNormalize(dxa, dya, dza, dxb, dyb, dzb, out normi.vals[0x00], out normi.vals[0x01], out normi.vals[0x02]);
 					this.normals[tri.Item1].AddDirect(normi);
 					this.normals[tri.Item2].AddDirect(normi);
 					this.normals[tri.Item3].AddDirect(normi);

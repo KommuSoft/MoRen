@@ -14,7 +14,7 @@ namespace Renderer {
 			this.p2 = c;
 			if(na == null || nb == null || nc == null) {
 				Point3 norm = new Point3();
-				Point3.Cross(p1.X-p0.X, p1.Y-p0.Y, p1.Z-p0.Z, p2.X-p0.X, p2.Y-p0.Y, p2.Z-p0.Z, out norm.X, out norm.Y, out norm.Z);
+				Point3.Cross(p1.X-p0.X, p1.Y-p0.Y, p1.Z-p0.Z, p2.X-p0.X, p2.Y-p0.Y, p2.Z-p0.Z, out norm.vals[0x00], out norm.vals[0x01], out norm.vals[0x02]);
 				norm.Normalize();
 				this.n0 = this.n1 = this.n2 = norm;
 			}
