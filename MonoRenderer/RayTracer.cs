@@ -112,7 +112,7 @@ namespace Renderer {
 			PerlinCache.InitializeNoiseBuffer();
 			LoaderObj lo = new LoaderObj();
 			double alpha = 0.0d;
-			FileStream fs = File.Open("venus.obj", FileMode.Open, FileAccess.Read);
+			FileStream fs = File.Open("teapot.obj", FileMode.Open, FileAccess.Read);
 			lo.Load(null, fs);
 			fs.Close();
 			List<Light> lights = new List<Light>();
@@ -122,7 +122,7 @@ namespace Renderer {
 			for(int i = 0x00; alpha < 2.0d*Math.PI; i++, alpha += Math.PI/80) {
 				Matrix4 M = new Matrix4();
 				M.RotateY(1.0d*Math.PI+alpha);
-				M.Shift(0.0d, 10.0d, 40.0d);
+				M.Shift(0.0d, 5.0d, 30.0d);
 				Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
 				Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights);
 				DateTime start = DateTime.Now;

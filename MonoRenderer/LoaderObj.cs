@@ -112,13 +112,13 @@ namespace Renderer {
 				return null;
 			}
 			else {
-				return items[index-0x01];
+				return items[index];
 			}
 		}
 		private static int ParseIntOrMinus (string s) {
 			int res;
 			if(int.TryParse(s, out res)) {
-				return res;
+				return res-0x01;
 			}
 			return -0x01;
 		}
@@ -139,14 +139,22 @@ namespace Renderer {
 				line = tr.ReadLine();
 			}
 			tr.Close();
-			checkTexture();
+			checkNormTeX();
 			double x0, x1, y0, y1, z0, z1;
 			Utils.CalculateBoundingBox(this.pos, out x0, out x1, out y0, out y1, out z0, out z1);
 			Utils.UnitBox(this.pos);
 			//Console.WriteLine("0.5*({0},{2},{4})+0.5*({1},{3},{5})", x0, x1, y0, y1, z0, z1);
 		}
 
-		private void checkTexture () {
+		private void checkNormTeX () {
+			if(this.nor.Count <= 0x00) {
+				foreach(int[] tri in this.tri) {
+					tri[0x01] = tri[0x00];
+					tri[0x04] = tri[0x03];
+					tri[0x07] = tri[0x06];
+				}
+				this.nor = Utils.GenerateSmoothNormalsFromTriangles(this.pos, this.tri.Select(x => new Tuple<int,int,int>(x[0x00], x[0x03], x[0x06])));
+			}
 			if(this.tex.Count <= 0x00) {
 				foreach(int[] tri in this.tri) {
 					tri[0x02] = tri[0x00];

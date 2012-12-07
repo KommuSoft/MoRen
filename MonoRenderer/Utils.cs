@@ -171,6 +171,31 @@ namespace Renderer {
 			}
 		}
 
+		public static List<Point3> GenerateSmoothNormalsFromTriangles (IList<Point3> vertices, IEnumerable<Tuple<int,int,int>> indices) {
+			List<Point3> normals = new List<Point3>(vertices.Count);
+			for(int i = 0; i < vertices.Count; i++) {
+				normals.Add(new Point3());
+			}
+			Point3 normi = new Point3();
+			double dxa, dya, dza, dxb, dyb, dzb;
+			foreach(Tuple<int,int,int> tri in indices) {
+				dxa = vertices[tri.Item2].X-vertices[tri.Item1].X;
+				dya = vertices[tri.Item2].Y-vertices[tri.Item1].Y;
+				dza = vertices[tri.Item2].Z-vertices[tri.Item1].Z;
+				dxb = vertices[tri.Item3].X-vertices[tri.Item1].X;
+				dyb = vertices[tri.Item3].Y-vertices[tri.Item1].Y;
+				dzb = vertices[tri.Item3].Z-vertices[tri.Item1].Z;
+				Point3.CrossNormalize(dxa, dya, dza, dxb, dyb, dzb, out normi.X, out normi.Y, out normi.Z);
+				normals[tri.Item1].AddDirect(normi);
+				normals[tri.Item2].AddDirect(normi);
+				normals[tri.Item3].AddDirect(normi);
+			}
+			foreach(Point3 p in normals) {
+				p.Normalize();
+			}
+			return normals;
+		}
+
 		public static IEnumerable<Tuple<int,T>> Mark<T> (this IEnumerable<T> source) {
 			int i = 0x00;
 			foreach(T elem in source) {

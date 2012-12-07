@@ -601,27 +601,7 @@ namespace Renderer {
 					this.indices = Utils.GenerateIndicesRange(this.vertices.Count).ToList();
 					this.materialstr = new List<string>();
 				}
-				this.normals = new List<Point3>(this.vertices.Count);
-				for(int i = 0; i < this.vertices.Count; i++) {
-					this.normals.Add(new Point3());
-				}
-				Point3 normi = new Point3();
-				double dxa, dya, dza, dxb, dyb, dzb;
-				foreach(Tuple<ushort,ushort,ushort,ushort> tri in this.indices) {
-					dxa = this.vertices[tri.Item2].X-this.vertices[tri.Item1].X;
-					dya = this.vertices[tri.Item2].Y-this.vertices[tri.Item1].Y;
-					dza = this.vertices[tri.Item2].Z-this.vertices[tri.Item1].Z;
-					dxb = this.vertices[tri.Item3].X-this.vertices[tri.Item1].X;
-					dyb = this.vertices[tri.Item3].Y-this.vertices[tri.Item1].Y;
-					dzb = this.vertices[tri.Item3].Z-this.vertices[tri.Item1].Z;
-					Point3.CrossNormalize(dxa, dya, dza, dxb, dyb, dzb, out normi.X, out normi.Y, out normi.Z);
-					this.normals[tri.Item1].AddDirect(normi);
-					this.normals[tri.Item2].AddDirect(normi);
-					this.normals[tri.Item3].AddDirect(normi);
-				}
-				foreach(Point3 p in this.normals) {
-					p.Normalize();
-				}
+				this.normals = Utils.GenerateSmoothNormalsFromTriangles(this.vertices, this.indices.Select(x => new Tuple<int,int,int>(x.Item1, x.Item2, x.Item3)));
 				this.Collapse();
 			}
 
