@@ -43,6 +43,7 @@ namespace Renderer {
 		private int antialiasSqrt = 0x04;
 		private int maxDepth = 0x02;
 		private int lightTests = 0x08;
+		private double dispersion = 0.0d;
 
 		[XmlElement("AntialiasSqrt")]
 		public int AntialiasSqrt {

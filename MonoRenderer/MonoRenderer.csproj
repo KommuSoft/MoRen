@@ -95,6 +95,7 @@
     <Compile Include="ITransformable.cs" />
     <Compile Include="CameraPostProcessor.cs" />
     <Compile Include="NoisePostProcessor.cs" />
+    <Compile Include="ParserUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 
 namespace Renderer {
@@ -28,6 +29,10 @@ namespace Renderer {
 	
 	[XmlType("Matrix")]
 	public sealed class Matrix4 : ITransformable {
+
+		[XmlIgnore]
+		private static readonly Regex
+			rgx = new Regex(string.Format(@"^((?<rotxyz>Rotate ?(?<dim>X|Y|Z) {0})|(?<rotv>Rotate {1} {2} {3} {0})|(?<shift>Shift {1} {2} {3})|(?<scale>Scale {1}( {2} {3})?)|(?<matrix>Matrix {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}))$", ParserUtils.FormGroup(ParserUtils.Real, "ux"), ParserUtils.FormGroup(ParserUtils.Real, "uy"), ParserUtils.FormGroup(ParserUtils.Real, "uz"), ParserUtils.FormGroup(ParserUtils.Real, "m10"), ParserUtils.FormGroup(ParserUtils.Real, "m11"), ParserUtils.FormGroup(ParserUtils.Real, "m12"), ParserUtils.FormGroup(ParserUtils.Real, "m13"), ParserUtils.FormGroup(ParserUtils.Real, "m20"), ParserUtils.FormGroup(ParserUtils.Real, "m21"), ParserUtils.FormGroup(ParserUtils.Real, "m22"), ParserUtils.FormGroup(ParserUtils.Real, "m23")), RegexOptions.Compiled|RegexOptions.CultureInvariant|RegexOptions.IgnoreCase|RegexOptions.Singleline|RegexOptions.ExplicitCapture);
 		
 		[XmlAttribute("M00")]
 		public double
@@ -312,7 +317,27 @@ namespace Renderer {
 			source.Transform(manipulator);
 		}
 		public override string ToString () {
-			return string.Format("[\t{0}\t{1}\t{2}\t{3}\n\t{4}\t{5}\t{6}\t{7}\n\t{8}\t{9}\t{10}\t{11}\t]", M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23);
+			return string.Format("Matrix {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}", M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23);
+		}
+		private static int ParseDim (string dim) {
+			switch(dim) {
+				case "x":
+					return 0x00;
+				case "y":
+					return 0x01;
+				default :
+					return 0x02;
+			}
+		}
+		public static Matrix4 Parse (string toParse) {
+			toParse = toParse.Trim().ToLower();
+			Match m = rgx.Match(toParse);
+			if(m.Success) {
+				if(m.Groups["rotxyz"].Captures.Count > 0x00) {
+
+				}
+			}
+			return null;
 		}
 		
 	}
