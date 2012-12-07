@@ -37,7 +37,7 @@ namespace Renderer {
 		private double roll = 0.0d;
 		private double foVH = 0.5d*Math.PI;
 		private int antiAliasingThreshold = 1;
-		private readonly List<Light> lights;
+		private readonly Light[] lights;
 		private AntiAliasingTechnique aaTec = AntiAliasingTechnique.Sobel;
 		private int antialiasSqrt = 0x04;
 
@@ -153,11 +153,12 @@ namespace Renderer {
 		public Camera () {
 		}
 
-		public Camera (int w, int h, double screenDistance, double foVH, Accelerator acc, List<Light> lights) {
+		public Camera (int w, int h, double screenDistance, double foVH, Accelerator acc, Light[] lights, int antialiasing) {
 			this.raster = new Texture(w, h);
 			this.foVH = foVH;
 			this.acc = acc;
 			this.lights = lights;
+			this.antialiasSqrt = antialiasing;
 		}
 
 		public void RebuildMatrix () {
@@ -201,10 +202,10 @@ namespace Renderer {
 			uint[] aaCache = new uint[aasqrt*aasqrt];
 			RayTracer rt = new RayTracer(this.acc, this.lights);
 			int aa = aasqrt*aasqrt, aac;
-			yg = -sh+dwh*yfrom;
+			yg = dwh*yfrom-0.5d*(sh+dwh);
 			for(; k < ks;) {
 				kc = k+Width;
-				xg = -0.5d*sw;
+				xg = -0.5d*(sw+dwh);
 				for(; k < kc;) {
 					l = 0x00;
 					for(; l < aa;) {

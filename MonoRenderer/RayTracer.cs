@@ -41,8 +41,8 @@ namespace Renderer {
 		private readonly Accelerator
 			acc;
 		[XmlIgnore]
-		private readonly List<Light>
-			lights = new List<Light>();
+		private readonly Light[]
+			lights;
 		[XmlAttribute("AmbientColor")]
 		public uint
 			AmbientColor = 0x00101010;
@@ -62,7 +62,7 @@ namespace Renderer {
 		private readonly Ray
 			sr;
 		
-		public RayTracer (Accelerator acc, List<Light> lights) {
+		public RayTracer (Accelerator acc, Light[] lights) {
 			this.acc = acc;
 			this.lights = lights;
 			this.sr = new Ray(new Point3(0.0d, 0.0d, 0.0d), dis);
@@ -115,16 +115,17 @@ namespace Renderer {
 			FileStream fs = File.Open("venus.obj", FileMode.Open, FileAccess.Read);
 			lo.Load(null, fs);
 			fs.Close();
-			List<Light> lights = new List<Light>();
-			lights.Add(new Light(0x808080, new Point3(-5.0d, 5.0d, 0.0d)));
-			lights.Add(new Light(0x808080, new Point3(5.0d, -5.0d, 0.0d)));
+			Light[] lights = new Light[] {
+				new Light(0x808080, new Point3(-5.0d, 5.0d, 0.0d)),
+				new Light(0x808080, new Point3(5.0d, -5.0d, 0.0d))
+			};
 			TimeSpan ts = new TimeSpan();
 			for(int i = 0x00; alpha < 2.0d*Math.PI; i++, alpha += Math.PI/80) {
 				Matrix4 M = new Matrix4();
 				M.RotateY(1.0d*Math.PI+alpha);
-				M.Shift(0.0d, 5.0d, 30.0d);
+				M.Shift(0.0d, 0.0d, 30.0d);
 				Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
-				Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights);
+				Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x04);
 				DateTime start = DateTime.Now;
 				cam.CalculateImage();
 				DateTime stop = DateTime.Now;
