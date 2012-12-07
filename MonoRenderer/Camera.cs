@@ -39,7 +39,7 @@ namespace Renderer {
 		private int antiAliasingThreshold = 1;
 		private readonly List<Light> lights;
 		private AntiAliasingTechnique aaTec = AntiAliasingTechnique.Sobel;
-		private int antialiasSqrt = 0x01;
+		private int antialiasSqrt = 0x04;
 
 		[XmlElement("AntialiasSqrt")]
 		public int AntialiasSqrt {
@@ -192,36 +192,37 @@ namespace Renderer {
 			double sw = sh*w/h;
 			double dwh = sw/w;
 			double dwha = dwh/antialiasSqrt;
-			double yg, xg, ygt, xgt;
+			double yg, xg;
 			Ray ray = new Ray(0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 1.0d);
 			uint[] pixel = this.raster.Pixel;
-			int k = Width*yfrom;
+			int k = Width*yfrom, ks = Width*yto, kc;
 			int l;
 			int aasqrt = this.antialiasSqrt;
 			uint[] aaCache = new uint[aasqrt*aasqrt];
 			RayTracer rt = new RayTracer(this.acc, this.lights);
+			int aa = aasqrt*aasqrt, aac;
 			yg = -sh+dwh*yfrom;
-			for(int y = yfrom; y < yto; y++) {
+			for(; k < ks;) {
+				kc = k+Width;
 				xg = -0.5d*sw;
-				for(int x = 0x00; x < w; x++) {
-					xgt = xg;
-					ygt = yg;
+				for(; k < kc;) {
 					l = 0x00;
-					for(int i = 0x00; i < aasqrt; i++) {
-						for(int j = 0x00; j < aasqrt; j++) {
-							//Console.WriteLine("{0} | {1}", xg*dwha, yg*dwha);
+					for(; l < aa;) {
+						aac = l+aasqrt;
+						for(; l < aac;) {
 							ray.Offset.SetValues(xg, -yg, 0.0d);
 							ray.Direction.SetValues(xg, -yg, this.screenDistance);
 							ray.NormalizeDirection();
 							ray.Transform(this.matrix);
-							aaCache[l++] = Color.AlphaChannel|rt.CalculateColor(ray, 0);
-							xgt += dwha;
+							aaCache[l++] = rt.CalculateColor(ray, 0);
+							xg += dwha;
 						}
-						ygt += dwha;
-						xgt -= dwha;
+						yg += dwha;
+						xg -= dwh;
 					}
-					pixel[k++] = Color.Mix(aaCache);
+					pixel[k++] = Color.AlphaChannel|Color.Mix(aaCache);
 					xg += dwh;
+					yg -= dwh;
 				}
 				yg += dwh;
 			}

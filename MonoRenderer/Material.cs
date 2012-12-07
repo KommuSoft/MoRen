@@ -35,7 +35,7 @@ namespace Renderer {
 		}
 
 		public void ADSAt00 (Point3 tu, out uint ambient, out uint diffuse, out uint specular) {
-			ambient = diffuse = specular = PerlinCache.Sky3(tu);
+			ambient = diffuse = specular = PerlinCache.Marble3(tu);
 			/*
 			ambient = this.Ambient;
 			diffuse = this.Diffuse;

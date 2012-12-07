@@ -23,7 +23,7 @@ namespace Renderer {
 
 	public enum AntiAliasingTechnique {
 		None,
-		Constant,
+		Naive,
 		Sobel
 	}
 	

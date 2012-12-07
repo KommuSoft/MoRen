@@ -112,7 +112,7 @@ namespace Renderer {
 			PerlinCache.InitializeNoiseBuffer();
 			LoaderObj lo = new LoaderObj();
 			double alpha = 0.0d;
-			FileStream fs = File.Open("teapot.obj", FileMode.Open, FileAccess.Read);
+			FileStream fs = File.Open("venus.obj", FileMode.Open, FileAccess.Read);
 			lo.Load(null, fs);
 			fs.Close();
 			List<Light> lights = new List<Light>();
