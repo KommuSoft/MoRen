@@ -135,11 +135,11 @@ namespace Renderer {
 			rightsf = 0.0d;
 			foreach(RenderItem ir in inp) {
 				ir.GetDimensionBounds(dim, out x0, out x1);
-				if(x0 < x && ir.InBox(bbl)) {
+				if(x0 < x && (x < x1 || ir.InBox(bbl))) {
 					left.Add(ir);
 					leftsf += ir.Surface();
 				}
-				if(x1 > x && ir.InBox(bbr)) {
+				if(x1 > x && (x > x0 || ir.InBox(bbr))) {
 					right.Add(ir);
 					rightsf += ir.Surface();
 				}
@@ -147,13 +147,21 @@ namespace Renderer {
 		}
 
 		public RenderItem CalculateHit (Ray ray, out double tHit, double maxT) {
-			Point3 inter = new Point3();
+			Point3 inter = new Point3(ray.Offset);
 			tHit = maxT;
-			double t;
-			Utils.CalculateBoxHitpoint(ray, inter, out t, this.x0, this.x1, this.y0, this.y1, this.z0, this.z1);
-			if(t > maxT) {
-				return null;
+			double t = 0.0d;
+			if(x0 > inter.X || inter.X > x1 || y0 > inter.Y || inter.Y > y1 || z0 > inter.Z || inter.Z > z1) {
+				Utils.CalculateBoxHitpoint(ray, inter, out t, this.x0, this.x1, this.y0, this.y1, this.z0, this.z1);
+				if(t > maxT) {
+					return null;
+				}
 			}
+			Point3 inter2 = new Point3();
+			ray.PointAt(t, inter2);
+			Ray end = new Ray(0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d);
+			end.SetWithEpsilon(inter2, ray.Direction);
+			Utils.CalculateBoxHitpoint(end, inter2, out tHit, this.x0, this.x1, this.y0, this.y1, this.z0, this.z1);
+			tHit = Math.Min(tHit+t, maxT);
 			RenderItem ri = null;
 			this.root.Hit(ray, inter, ref t, ref tHit, ref ri);
 			return ri;
@@ -161,6 +169,7 @@ namespace Renderer {
 
 		private sealed class BinarySpaceNode {
 
+			private readonly double x0, x1;
 			private readonly double x;
 			private readonly int dim;
 			private readonly BinarySpaceNode[] children;
@@ -182,7 +191,8 @@ namespace Renderer {
 			public void Hit (Ray ray, Point3 inter, ref double t, ref double tHit, ref RenderItem ri) {
 				double tt;
 				if(this.tri == null) {
-					if(t < tHit) {
+					tt = (x0-inter[dim])/ray.Direction[dim];
+					if(t+tt < tHit) {
 						int cur = Math.Sign(inter[dim]-x);
 						if(cur*Maths.SoftSign(ray.Direction[dim]) < 0.0d) {//with migration
 							tt = t+(x-inter[dim])/ray.Direction[dim];

@@ -123,7 +123,7 @@ namespace Renderer {
 				Matrix4 M = new Matrix4();
 				M.RotateY(1.0d*Math.PI+alpha);
 				M.Shift(0.0d, 10.0d, 40.0d);
-				Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
+				Accelerator acc = new BinarySpacePartitionAccelerator(lo.Inject(M));
 				Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights);
 				DateTime start = DateTime.Now;
 				cam.CalculateImage();
