@@ -93,12 +93,7 @@ namespace Renderer {
 				}
 			}
 			else if(t < tHit) {
-				int pos = (Maths.BinarySign(inter.X-fotn.x)<<0x04)|(Maths.BinarySign(inter.Y-fotn.y)<<0x02)|Maths.BinarySign(inter.Z-fotn.z);
-				/*int[] xyzis = new int[] {
-					Maths.BinarySign(inter.X-fotn.x),
-					Maths.BinarySign(inter.Y-fotn.y),
-					Maths.BinarySign(inter.Z-fotn.z)
-				};*/
+				int pos = Maths.BinarySign(inter.X-fotn.x)|(Maths.BinarySign(inter.Y-fotn.y)<<0x02)|(Maths.BinarySign(inter.Z-fotn.z)<<0x04);
 				double xt, yt, zt;
 				int nextdim = 0x00;
 				do {
@@ -106,19 +101,19 @@ namespace Renderer {
 					seqxyz[0x07] = fotn.y;
 					seqxyz[0x0a] = fotn.z;
 					tt = double.PositiveInfinity;
-					calcDim(ref tt, ref nextdim, ray.X0, seqxyz[((pos&0x10)>>0x04)+dxyzis[0x00]+0x03], seqxyz[0x00], 0x00);//seqxyz [0x00]
+					calcDim(ref tt, ref nextdim, ray.X0, seqxyz[(pos&0x01)+dxyzis[0x00]+0x03], seqxyz[0x00], 0x00);//seqxyz [0x00]
 					calcDim(ref tt, ref nextdim, ray.Y0, seqxyz[((pos&0x04)>>0x02)+dxyzis[0x01]+0x06], seqxyz[0x01], 0x01);
-					calcDim(ref tt, ref nextdim, ray.Z0, seqxyz[(pos&0x01)+dxyzis[0x02]+0x09], seqxyz[0x02], 0x02);
-					xt = seqxyz[0x05-2*((pos&0x10)>>0x04)];
-					yt = seqxyz[0x08-2*((pos&0x04)>>0x02)];
-					zt = seqxyz[0x0b-2*(pos&0x01)];
-					seqxyz[0x05-2*((pos&0x10)>>0x04)] = fotn.x;
-					seqxyz[0x08-2*((pos&0x04)>>0x02)] = fotn.y;
-					seqxyz[0x0b-2*(pos&0x01)] = fotn.z;
-					proceedSubTree(ray, dxyzis, inter, ref ri, ref t, ref tHit, fotn.node[(((pos&0x10)>>0x04)<<0x02)|(((pos&0x04)>>0x02)<<0x01)|(pos&0x01)], seqxyz);
-					seqxyz[0x05-2*((pos&0x10)>>0x04)] = xt;
-					seqxyz[0x08-2*((pos&0x04)>>0x02)] = yt;
-					seqxyz[0x0b-2*(pos&0x01)] = zt;
+					calcDim(ref tt, ref nextdim, ray.Z0, seqxyz[((pos&0x10)>>0x04)+dxyzis[0x02]+0x09], seqxyz[0x02], 0x02);
+					xt = seqxyz[0x05-((pos&0x01)<<0x01)];
+					yt = seqxyz[0x08-((pos&0x04)>>0x01)];
+					zt = seqxyz[0x0b-((pos&0x10)>>0x03)];
+					seqxyz[0x05-((pos&0x01)<<0x01)] = fotn.x;
+					seqxyz[0x08-((pos&0x04)>>0x01)] = fotn.y;
+					seqxyz[0x0b-((pos&0x10)>>0x03)] = fotn.z;
+					proceedSubTree(ray, dxyzis, inter, ref ri, ref t, ref tHit, fotn.node[((pos&0x01)<<0x02)|((pos&0x04)>>0x01)|((pos&0x10)>>0x04)], seqxyz);
+					seqxyz[0x05-((pos&0x01)<<0x01)] = xt;
+					seqxyz[0x08-((pos&0x04)>>0x01)] = yt;
+					seqxyz[0x0b-((pos&0x10)>>0x03)] = zt;
 					t = tt;
 					ray.PointAt(t, inter);
 					pos += (2*dxyzis[nextdim]-1)<<(0x02*nextdim);
