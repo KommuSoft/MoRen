@@ -19,6 +19,7 @@ namespace Renderer {
 		public readonly Texture Bump;
 		public readonly Texture Envmap;
 		public readonly MaterialGetter ADSAt;
+		public readonly double FresnelR0;
 		
 		public Material (uint ambient = 0xc0c0c0, uint specular = 0xc0c0c0, uint diffuse = 0xc0c0c0, double shininess = 15.0d, double transparent = 0.0d, Texture texture = null, Texture reflection = null, Texture bump = null, double nfactor=1.0d) {
 			this.Ambient = ambient;
@@ -29,6 +30,8 @@ namespace Renderer {
 			this.Texture = texture;
 			this.Reflection = reflection;
 			this.Bump = bump;
+			this.FresnelR0 = (nfactor-1.0d)/(nfactor+1.0d);
+			this.FresnelR0 *= this.FresnelR0;
 			if(this.Texture == null && this.Reflection == null) {
 				this.ADSAt = ADSAt00;
 			}
