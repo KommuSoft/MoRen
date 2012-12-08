@@ -42,6 +42,7 @@
     <Compile Include="BinarySpacePartitionAcceleratorTest.cs" />
     <Compile Include="MatrixTest.cs" />
     <Compile Include="TestParameters.cs" />
+    <Compile Include="ColorTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

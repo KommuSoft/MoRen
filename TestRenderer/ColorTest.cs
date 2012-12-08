@@ -1,5 +1,5 @@
 //
-//  TestParameters.cs
+//  ColorTest.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -19,16 +19,19 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using NUnit.Framework;
+using Renderer;
 
 namespace TestRenderer {
 
-	public static class TestParameters {
-
-
-		public const int TriceratopsTest = 0x00;// int.MaxValue;
-		public const int BuildTest = 0x00;//0x100;
-		public const int RayTest = 0x00;//0x100;
-
+	[TestFixture()]
+	public class ColorTest {
+		[Test()]
+		public void Test64 () {
+			for(uint i = 0x000000; i < 0x1000000; i++) {
+				Assert.AreEqual(i, Color.MixFrom64((ulong)i, 0x01));
+			}
+		}
 	}
 }
 
