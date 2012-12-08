@@ -74,7 +74,7 @@ namespace Renderer {
 		public Mesh () {
 		}
 		public Mesh (string Filename) {
-			this.Filename = filename;
+			this.filename = filename;
 		}
 
 		public void Resolve () {
@@ -94,12 +94,9 @@ namespace Renderer {
 			}
 		}
 
-		public List<RenderItem> GenerateItemCollection (Matrix4 transformation) {
+		public void Inject (Matrix4 transformation, List<RenderItem> items) {
 			if(this.loader != null) {
-				return this.loader.Inject(transformation, this.parameters);
-			}
-			else {
-				return new List<RenderItem>();
+				this.loader.Inject(items, transformation, parameters);
 			}
 		}
 		

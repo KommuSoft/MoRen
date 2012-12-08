@@ -24,11 +24,10 @@ using System.Collections.Generic;
 using System.IO;
 
 namespace Renderer {
-	public interface MeshLoader
-	{
+	public interface MeshLoader {
 
 		void Load (string currentDir, Stream stream);
-		List<RenderItem> Inject (Matrix4 transform, params string[] args);
+		void Inject (List<RenderItem> items, Matrix4 transform, params string[] args);
 
 	}
 }

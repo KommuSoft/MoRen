@@ -107,16 +107,21 @@ namespace Renderer.SceneBuilding {
 		}
 
 		public void Inject (int maxDepth, MatrixStack stack, List<RenderItem> items, int depth) {
+			Console.WriteLine("at {0} depth {1} transform {2}", this.Name, depth, stack.Top);
 			if(depth < maxDepth) {
 				stack.PushMatrix(this.Transformer);
 				if(this.Mesh != null) {
 					this.Mesh.Inject(stack.Top, items);
+				}
+				foreach(SceneGraphNode sgn in SubNodes) {
+					sgn.Inject(maxDepth, stack, items, depth+1);
 				}
 				stack.PopMatrix();
 			}
 		}
 
 		public void Resolve (Dictionary<string,SceneGraphNode> dictionary) {
+			Console.WriteLine("resolving {0}", this.Name);
 			if(this.childNames != null) {
 				this.SubNodes.AddRange(this.childNames.Select(x => dictionary[x]));
 			}

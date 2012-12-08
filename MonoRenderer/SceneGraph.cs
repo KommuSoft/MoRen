@@ -77,6 +77,7 @@ namespace Renderer.SceneBuilding {
 				return nodes;
 			}
 			set {
+				Console.WriteLine("resolving");
 				foreach(SceneGraphNode sgn in value) {
 					this.cachedNodes.Add(sgn.Name, sgn);
 				}
@@ -93,6 +94,7 @@ namespace Renderer.SceneBuilding {
 			List<RenderItem> items = new List<RenderItem>();
 			MatrixStack ms = new MatrixStack();
 			this.Root.Inject(this.MaxDepth, ms, items, 0x00);
+			return items;
 		}
 		
 	}

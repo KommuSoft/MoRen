@@ -84,7 +84,7 @@ namespace Renderer {
 				this.tri.Add(new int[] {i0,n0,t0,i1,n1,t1,i2,n2,t2});
 			}
 		}
-		public List<RenderItem> Inject (Matrix4 transform, params string[] args) {
+		public void Inject (List<RenderItem> ris, Matrix4 transform, params string[] args) {
 			Point3[] pos = this.pos.Select(x => new Point3(x, transform)).ToArray();
 			Point3[] nor = this.nor.Select(x => new Point3(x)).ToArray();
 			for(int i = 0; i < nor.Length; i++) {
@@ -92,7 +92,6 @@ namespace Renderer {
 				nor[i].Normalize();
 			}
 			Point3[] tex = this.tex.ToArray();
-			List<RenderItem> ris = new List<RenderItem>(this.tri.Count);
 			foreach(int[] seq in this.tri) {
 				ris.Add(new Triangle(ItemOrNull(pos, seq[0x00]),
 				                     ItemOrNull(pos, seq[0x03]),
@@ -105,7 +104,6 @@ namespace Renderer {
 				                     ItemOrNull(tex, seq[0x08]), this.material)
 				);
 			}
-			return ris;
 		}
 		private static T ItemOrNull<T> (T[] items, int index) where T : class {
 			if(index < 0x00) {

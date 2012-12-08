@@ -127,9 +127,11 @@ namespace Renderer {
 		}
 		
 		public static int Main (string[] args) {
-			/*SceneDescription sd = new SceneDescription(new SceneGraph());
-			sd.Save("Scene.xml");*/
-			SceneDescription.ParseFromStream("Scene.xml");
+			SceneDescription sd = new SceneDescription(new SceneGraph());
+			sd.SceneGraph.Root.AddChild(new SceneGraphNode(new Mesh("venus.obj")));
+			sd.Save("Scene2.xml");
+			/*SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");*/
+			Accelerator acc = new OctTreeAccelerator(sd.SceneGraph.Inject());
 			PerlinCache.InitializeNoiseBuffer();
 			LoaderObj lo = new LoaderObj();
 			//double alpha = 0.0d;
@@ -140,10 +142,10 @@ namespace Renderer {
 				new Light(0x808080, new Point3(-5.0d, 5.0d, 0.0d)),
 				new Light(0x808080, new Point3(5.0d, -5.0d, 0.0d))
 			};
-			Matrix4 M = new Matrix4();
+			/*Matrix4 M = new Matrix4();
 			M.RotateY(Math.PI);
-			M.Shift(0.0d, 0.0d, 30.0d);
-			Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
+			M.Shift(0.0d, 0.0d, 30.0d);*/
+			//Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
 			List<CameraPostProcessor> cpps = new List<CameraPostProcessor>();
 			cpps.Add(new NoisePostProcessor());
 			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x01, 0x08, 0x40, cpps);

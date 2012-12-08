@@ -36,8 +36,8 @@ namespace Renderer {
 			
 		}
 
-		public List<RenderItem> Inject (Matrix4 transform, params string[] args) {
-			return this.root.GetItems(transform).ToList();
+		public void Inject (List<RenderItem> items, Matrix4 transform, params string[] args) {
+			items.AddRange(this.root.GetItems(transform));
 		}
 
 		public void Load (string dir, Stream s) {
