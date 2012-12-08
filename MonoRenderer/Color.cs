@@ -50,6 +50,9 @@ namespace Renderer {
 			b /= l;
 			return (r<<0x010)|(g<<0x08)|b;
 		}
+		public static void GetColorComponents (uint color, out uint r, out uint g, out uint b) {
+
+		}
 		public static uint FromFrac (double fr, double fg, double fb) {
 			uint r = (uint)Maths.Border(0x00, (int)Math.Round(0xff*fr), 0xff);
 			uint g = (uint)Maths.Border(0x00, (int)Math.Round(0xff*fg), 0xff);

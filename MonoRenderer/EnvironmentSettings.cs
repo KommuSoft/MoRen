@@ -41,14 +41,18 @@ namespace Renderer.SceneBuilding {
 		[XmlAttribute("Dispersion")]
 		public double
 			Dispersion = 0.0d;
+		[XmlAttribute("DispersionAntiAliasSqt")]
+		public uint
+			DispersingAntiAliasingSqrt = 0x01;//maximum 0x10
 
 		public EnvironmentSettings () {
 		}
-		public EnvironmentSettings (uint ambientcolor, uint recursionDepth, uint lightTest, uint antialiasingSqrt, double dispersion = 0.0d) {
+		public EnvironmentSettings (uint ambientcolor, uint recursionDepth, uint lightTest, uint antialiasingSqrt, double dispersion = 0.0d, uint dispersionAntialias = 0x01) {
 			this.AmbientColor = new ColorWrapper(ambientcolor);
 			this.RecursionDepth = recursionDepth;
 			this.LightTest = lightTest;
 			this.AntiAliasingSqrt = antialiasingSqrt;
+			this.DispersingAntiAliasingSqrt = dispersionAntialias;
 		}
 
 	}

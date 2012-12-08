@@ -526,6 +526,12 @@ namespace Renderer {
 		public static float Random () {
 			return (float)(2.0d*RandomGenerator.NextDouble()-1.0d);
 		}
+		public static void GenerateRandomCirclePoint (double R, out double x, out double y) {
+			double r = R*Math.Sqrt(RandomGenerator.NextDouble());
+			double theta = PI2*RandomGenerator.NextDouble();
+			x = Math.Cos(theta)*r;
+			y = Math.Sin(theta)*r;
+		}
 		public static float Random (float m, float M) {
 			return (float)((M-m)*RandomGenerator.NextDouble()+m);
 		}

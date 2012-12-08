@@ -29,7 +29,7 @@ namespace Renderer {
 	public sealed class Camera : NameBase {
 
 		private readonly Point3 position = new Point3(0.0d, 0.0d, 0.0d);
-		private readonly Point3 lookAt = new Point3(0.0d, 0.0d, 1.0d);
+		private readonly Point3 lookAt = new Point3(0.0d, 0.0d, 60.0d);
 		private readonly Matrix4 matrix = new Matrix4();
 		private readonly Accelerator acc;
 		private Texture raster = new Texture(1, 1);
@@ -37,12 +37,12 @@ namespace Renderer {
 		private bool dirty = true;
 		private double roll = 0.0d;
 		private double foVH = 0.5d*Math.PI;
-		private int antiAliasingThreshold = 1;
 		private readonly Light[] lights;
 		private readonly List<CameraPostProcessor> postProcessors;
 		private uint antialiasSqrt = 0x04;
 		private readonly EnvironmentSettings settings;
 		private double dispersion = 0.0d;
+		private uint dispersionAntialiasSqrt = 0x04;
 
 		[XmlElement("Position")]
 		public Point3 Position {
@@ -149,6 +149,7 @@ namespace Renderer {
 			}
 			this.dirty = false;
 			Point3 forward = this.lookAt-this.position;
+			forward.Normalize();
 			Point3 right = new Point3(forward.Z, 0.0d, -forward.X);
 			right.Normalize();
 			Point3 up = Point3.CrossNormalize(forward, right);
@@ -183,34 +184,47 @@ namespace Renderer {
 			Ray ray = new Ray(0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 1.0d);
 			uint[] pixel = this.raster.Pixel;
 			int k = Width*yfrom, ks = Width*yto, kc;
-			uint l;
+			uint l, m;
 			uint aasqrt = this.antialiasSqrt;
-			ulong aaCache;
+			uint aaRedCache, aaGreenCache, aaBlueCache;
 			RayTracer rt = new RayTracer(this.acc, this.lights, settings);
-			uint aa = aasqrt*aasqrt, aac;
+			uint aa = aasqrt*aasqrt, aac, aad = ;
 			yg = dwh*yfrom-0.5d*(sh+dwh);
+			Point3 tmp = new Point3(0.0d, 0.0d, 0.0d), tmp2 = new Point3(0.0d, 0.0d, 0.0d);
+			double focusLength = Point3.DiffLength(this.position, this.lookAt);
+			double frac = focusLength/this.screenDistance;
 			for(; k < ks;) {
 				kc = k+Width;
 				xg = -0.5d*(sw+dwh);
 				for(; k < kc;) {
 					l = 0x00;
-					aaCache = 0x00;
+					aaRedCache = 0x00, aaGreenCache = 0x00, aaBlueCache = 0x00;
 					for(; l < aa;) {
 						aac = l+aasqrt;
 						for(; l < aac; l++) {
-							ray.Offset.SetValues(xg, -yg, 0.0d);
+							tmp.SetValues(xg*frac, -yg*frac, focusLength);
+							for(; m < daa; l++) {
+								double xt, yt;
+								Maths.GenerateRandomCirclePoint(this.dispersion, out xt, out yt);
+								ray.Offset.SetValues(xg+xt, yg+yt, 0.0d);
+								ray.Direction.SetValues(ray.Offset, tmp);
+								ray.NormalizeDirection();
+								ray.Transform(this.matrix);
+								Color.AddComponents(rt.CalculateColor(ray, 0), ref aaRedCache, ref aaGreenCache, ref aaBlueCache);
+							}
+							/*ray.Offset.SetValues(xg, -yg, 0.0d);
 							ray.Direction.SetValues(xg, -yg, this.screenDistance);
 							ray.NormalizeDirection();
 							ray.Transform(this.matrix);
-							aaCache += Color.ToColor64(rt.CalculateColor(ray, 0));
+							aaCache += Color.ToColor64(rt.CalculateColor(ray, 0));*/
 							xg += dwha;
 						}
 						yg += dwha;
 						xg -= dwh;
 					}
+					yg -= dwh;
 					pixel[k++] = Color.AlphaChannel|Color.MixFrom64(aaCache, aa);
 					xg += dwh;
-					yg -= dwh;
 				}
 				yg += dwh;
 			}
