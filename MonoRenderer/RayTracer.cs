@@ -40,7 +40,7 @@ namespace Renderer {
 
 		private readonly Accelerator acc;
 		private readonly Light[] lights;
-		public uint AmbientColor = 0x00101010;
+		private readonly uint ambientColor = 0x00101010;
 		private readonly CastResult nw = new CastResult();
 		private readonly Point3 dis = new Point3();
 		private readonly Point3 rl = new Point3();
@@ -75,7 +75,7 @@ namespace Renderer {
 				uint ambient, diffuse, specular, reflectance;
 				mat.ADSAt(nw.TU, -Point3.CosAngle(ray.Direction, norm), out ambient, out diffuse, out specular, out reflectance);
 				uint clr;
-				clr = Color.Multiply(this.AmbientColor, ambient);
+				clr = Color.Multiply(this.ambientColor, ambient);
 				uint clrl;
 				foreach(Light li in this.lights) {
 					Point3.Reflect(ray.Direction, nw.Normal, rl);

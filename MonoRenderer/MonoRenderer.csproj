@@ -98,6 +98,7 @@
     <Compile Include="ParserUtils.cs" />
     <Compile Include="LightWrapper.cs" />
     <Compile Include="ColorWrapper.cs" />
+    <Compile Include="EnvironmentSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
