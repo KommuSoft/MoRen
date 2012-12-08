@@ -35,7 +35,8 @@ namespace TestRenderer {
 			FileStream fs = File.Open("triceratops.obj", FileMode.Open, FileAccess.Read);
 			lo.Load(null, fs);
 			fs.Close();
-			List<RenderItem> ris = lo.Inject(M);
+			List<RenderItem> ris = new List<RenderItem>();
+			lo.Inject(ris, M);
 			GridAccelerator ga = new GridAccelerator(ris);
 			OctTreeAccelerator oa = new OctTreeAccelerator(ris);
 			double t;

@@ -28,13 +28,22 @@ namespace TestRenderer {
 	public class MatrixTest {
 		[Test()]
 		public void TestParse () {
-			Assert.Equals(new Matrix4(), Matrix4.Parse("id"));
-			Assert.Equals(new Matrix4(), Matrix4.Parse("ID"));
-			Assert.Equals(new Matrix4(), Matrix4.Parse("IdEnTiTy"));
-			Assert.Equals(Matrix4.CreateRotateXMatrix(1.0d), Matrix4.Parse("RotateX 1.0"));
-			Assert.Equals(Matrix4.CreateRotateYMatrix(1.0d), Matrix4.Parse("RotateY 1.0"));
-			Assert.Equals(Matrix4.CreateRotateZMatrix(1.0d), Matrix4.Parse("RotateZ 1.0"));
+			Assert.AreEqual(new Matrix4(), Matrix4.Parse("id"));
+			Assert.AreEqual(new Matrix4(), Matrix4.Parse("ID"));
+			Assert.AreEqual(new Matrix4(), Matrix4.Parse("IdEnTiTy"));
+			Assert.AreEqual(Matrix4.CreateRotateXMatrix(1.0d), Matrix4.Parse("RotateX 1.0"));
+			Assert.AreEqual(Matrix4.CreateRotateYMatrix(1.0d), Matrix4.Parse("RotateY 1.0"));
+			Assert.AreEqual(Matrix4.CreateRotateZMatrix(1.0d), Matrix4.Parse("RotateZ 1.0"));
+			Assert.AreEqual(Matrix4.CreateRotateXMatrix(1.0d), Matrix4.Parse("Rotate X 1.0"));
+			Assert.AreEqual(Matrix4.CreateRotateYMatrix(1.0d), Matrix4.Parse("Rotate Y 1.0"));
+			Assert.AreEqual(Matrix4.CreateRotateZMatrix(1.0d), Matrix4.Parse("Rotate Z 1.0"));
+			Assert.AreEqual(Matrix4.CreateRotateXMatrix(1.0d), Matrix4.Parse("Rotate 1.0 0.0 0.0 1.0"));
+			Assert.AreEqual(Matrix4.CreateRotateYMatrix(1.0d), Matrix4.Parse("Rotate 0.0 1.0 0.0 1.0"));
+			Assert.AreEqual(Matrix4.CreateRotateZMatrix(1.0d), Matrix4.Parse("Rotate 0.0 0.0 1.0 1.0"));
+			Assert.AreEqual(Matrix4.CreateScaleMatrix(1.0d), Matrix4.Parse("scale 1.0"));
+			Assert.AreEqual(Matrix4.CreateScaleMatrix(2.0d), Matrix4.Parse("scale 2.0"));
+			Assert.AreEqual(Matrix4.CreateScaleMatrix(0.5d, 3.0d, 2.0d), Matrix4.Parse("scale 0.5 3.0 2.0"));
+			Assert.AreEqual(Matrix4.CreateShiftMatrix(0.5d, 3.0d, 2.0d), Matrix4.Parse("shift 0.5 3.0 2.0"));
 		}
 	}
 }
-
