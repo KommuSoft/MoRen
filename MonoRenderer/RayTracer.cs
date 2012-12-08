@@ -132,14 +132,12 @@ namespace Renderer {
 			sd.SceneGraph.Root.TransformerString = "Shift 0 0 40";
 			sd.SceneGraph.Root.AddChild(new SceneGraphNode(new Mesh("venus.obj")));
 			sd.Save("Scene2.xml");*/
-			SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
-			Accelerator acc = new OctTreeAccelerator(sd.SceneGraph.Inject());
 			PerlinCache.InitializeNoiseBuffer();
-			LoaderObj lo = new LoaderObj();
+			/*LoaderObj lo = new LoaderObj();
 			//double alpha = 0.0d;
 			FileStream fs = File.Open("venus.obj", FileMode.Open, FileAccess.Read);
 			lo.Load(null, fs);
-			fs.Close();
+			fs.Close();*/
 			Light[] lights = new Light[] {
 				new Light(0x808080, new Point3(-5.0d, 5.0d, 1.0d)),
 				new Light(0x808080, new Point3(5.0d, -5.0d, 1.0d))
@@ -150,26 +148,24 @@ namespace Renderer {
 			//Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
 			List<CameraPostProcessor> cpps = new List<CameraPostProcessor>();
 			//EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x08, 0x40, 0x01);
-			EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x08, 0x010, 0x03);
+			EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x01, 0x01, 0x01);
 			cpps.Add(new NoisePostProcessor());
+			//RenderWindow rw = new RenderWindow(cam);
+			//rw.ShowDialog();
+			double alpha = 0.0d;
+			TimeSpan ts = new TimeSpan();
+			//for(int i = 0x00; alpha < 2.0d*Math.PI; i++, alpha += Math.PI/80) {
+			SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
+			Accelerator acc = new OctTreeAccelerator(sd.SceneGraph.Inject());
 			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, es, cpps);
-			RenderWindow rw = new RenderWindow(cam);
-			rw.ShowDialog();
-			/*TimeSpan ts = new TimeSpan();
-			for(int i = 0x00; alpha < 2.0d*Math.PI; i++, alpha += Math.PI/80) {
-				Matrix4 M = new Matrix4();
-				M.RotateY(1.0d*Math.PI+alpha);
-				M.Shift(0.0d, 0.0d, 30.0d);
-				Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
-				//Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x01, 0x08);
-				Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x02, 0x08, 0x08);
-				/*DateTime start = DateTime.Now;
-				cam.CalculateImage();
-				DateTime stop = DateTime.Now;
-				ts = ts.Add(stop-start);
-				cam.Save("venus/result"+i.ToString("000")+".png");*/
+			DateTime start = DateTime.Now;
+			cam.CalculateImage();
+			DateTime stop = DateTime.Now;
+			ts = ts.Add(stop-start);
+			//cam.Save("fluttershy/result"+i.ToString("000")+".png");
+			cam.Save("fluttershy/result.png");
 			//}
-			//Console.WriteLine("Testcase took {0}", ts);
+			Console.WriteLine("Testcase took {0}", ts);
 			return 0x00;
 		}
 		
