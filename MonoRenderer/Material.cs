@@ -41,7 +41,6 @@ namespace Renderer {
 			ambient = this.Ambient;
 			diffuse = this.Diffuse;
 			specular = this.Specular;
-			ambient = diffuse = specular = PerlinCache.Marble3(tu);
 			uint tex;
 			if(this.Texture != null) {
 				tex = this.Texture.ColorAt(tu);
@@ -57,14 +56,6 @@ namespace Renderer {
 			reflectance = Color.Scale(reflectance, FresnelR0+(1.0d-FresnelR0)*Math.Pow(cos, 5.0d));
 		}
 
-		/*public void ADSAt00 (Point3 tu, out uint ambient, out uint diffuse, out uint specular, out uint reflectance) {
-			ambient = diffuse = specular = PerlinCache.Marble3(tu);
-			/*
-			ambient = this.Ambient;
-			diffuse = this.Diffuse;
-			specular = this.Specular;
-		}*/
-
 		public void ADSAt11 (Point3 tu, out uint ambient, out uint diffuse, out uint specular) {
 			ambient = this.Ambient;
 			diffuse = this.Diffuse;
@@ -78,23 +69,6 @@ namespace Renderer {
 			//ambient = Color.Multiply(ambient, tex);
 			//diffuse = Color.Multiply(diffuse, tex);
 			specular = Color.Multiply(specular, tex);
-		}
-		
-		private uint readInt (BinaryReader br) {
-			uint bd = (uint)br.ReadByte()<<0x18;
-			uint bc = (uint)br.ReadByte()<<0x10;
-			uint bb = (uint)br.ReadByte()<<0x08;
-			uint ba = (uint)br.ReadByte();
-			return bd|bc|bb|ba;
-		}
-
-		private float readFloat (BinaryReader br) {
-			byte[] data = new byte[4];
-			data[3] = br.ReadByte();
-			data[2] = br.ReadByte();
-			data[1] = br.ReadByte();
-			data[0] = br.ReadByte();
-			return BitConverter.ToSingle(data, 0x00);
 		}
 		
 	}

@@ -29,14 +29,10 @@ namespace Renderer {
 			x1 = Center[dim]+Radius;
 		}
 		public override bool InBox (double xm, double xM, double ym, double yM, double zm, double zM) {
-			double x0 = Math.Max(xm, Center.X-Radius);
-			double x1 = Math.Min(xM, Center.X+Radius);
-			double y0 = Math.Max(ym, Center.Y-Radius);
-			double y1 = Math.Min(yM, Center.Y+Radius);
-			double z0 = Math.Max(zm, Center.Z-Radius);
-			double z1 = Math.Min(zM, Center.Z+Radius);
-			return (x0 <= x1 && y0 <= y1 && z0 <= z1);
-			//return ;//TODO: make more sophisticated;
+			double xmin = Maths.ClosestInterval(this.Center.X, xm, xM);
+			double ymin = Maths.ClosestInterval(this.Center.Y, ym, yM);
+			double zmin = Maths.ClosestInterval(this.Center.Z, zm, zM);
+			return (xmin*xmin+ymin*ymin+zmin*zmin <= Radius*Radius);
 		}
 		public override double HitAt (Ray ray) {
 			double xa = ray.X0-Center.X;

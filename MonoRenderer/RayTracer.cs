@@ -78,8 +78,8 @@ namespace Renderer {
 				uint clr;
 				clr = Color.Multiply(this.ambientColor, ambient);
 				uint clrl;
+				Point3.Reflect(ray.Direction, nw.Normal, rl);
 				foreach(Light li in this.lights) {
-					Point3.Reflect(ray.Direction, nw.Normal, rl);
 					double len = Point3.DiffLength(hp, li.Position);
 					double thetafrac = Math.PI-Math.Asin(li.Radius/len);
 					uint light = 0x00;
@@ -112,6 +112,10 @@ namespace Renderer {
 						clrl = Color.Add(clrl, Color.Scale(Color.Multiply(li.Color, specular), Math.Pow(Point3.CosAngleNorm(rl, dis), mat.Shininess)));
 						clr = Color.Add(clr, Color.loseIntensity(Color.Scale(clrl, light), len));
 					}
+				}
+				ray.SetWithEpsilon(hp, rl);
+				if(depth < maxDepth) {
+					clr = Color.Add(clr, Color.Multiply(this.CalculateColor(ray, depth+1), specular));
 				}
 				/*if(depth < maxDepth) {
 					Point3 rl, rf;

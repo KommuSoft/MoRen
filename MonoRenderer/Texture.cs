@@ -241,6 +241,9 @@ namespace Renderer {
 			}
 			return this;
 		}
+		public static implicit operator ColorAtMethod (Texture tex) {
+			return tex.ColorAt;
+		}
 		
 	}
 	

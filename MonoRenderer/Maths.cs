@@ -538,6 +538,19 @@ namespace Renderer {
 		public static float RandomWithDelta (float averidge, float delta) {
 			return averidge+Random()*delta;
 		}
+		public static double ClosestInterval (double x, double x0, double x1) {
+			if(x0 <= x) {
+				if(x <= x1) {
+					return x;
+				}
+				else {
+					return x1;
+				}
+			}
+			else {
+				return x0;
+			}
+		}
 			
 	}
 	

@@ -102,6 +102,7 @@
     <Compile Include="CameraWrapper.cs" />
     <Compile Include="AcceleratorWrapper.cs" />
     <Compile Include="AcceleratorType.cs" />
+    <Compile Include="ColorAtMethod.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

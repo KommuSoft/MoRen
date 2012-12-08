@@ -1,5 +1,5 @@
 //
-//  AcceleratorWrapper.cs
+//  ColorAtMethod.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -18,35 +18,9 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-using System;
-using System.Collections.Generic;
-using System.Xml.Serialization;
 
 namespace Renderer {
 
-	[XmlType("Accelerator")]
-	public class AcceleratorWrapper {
+	public delegate uint ColorAtMethod (Point3 parameter);
 
-		[XmlAttribute("Type")]
-		public AcceleratorType
-			type;
-
-		public AcceleratorWrapper () {
-		}
-
-		public Accelerator CreateAccelerator (List<RenderItem> items) {
-			switch(this.type) {
-				case AcceleratorType.Grid:
-					return new GridAccelerator(items);
-				case AcceleratorType.Naive:
-					return new NaiveAccelerator(items);
-				case AcceleratorType.BinSpaceTree:
-					return new BinarySpacePartitionAccelerator(items);
-				default :
-					return new OctTreeAccelerator(items);
-			}
-		}
-
-	}
 }
-
