@@ -149,7 +149,8 @@ namespace Renderer {
 			M.Shift(0.0d, 0.0d, 30.0d);*/
 			//Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
 			List<CameraPostProcessor> cpps = new List<CameraPostProcessor>();
-			EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x08, 0x40, 0x01);
+			//EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x08, 0x40, 0x01);
+			EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x08, 0x010, 0x03);
 			cpps.Add(new NoisePostProcessor());
 			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, es, cpps);
 			RenderWindow rw = new RenderWindow(cam);

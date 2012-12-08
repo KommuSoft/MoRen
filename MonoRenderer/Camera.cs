@@ -196,7 +196,7 @@ namespace Renderer {
 					aaCache = 0x00;
 					for(; l < aa;) {
 						aac = l+aasqrt;
-						for(; l < aac;) {
+						for(; l < aac; l++) {
 							ray.Offset.SetValues(xg, -yg, 0.0d);
 							ray.Direction.SetValues(xg, -yg, this.screenDistance);
 							ray.NormalizeDirection();
@@ -207,8 +207,6 @@ namespace Renderer {
 						yg += dwha;
 						xg -= dwh;
 					}
-					Console.WriteLine(aaCache);
-					Console.WriteLine(aa);
 					pixel[k++] = Color.AlphaChannel|Color.MixFrom64(aaCache, aa);
 					xg += dwh;
 					yg -= dwh;

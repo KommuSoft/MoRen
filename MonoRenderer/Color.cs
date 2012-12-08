@@ -58,7 +58,7 @@ namespace Renderer {
 		}
 		public static ulong ToColor64 (uint color) {
 			ulong cu = color;
-			return ((cu&RedChannel)<<0x32)|((cu&GreenChannel)<<0x10)|(cu&BlueChannel);
+			return ((cu&RedChannel)<<0x10)|((cu&GreenChannel)<<0x08)|(cu&BlueChannel);
 		}
 		public static uint MixFrom64 (ulong color, uint n) {
 			uint red = (uint)(((color&RedChannel64)>>0x20)/n);
