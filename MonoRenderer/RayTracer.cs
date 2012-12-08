@@ -115,7 +115,7 @@ namespace Renderer {
 				}
 				ray.SetWithEpsilon(hp, rl);
 				if(depth < maxDepth) {
-					clr = Color.Add(clr, Color.Multiply(this.CalculateColor(ray, depth+1), specular));
+					clr = Color.Add(clr, Color.Multiply(this.CalculateColor(ray, depth+1), reflectance));
 				}
 				/*if(depth < maxDepth) {
 					Point3 rl, rf;
@@ -132,36 +132,40 @@ namespace Renderer {
 		}
 		
 		public static int Main (string[] args) {
-			/*SceneDescription sd = new SceneDescription(new SceneGraph());
-			sd.SceneGraph.Root.TransformerString = "Shift 0 0 40";
-			sd.SceneGraph.Root.AddChild(new SceneGraphNode(new Mesh("venus.obj")));
-			sd.Save("Scene2.xml");*/
+			Console.WriteLine(Color.FromWavelength(600).ToString("X"));
+			//SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
 			PerlinCache.InitializeNoiseBuffer();
-			/*LoaderObj lo = new LoaderObj();
-			//double alpha = 0.0d;
-			FileStream fs = File.Open("venus.obj", FileMode.Open, FileAccess.Read);
-			lo.Load(null, fs);
-			fs.Close();*/
 			Light[] lights = new Light[] {
 				new Light(0x808080, new Point3(-5.0d, 5.0d, 1.0d)),
-				new Light(0x808080, new Point3(5.0d, -5.0d, 1.0d))
+				new Light(0x808080, new Point3(5.0d, -5.0d, 1.0d)),
+			//	new Light(0x808080, new Point3(-5.0d, 0.0d, 60.0d))
 			};
-			/*Matrix4 M = new Matrix4();
-			M.RotateY(Math.PI);
-			M.Shift(0.0d, 0.0d, 30.0d);*/
-			//Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
 			List<CameraPostProcessor> cpps = new List<CameraPostProcessor>();
 			//EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x08, 0x40, 0x01);
-			//EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x01, 0x01, 0x01);
-			cpps.Add(new NoisePostProcessor());
+			//cpps.Add(new NoisePostProcessor());
 			//RenderWindow rw = new RenderWindow(cam);
 			//rw.ShowDialog();
 			double alpha = 0.0d;
 			TimeSpan ts = new TimeSpan();
 			//for(int i = 0x00; alpha < 2.0d*Math.PI; i++, alpha += Math.PI/80) {
-			SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
-			Accelerator acc = new OctTreeAccelerator(sd.SceneGraph.Inject());
-			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, sd.EnvironmentSettings, cpps);
+			EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x04, 0x01, 0x01);
+			List<RenderItem> ris = new List<RenderItem>();
+			ris.Add(new Sphere(new Point3(-3.0d, 0.0d, 20.0d), 2.0d, Material.RedMaterial));
+			ris.Add(new Sphere(new Point3(3.0d, 0.0d, 30.0d), 2.0d, Material.MetalMaterial));
+			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, -20.0d), new Point3(-20.0d, -10.0d, 100.0d), new Point3(20.0d, -10.0d, 100.0d), Material.DefaultMaterial));
+			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, -20.0d), new Point3(20.0d, -10.0d, 100.0d), new Point3(20.0d, -10.0d, -20.0d), Material.DefaultMaterial));
+			ris.Add(new Triangle(new Point3(20.0d, 10.0d, -20.0d), new Point3(20.0d, 10.0d, 100.0d), new Point3(-20.0d, 10.0d, 100.0d), Material.RedMaterial));
+			ris.Add(new Triangle(new Point3(20.0d, 10.0d, -20.0d), new Point3(-20.0d, 10.0d, 100.0d), new Point3(-20.0d, 10.0d, -20.0d), Material.RedMaterial));
+			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, -20.0d), new Point3(-20.0d, 10.0d, -20.0d), new Point3(-20.0d, 10.0d, 100.0d), Material.GreenMaterial));
+			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, -20.0d), new Point3(-20.0d, 10.0d, 100.0d), new Point3(-20.0d, -10.0d, 100.0d), Material.GreenMaterial));
+			ris.Add(new Triangle(new Point3(20.0d, 10.0d, -20.0d), new Point3(20.0d, -10.0d, -20.0d), new Point3(20.0d, -10.0d, 100.0d), Material.BlueMaterial));
+			ris.Add(new Triangle(new Point3(20.0d, 10.0d, -20.0d), new Point3(20.0d, -10.0d, 100.0d), new Point3(20.0d, 10.0d, 100.0d), Material.BlueMaterial));
+			ris.Add(new Triangle(new Point3(20.0d, 10.0d, -20.0d), new Point3(-20.0d, 10.0d, -20.0d), new Point3(20.0d, -10.0d, -20.0d), Material.YellowMaterial));
+			ris.Add(new Triangle(new Point3(20.0d, -10.0d, -20.0d), new Point3(-20.0d, 10.0d, -20.0d), new Point3(-20.0d, -10.0d, -20.0d), Material.YellowMaterial));
+			ris.Add(new Triangle(new Point3(-20.0d, 10.0d, 100.0d), new Point3(20.0d, 10.0d, 100.0d), new Point3(-20.0d, -10.0d, 100.0d), Material.PurpleMaterial));
+			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, 100.0d), new Point3(20.0d, 10.0d, 100.0d), new Point3(20.0d, -10.0d, 100.0d), Material.PurpleMaterial));
+			Accelerator acc = new OctTreeAccelerator(ris);
+			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, es, cpps);
 			DateTime start = DateTime.Now;
 			cam.CalculateImage();
 			DateTime stop = DateTime.Now;

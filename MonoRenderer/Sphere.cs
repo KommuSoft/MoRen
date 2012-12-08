@@ -29,17 +29,21 @@ namespace Renderer {
 			x1 = Center[dim]+Radius;
 		}
 		public override bool InBox (double xm, double xM, double ym, double yM, double zm, double zM) {
-			double xmin = Maths.ClosestInterval(this.Center.X, xm, xM);
-			double ymin = Maths.ClosestInterval(this.Center.Y, ym, yM);
-			double zmin = Maths.ClosestInterval(this.Center.Z, zm, zM);
+			double xmin = Maths.ClosestInterval(this.Center.X, xm, xM)-Center.X;
+			double ymin = Maths.ClosestInterval(this.Center.Y, ym, yM)-Center.Y;
+			double zmin = Maths.ClosestInterval(this.Center.Z, zm, zM)-Center.Z;
+			//Console.WriteLine("Tested inbox {7}/{8}: {0} -> {1}/{2} -> {3}/{4} -> {5} {6} | {9} {10} {11}", xm, xM, ym, yM, zm, zM, xmin*xmin+ymin*ymin+zmin*zmin <= Radius*Radius, this.Center, Radius, xmin, ymin, zmin);
 			return (xmin*xmin+ymin*ymin+zmin*zmin <= Radius*Radius);
 		}
 		public override double HitAt (Ray ray) {
-			double xa = ray.X0-Center.X;
-			double ya = ray.Y0-Center.Y;
-			double za = ray.Z0-Center.Z;
-			double b_2 = ray.DX*xa+ray.DY*ya+ray.DZ*za;
-			double c = xa*xa+ya*ya+za*za-Radius*Radius;
+			double x0 = ray.X0-Center.X;
+			double y0 = ray.Y0-Center.Y;
+			double z0 = ray.Z0-Center.Z;
+			double dx = ray.DX;
+			double dy = ray.DY;
+			double dz = ray.DZ;
+			double b_2 = dx*x0+dy*y0+dz*z0;
+			double c = x0*x0+y0*y0+z0*z0-Radius*Radius;
 			double D_4 = b_2*b_2-c;
 			if(D_4 >= 0.0d) {
 				D_4 = Math.Sqrt(D_4);
@@ -56,7 +60,6 @@ namespace Renderer {
 			}
 		}
 		public override void Cast (Ray ray, CastResult cr) {
-			Console.WriteLine("testing {0}", ray);
 			double x0 = ray.X0-Center.X;
 			double y0 = ray.Y0-Center.Y;
 			double z0 = ray.Z0-Center.Z;
@@ -66,25 +69,15 @@ namespace Renderer {
 			double b_2 = dx*x0+dy*y0+dz*z0;
 			double c = x0*x0+y0*y0+z0*z0-Radius*Radius;
 			double D_4 = b_2*b_2-c;
-			if(D_4 >= 0.0d) {
-				D_4 = Math.Sqrt(D_4);
-				double t = Maths.MinGeqZero(-D_4-b_2, D_4-b_2);
-				if(t > 0.0d) {
-					Point3 norm = new Point3(Rinv*(x0+t*dx), Rinv*(y0+t*dy), Rinv*(z0+t*dz));
-					double tu = 0.5d*Math.Atan2(norm.Z, norm.X)/Math.PI-0.5d+0.3d;
-					if(tu >= 1.0d) {
-						tu -= 1.0d;
-					}
-					double tv = 0.5d-Math.Asin(norm.Y)/Math.PI;
-					cr.Copy(t, norm, tu, tv);
-				}
-				else {
-					cr.SetNull();
-				}
+			D_4 = Math.Sqrt(D_4);
+			double t = Maths.MinGeqZero(-D_4-b_2, D_4-b_2);
+			Point3 norm = new Point3(Rinv*(x0+t*dx), Rinv*(y0+t*dy), Rinv*(z0+t*dz));
+			double tu = 0.5d*Math.Atan2(norm.Z, norm.X)/Math.PI-0.5d+0.3d;
+			if(tu >= 1.0d) {
+				tu -= 1.0d;
 			}
-			else {
-				cr.SetNull();
-			}
+			double tv = 0.5d-Math.Asin(norm.Y)/Math.PI;
+			cr.Copy(t, norm, tu, tv);
 		}
 
 		public override double Surface () {

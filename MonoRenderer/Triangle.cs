@@ -8,6 +8,8 @@ namespace Renderer {
 		private readonly Point3 p0, p1, p2, n0, n1, n2;
 		private readonly Point3 t0, t1, t2;
 		
+		public Triangle (Point3 a, Point3 b, Point3 c, Material material) : this(a,b,c,null,null,null,null,null,null,material) {
+		}
 		public Triangle (Point3 a, Point3 b, Point3 c, Point3 na, Point3 nb, Point3 nc, Point3 ta, Point3 tb, Point3 tc, Material material) : base(material) {
 			this.p0 = a;
 			this.p1 = b;

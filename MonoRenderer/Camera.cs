@@ -39,10 +39,10 @@ namespace Renderer {
 		private double foVH = 0.5d*Math.PI;
 		private readonly Light[] lights;
 		private readonly List<CameraPostProcessor> postProcessors;
-		private readonly uint antialiasSqrt = 0x04;
+		private readonly uint antialiasSqrt = 0x01;
 		private readonly EnvironmentSettings settings;
 		private readonly double dispersion = 0.0d;
-		private readonly uint dispersionAntialiasSqrt = 0x04;
+		private readonly uint dispersionAntialiasSqrt = 0x01;
 
 		public Point3 Position {
 			get {
@@ -213,7 +213,7 @@ namespace Renderer {
 								aadc = m+aadsqrt;
 								for(; m < aadc; m++) {
 									//Console.WriteLine("DisSubpixel {0}/{1}", xd/dwhad, yd/dwhad);
-									ray.Offset.SetValues(xp+xd, yp+yd, 0.0d);
+									ray.Offset.SetValues(xp+xd, -yp-yd, 0.0d);
 									ray.Direction.SetValues(ray.Offset, tmp);
 									ray.NormalizeDirection();
 									ray.Transform(this.matrix);

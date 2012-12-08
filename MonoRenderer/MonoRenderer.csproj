@@ -103,6 +103,7 @@
     <Compile Include="AcceleratorWrapper.cs" />
     <Compile Include="AcceleratorType.cs" />
     <Compile Include="ColorAtMethod.cs" />
+    <Compile Include="FactorFromAngle.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
