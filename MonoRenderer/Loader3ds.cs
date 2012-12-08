@@ -172,7 +172,15 @@ namespace Renderer {
 					return null;
 				}
 				else if(activedir == null) {
-					return new Texture(name);
+					if(File.Exists(name)) {
+						return new Texture(name);
+					}
+					else {
+#if DEBUG
+						Console.Error.WriteLine("Cannot open \"{0}\": file doesn't exist!", name);
+#endif
+						return null;
+					}
 				}
 				else {
 					string path = Path.GetDirectoryName(activedir)+Path.DirectorySeparatorChar+name;

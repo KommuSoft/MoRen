@@ -25,26 +25,25 @@ using System.Xml.Serialization;
 using Renderer.SceneBuilding;
 
 namespace Renderer {
-	[XmlType("Camera")]
+
 	public sealed class Camera : NameBase {
 
 		private readonly Point3 position = new Point3(0.0d, 0.0d, 0.0d);
 		private readonly Point3 lookAt = new Point3(0.0d, 0.0d, 25.0d);
 		private readonly Matrix4 matrix = new Matrix4();
 		private readonly Accelerator acc;
-		private Texture raster = new Texture(1, 1);
+		private readonly Texture raster = new Texture(1, 1);
 		private double screenDistance = 1.5d;
 		private bool dirty = true;
 		private double roll = 0.0d;
 		private double foVH = 0.5d*Math.PI;
 		private readonly Light[] lights;
 		private readonly List<CameraPostProcessor> postProcessors;
-		private uint antialiasSqrt = 0x04;
+		private readonly uint antialiasSqrt = 0x04;
 		private readonly EnvironmentSettings settings;
-		private double dispersion = 0.0d;
-		private uint dispersionAntialiasSqrt = 0x04;
+		private readonly double dispersion = 0.0d;
+		private readonly uint dispersionAntialiasSqrt = 0x04;
 
-		[XmlElement("Position")]
 		public Point3 Position {
 			get {
 				return this.position;
@@ -55,7 +54,6 @@ namespace Renderer {
 			}
 		}
 
-		[XmlElement("LookAt")]
 		public Point3 LookAt {
 			get {
 				return this.lookAt;
@@ -66,7 +64,6 @@ namespace Renderer {
 			}
 		}
 
-		[XmlAttribute("Roll")]
 		public double Roll {
 			get {
 				return this.roll;
@@ -77,7 +74,6 @@ namespace Renderer {
 			}
 		}
 
-		[XmlAttribute("Width")]
 		public int Width {
 			get {
 				return this.raster.Width;
@@ -87,7 +83,6 @@ namespace Renderer {
 			}
 		}
 
-		[XmlAttribute("Height")]
 		public int Height {
 			get {
 				return this.raster.Height;
@@ -97,7 +92,6 @@ namespace Renderer {
 			}
 		}
 
-		[XmlAttribute("ScreenDistance")]
 		public double ScreenDistance {
 			get {
 				return this.screenDistance;
@@ -107,7 +101,6 @@ namespace Renderer {
 			}
 		}
 
-		[XmlAttribute("FoVH")]
 		public double FieldOfViewHeight {
 			get {
 				return this.foVH;
@@ -117,7 +110,6 @@ namespace Renderer {
 			}
 		}
 
-		[XmlIgnore]
 		public Texture Raster {
 			get {
 				return this.raster;
@@ -197,6 +189,7 @@ namespace Renderer {
 			double dwhad = dispersion*dwh;
 			double yp = dwh*yfrom-0.5d*sh-0.5d*dwha*aasqrt, xp;
 			double yd, xd;
+			#region PIXEL
 			for(; k < ks;) {
 				kc = k+Width;
 				xp = -0.5d*sw-0.5d*dwha*aasqrt;
@@ -206,6 +199,7 @@ namespace Renderer {
 					aaRedCache = 0x00;
 					aaGreenCache = 0x00;
 					aaBlueCache = 0x00;
+					#region ANTIALIASING
 					for(; l < aa;) {
 						aac = l+aasqrt;
 						for(; l < aac; l++) {
@@ -235,10 +229,12 @@ namespace Renderer {
 						yp += dwha;
 						xp -= dwh;
 					}
+					#endregion
 					yp -= dwh;
 					xp += dwh;
 					pixel[k++] = Color.AlphaChannel|Color.Mix(aaRedCache, aaGreenCache, aaBlueCache, aaaad);
 				}
+				#endregion
 				yp += dwh;
 			}
 		}

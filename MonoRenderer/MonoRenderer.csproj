@@ -99,6 +99,9 @@
     <Compile Include="LightWrapper.cs" />
     <Compile Include="ColorWrapper.cs" />
     <Compile Include="EnvironmentSettings.cs" />
+    <Compile Include="CameraWrapper.cs" />
+    <Compile Include="AcceleratorWrapper.cs" />
+    <Compile Include="AcceleratorType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

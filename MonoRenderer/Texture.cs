@@ -4,8 +4,7 @@ using System.Drawing.Imaging;
 
 namespace Renderer {
 	
-	public sealed class Texture
-	{
+	public sealed class Texture {
 		
 		internal int BitHeight;
 		internal int BitWidth;
@@ -25,7 +24,7 @@ namespace Renderer {
 			int nn = System.Math.Min(n, data.Length);
 			this.Pixel = new uint[n];
 			for(int i = 0x00; i < nn; i++) {
-				this.Pixel [i] = data [i];
+				this.Pixel[i] = data[i];
 			}
 		}
 		public unsafe Texture (string filename) : this(new Bitmap(filename)) {
@@ -41,7 +40,7 @@ namespace Renderer {
 			for(int y = 0x00; y < this.Height; y++) {
 				pixx = (uint*)pix;
 				for(int x = 0x00; x < this.Width; x++) {
-					this.Pixel [j++] = *pixx;
+					this.Pixel[j++] = *pixx;
 					pixx++;
 				}
 				pix += bmd.Stride;
@@ -58,7 +57,7 @@ namespace Renderer {
 			for(int y = 0x00; y < this.Height; y++) {
 				pixx = (uint*)pix;
 				for(int x = 0x00; x < this.Width; x++) {
-					*pixx = this.Pixel [j++];
+					*pixx = this.Pixel[j++];
 					pixx++;
 				}
 				pix += bmd.Stride;
@@ -75,7 +74,7 @@ namespace Renderer {
 			//double y = ((tu.Y%1.0d)+1.0d)%1.0d;
 			double x = Math.Abs(tu.X%1.0d);
 			double y = 1.0d-Math.Abs(tu.Y%1.0d);
-			return Pixel [(int)Math.Floor(x*Width)+(int)Math.Floor(y*Height)*Width];
+			return Pixel[(int)Math.Floor(x*Width)+(int)Math.Floor(y*Height)*Width];
 		}
 		private void setSize (int width, int height) {
 			int offset = width*height;
@@ -85,7 +84,7 @@ namespace Renderer {
 				for(int j = height-0x01; j >= 0x00; j--) {
 					offset2 = (j*this.Height/height)*this.Width;
 					for(int i = width-0x01; i >= 0x00; i--)
-						newPixel [offset--] = this.Pixel [i*this.Width/width+offset2];
+						newPixel[offset--] = this.Pixel[i*this.Width/width+offset2];
 				}
 				this.Width = width;
 				this.Height = height;
@@ -97,7 +96,7 @@ namespace Renderer {
 			uint[] data = additive.Pixel;
 			int n = System.Math.Min(this.Pixel.Length, data.Length);
 			for(int i = 0x00; i < n; i++)
-				this.Pixel [i] = Renderer.Color.Add(this.Pixel [i], data [i]);
+				this.Pixel[i] = Renderer.Color.Add(this.Pixel[i], data[i]);
 			return this;
 		}
 		public void Add (Texture texture, int posx, int posy, int xsize, int ysize) {
@@ -123,7 +122,7 @@ namespace Renderer {
 				offset1 = j*Width;
 				offset2 = (ty>>8)*tw;
 				for(int i = xBase; i < xend; i++) {
-					Pixel [i+offset1] = Color.Add(texture.Pixel [(tx>>8)+offset2], Pixel [i+offset1]);
+					Pixel[i+offset1] = Color.Add(texture.Pixel[(tx>>8)+offset2], Pixel[i+offset1]);
 					tx += dtx;
 				}
 				ty += dty;
@@ -140,7 +139,7 @@ namespace Renderer {
 			for(int y = 0x00; y < h; y++) {
 				alpha = (uint)(0xff*y/(top.Height-0x01));
 				for(x = 0x00; x < top.Width; x++) {
-					t.Pixel [pos] = Renderer.Color.Transparency(down.Pixel [pos], top.Pixel [pos], alpha);
+					t.Pixel[pos] = Renderer.Color.Transparency(down.Pixel[pos], top.Pixel[pos], alpha);
 					pos++;
 				}
 			}
@@ -154,55 +153,55 @@ namespace Renderer {
 			for(int y = 0x00; y < height; y++) {
 				offset = ((y>>cellbits)&0x01) == 0x00;
 				for(x = 0x00; x < width; x++)
-					t.Pixel [pos++] = (((offset^((x>>cellbits)&0x01) == 0x01)) ? evenColor : oddColor);
+					t.Pixel[pos++] = (((offset^((x>>cellbits)&0x01) == 0x01)) ? evenColor : oddColor);
 			}
 			return t;
 		}
 		public Texture Clear () {
 			int n = this.Pixel.Length;
 			for(int i = 0x00; i < n; i++)
-				this.Pixel [i] = 0x00;
+				this.Pixel[i] = 0x00;
 			return this;
 		}
 		public Texture Clone () {
 			Texture t = new Texture(this.Width, this.Height);
 			int n = this.Pixel.Length;
 			for(int i = 0x00; i < n; i++)
-				t.Pixel [i] = this.Pixel [i];
+				t.Pixel[i] = this.Pixel[i];
 			return t;
 		}
 		public Texture Colorize (params uint[] palette) {
 			int range = palette.Length-0x01;
 			int n = this.Pixel.Length;
 			for(int i = 0; i < n; i++)
-				this.Pixel [i] = palette [Maths.Border(0x00, this.Pixel [i], range)];
+				this.Pixel[i] = palette[Maths.Border(0x00, this.Pixel[i], range)];
 			return this;
 		}
 		public Texture Invert () {
 			int n = this.Pixel.Length;
 			for(int i = 0x00; i < n; i++)
-				this.Pixel [i] = Renderer.Color.Inverse(this.Pixel [i]);
+				this.Pixel[i] = Renderer.Color.Inverse(this.Pixel[i]);
 			return this;
 		}
 		public Texture Mix (Texture newData) {
 			uint[] data = newData.Pixel;
 			int n = System.Math.Min(this.Pixel.Length, data.Length);
 			for(int i = 0x00; i < n; i++)
-				this.Pixel [i] = Renderer.Color.Mix(this.Pixel [i], data [i]);
+				this.Pixel[i] = Renderer.Color.Mix(this.Pixel[i], data[i]);
 			return this;
 		}
 		public Texture Multiply (Texture multiplicative) {
 			uint[] data = multiplicative.Pixel;
 			int n = System.Math.Min(this.Pixel.Length, data.Length);
 			for(int i = 0x00; i < n; i++)
-				this.Pixel [i] = Renderer.Color.Multiply(this.Pixel [i], data [i]);
+				this.Pixel[i] = Renderer.Color.Multiply(this.Pixel[i], data[i]);
 			return this;
 		}
 		public Texture Put (Texture newData) {
 			uint[] data = newData.Pixel;
 			int n = System.Math.Min(this.Pixel.Length, data.Length);
 			for(int i = 0x00; i < n; i++)
-				this.Pixel [i] = data [i];
+				this.Pixel[i] = data[i];
 			return this;
 		}
 		public void Resize () {
@@ -218,27 +217,27 @@ namespace Renderer {
 			uint[] data = subtractive.Pixel;
 			int n = System.Math.Min(this.Pixel.Length, data.Length);
 			for(int i = 0x00; i < n; i++)
-				this.Pixel [i] = Renderer.Color.Sub(this.Pixel [i], data [i]);
+				this.Pixel[i] = Renderer.Color.Sub(this.Pixel[i], data[i]);
 			return this;
 		}
 		public Texture ToAverage () {
 			int n = this.Pixel.Length;
 			for(int i = 0x00; i < n; i++)
-				this.Pixel [i] = Renderer.Color.GetAverage(this.Pixel [i]);
+				this.Pixel[i] = Renderer.Color.GetAverage(this.Pixel[i]);
 			return this;
 		}
 		public Texture ToGray () {
 			int n = this.Pixel.Length;
 			for(int i = 0x00; i < n; i++)
-				this.Pixel [i] = Renderer.Color.GetGray(this.Pixel [i]);
+				this.Pixel[i] = Renderer.Color.GetGray(this.Pixel[i]);
 			return this;
 		}
 		public Texture ValueToGray () {
 			uint intensity;
 			int n = this.Pixel.Length;
 			for(int i = 0x00; i < n; i++) {
-				intensity = this.Pixel [i]&0xff;
-				this.Pixel [i] = Renderer.Color.GetColor(intensity, intensity, intensity);
+				intensity = this.Pixel[i]&0xff;
+				this.Pixel[i] = Renderer.Color.GetColor(intensity, intensity, intensity);
 			}
 			return this;
 		}
