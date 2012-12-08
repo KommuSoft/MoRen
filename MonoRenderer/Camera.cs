@@ -29,7 +29,7 @@ namespace Renderer {
 	public sealed class Camera : NameBase {
 
 		private readonly Point3 position = new Point3(0.0d, 0.0d, 0.0d);
-		private readonly Point3 lookAt = new Point3(0.0d, 0.0d, 60.0d);
+		private readonly Point3 lookAt = new Point3(0.0d, 0.0d, 25.0d);
 		private readonly Matrix4 matrix = new Matrix4();
 		private readonly Accelerator acc;
 		private Texture raster = new Texture(1, 1);
@@ -134,6 +134,7 @@ namespace Renderer {
 			this.lights = lights;
 			this.antialiasSqrt = settings.AntiAliasingSqrt;
 			this.dispersion = settings.Dispersion;
+			this.dispersionAntialiasSqrt = settings.DispersingAntiAliasingSqrt;
 			this.settings = settings;
 			if(postprocessors != null) {
 				this.postProcessors = postprocessors;
@@ -174,59 +175,71 @@ namespace Renderer {
 		}
 		private void CalculateImage (int yfrom, int yto) {
 			double sd = this.screenDistance;
-			double sh = sd*Math.Tan(0.5d*this.foVH);
+			double sh = 2.0d*sd*Math.Tan(0.5d*this.foVH);
 			int w = this.Width;
 			int h = this.Height;
 			double sw = sh*w/h;
 			double dwh = sw/w;
-			double dwha = dwh/antialiasSqrt;
-			double yg, xg;
 			Ray ray = new Ray(0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 1.0d);
 			uint[] pixel = this.raster.Pixel;
 			int k = Width*yfrom, ks = Width*yto, kc;
 			uint l, m;
 			uint aasqrt = this.antialiasSqrt;
+			uint aadsqrt = this.dispersionAntialiasSqrt;
 			uint aaRedCache, aaGreenCache, aaBlueCache;
 			RayTracer rt = new RayTracer(this.acc, this.lights, settings);
-			uint aa = aasqrt*aasqrt, aac, aad = ;
-			yg = dwh*yfrom-0.5d*(sh+dwh);
-			Point3 tmp = new Point3(0.0d, 0.0d, 0.0d), tmp2 = new Point3(0.0d, 0.0d, 0.0d);
+			uint aa = aasqrt*aasqrt, aac, aad = aadsqrt*aadsqrt, aadc;
+			Point3 tmp = new Point3(0.0d, 0.0d, 0.0d);
 			double focusLength = Point3.DiffLength(this.position, this.lookAt);
 			double frac = focusLength/this.screenDistance;
+			uint aaaad = aa*aad;
+			double dwha = dwh/aasqrt;
+			double dwhad = dispersion*dwh;
+			double yp = dwh*yfrom-0.5d*sh-0.5d*dwha*aasqrt, xp;
+			double yd, xd;
 			for(; k < ks;) {
 				kc = k+Width;
-				xg = -0.5d*(sw+dwh);
+				xp = -0.5d*sw-0.5d*dwha*aasqrt;
 				for(; k < kc;) {
+					//Console.WriteLine("Pixel {0}/{1}", xp/dwh, yp/dwh);
 					l = 0x00;
-					aaRedCache = 0x00, aaGreenCache = 0x00, aaBlueCache = 0x00;
+					aaRedCache = 0x00;
+					aaGreenCache = 0x00;
+					aaBlueCache = 0x00;
 					for(; l < aa;) {
 						aac = l+aasqrt;
 						for(; l < aac; l++) {
-							tmp.SetValues(xg*frac, -yg*frac, focusLength);
-							for(; m < daa; l++) {
-								double xt, yt;
-								Maths.GenerateRandomCirclePoint(this.dispersion, out xt, out yt);
-								ray.Offset.SetValues(xg+xt, yg+yt, 0.0d);
-								ray.Direction.SetValues(ray.Offset, tmp);
-								ray.NormalizeDirection();
-								ray.Transform(this.matrix);
-								Color.AddComponents(rt.CalculateColor(ray, 0), ref aaRedCache, ref aaGreenCache, ref aaBlueCache);
+							m = 0x00;
+							tmp.SetValues(xp*frac, -yp*frac, focusLength);
+							yd = -0.5d*dwhad*(aadsqrt-0x01);
+							//Console.WriteLine("SubPixel {0}/{1}", xg/dwha, yg/dwha);
+							#region DISPERSION
+							for(; m < aad;) {
+								xd = -0.5d*dwhad*(aadsqrt-0x01);
+								aadc = m+aadsqrt;
+								for(; m < aadc; m++) {
+									//Console.WriteLine("DisSubpixel {0}/{1}", xd/dwhad, yd/dwhad);
+									ray.Offset.SetValues(xp+xd, yp+yd, 0.0d);
+									ray.Direction.SetValues(ray.Offset, tmp);
+									ray.NormalizeDirection();
+									ray.Transform(this.matrix);
+									Color.AddComponents(rt.CalculateColor(ray, 0), ref aaRedCache, ref aaGreenCache, ref aaBlueCache);
+									//Console.WriteLine("{3} {4}: {0} {1} {2}", aaRedCache, aaGreenCache, aaBlueCache, l, m);
+									xd += dwhad;
+								}
+								yd += dwhad;
 							}
-							/*ray.Offset.SetValues(xg, -yg, 0.0d);
-							ray.Direction.SetValues(xg, -yg, this.screenDistance);
-							ray.NormalizeDirection();
-							ray.Transform(this.matrix);
-							aaCache += Color.ToColor64(rt.CalculateColor(ray, 0));*/
-							xg += dwha;
+							#endregion
+							xp += dwha;
 						}
-						yg += dwha;
-						xg -= dwh;
+						yp += dwha;
+						xp -= dwh;
 					}
-					yg -= dwh;
-					pixel[k++] = Color.AlphaChannel|Color.MixFrom64(aaCache, aa);
-					xg += dwh;
+					yp -= dwh;
+					xp += dwh;
+					pixel[k++] = Color.AlphaChannel|Color.Mix(aaRedCache, aaGreenCache, aaBlueCache, aaaad);
 				}
-				yg += dwh;
+				yp += dwh;
 			}
 		}
 		
