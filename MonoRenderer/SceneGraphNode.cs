@@ -106,6 +106,16 @@ namespace Renderer.SceneBuilding {
 			return this.Name.GetHashCode();
 		}
 
+		public void Inject (int maxDepth, MatrixStack stack, List<RenderItem> items, int depth) {
+			if(depth < maxDepth) {
+				stack.PushMatrix(this.Transformer);
+				if(this.Mesh != null) {
+					this.Mesh.Inject(stack.Top, items);
+				}
+				stack.PopMatrix();
+			}
+		}
+
 		public void Resolve (Dictionary<string,SceneGraphNode> dictionary) {
 			if(this.childNames != null) {
 				this.SubNodes.AddRange(this.childNames.Select(x => dictionary[x]));

@@ -27,10 +27,6 @@ namespace Renderer.SceneBuilding {
 	
 	[XmlType("SceneGraph")]
 	public sealed class SceneGraph {
-		
-		[XmlIgnore]
-		public readonly MatrixStack
-			matrixStack = new MatrixStack();
 
 		[XmlIgnore]
 		private readonly Dictionary<string,SceneGraphNode>
@@ -91,6 +87,12 @@ namespace Renderer.SceneBuilding {
 		}
 		public SceneGraph () {
 			this.Root = new SceneGraphNode();
+		}
+
+		public List<RenderItem> Inject () {
+			List<RenderItem> items = new List<RenderItem>();
+			MatrixStack ms = new MatrixStack();
+			this.Root.Inject(this.MaxDepth, ms, items, 0x00);
 		}
 		
 	}
