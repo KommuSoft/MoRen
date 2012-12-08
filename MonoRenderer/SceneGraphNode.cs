@@ -108,7 +108,6 @@ namespace Renderer.SceneBuilding {
 		}
 
 		public void Inject (int maxDepth, MatrixStack stack, List<RenderItem> items, int depth) {
-			Console.WriteLine("at {0} depth {1} transform {2}", this.Name, depth, stack.Top);
 			if(depth < maxDepth) {
 				stack.PushMatrix(this.Transformer);
 				if(this.Mesh != null) {
@@ -122,7 +121,6 @@ namespace Renderer.SceneBuilding {
 		}
 
 		public void Resolve (Dictionary<string,SceneGraphNode> dictionary) {
-			Console.WriteLine("resolving {0} with childs {1}", this.Name, string.Join(",", this.childNames));
 			if(this.childNames != null) {
 				this.SubNodes.AddRange(this.childNames.Select(x => dictionary[x]));
 			}

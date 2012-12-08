@@ -14,7 +14,7 @@ namespace Renderer {
 			this.p2 = c;
 			if(na == null || nb == null || nc == null) {
 				Point3 norm = new Point3();
-				Point3.Cross(p1.X-p0.X, p1.Y-p0.Y, p1.Z-p0.Z, p2.X-p0.X, p2.Y-p0.Y, p2.Z-p0.Z, out norm.vals[0x00], out norm.vals[0x01], out norm.vals[0x02]);
+				Point3.Cross(p1.X-p0.X, p1.Y-p0.Y, p1.Z-p0.Z, p2.X-p0.X, p2.Y-p0.Y, p2.Z-p0.Z, out norm.X, out norm.Y, out norm.Z);
 				norm.Normalize();
 				this.n0 = this.n1 = this.n2 = norm;
 			}
@@ -48,6 +48,9 @@ namespace Renderer {
 			x1 = Maths.Max(p0[dim], p1[dim], p2[dim]);
 		}
 		public override bool InBox (double xm, double xM, double ym, double yM, double zm, double zM) {
+			if(this.p0.InBox(xm, xM, ym, yM, zm, zM) || this.p1.InBox(xm, xM, ym, yM, zm, zM) || this.p2.InBox(xm, xM, ym, yM, zm, zM)) {
+				return true;
+			}
 			double v0x, v0y, v0z, v1x, v1y, v1z, v2x, v2y, v2z;
 			double fex, fey, fez;
 			double normalx, normaly, normalz, e0x, e0y, e0z, e1x, e1y, e1z, e2x, e2y, e2z;
