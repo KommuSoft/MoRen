@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Xml.Serialization;
+using Renderer.SceneBuilding;
 
 namespace Renderer {
 	[XmlType("Camera")]
@@ -38,22 +39,11 @@ namespace Renderer {
 		private double foVH = 0.5d*Math.PI;
 		private int antiAliasingThreshold = 1;
 		private readonly Light[] lights;
-		private AntiAliasingTechnique aaTec = AntiAliasingTechnique.Sobel;
 		private readonly List<CameraPostProcessor> postProcessors;
-		private int antialiasSqrt = 0x04;
-		private int maxDepth = 0x02;
-		private int lightTests = 0x08;
+		private uint antialiasSqrt = 0x04;
+		private readonly EnvironmentSettings settings;
 		private double dispersion = 0.0d;
 
-		[XmlElement("AntialiasSqrt")]
-		public int AntialiasSqrt {
-			get {
-				return this.antialiasSqrt;
-			}
-			set {
-				this.antialiasSqrt = value;
-			}
-		}
 		[XmlElement("Position")]
 		public Point3 Position {
 			get {
@@ -84,13 +74,6 @@ namespace Renderer {
 			set {
 				this.roll = value;
 				this.dirty = true;
-			}
-		}
-
-		[XmlAttribute("LightTests")]
-		public int LightTests {
-			get {
-				return this.lightTests;
 			}
 		}
 
@@ -141,37 +124,16 @@ namespace Renderer {
 			}
 		}
 
-		[XmlAttribute("AntiAliasingThreshold")]
-		public int AntiAliasingThreshold {
-			get {
-				return this.antiAliasingThreshold;
-			}
-			set {
-				this.antiAliasingThreshold = value;
-			}
-		}
-
-		[XmlAttribute("AntiAliasingTechnique")]
-		public AntiAliasingTechnique AntiAliasingTechnique {
-			get {
-				return this.aaTec;
-			}
-			set {
-				this.aaTec = value;
-			}
-		}
-
 		public Camera () {
 		}
 
-		public Camera (int w, int h, double screenDistance, double foVH, Accelerator acc, Light[] lights, int antialiasing, int maxDepth = 0x02, int lightTests = 0x08, List<CameraPostProcessor> postprocessors = null) {
+		public Camera (int w, int h, double screenDistance, double foVH, Accelerator acc, Light[] lights, EnvironmentSettings settings, List<CameraPostProcessor> postprocessors = null) {
 			this.raster = new Texture(w, h);
 			this.foVH = foVH;
 			this.acc = acc;
 			this.lights = lights;
-			this.antialiasSqrt = antialiasing;
-			this.maxDepth = maxDepth;
-			this.lightTests = lightTests;
+			this.antialiasSqrt = settings.AntiAliasingSqrt;
+			this.settings = settings;
 			if(postprocessors != null) {
 				this.postProcessors = postprocessors;
 			}
@@ -220,17 +182,18 @@ namespace Renderer {
 			Ray ray = new Ray(0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 1.0d);
 			uint[] pixel = this.raster.Pixel;
 			int k = Width*yfrom, ks = Width*yto, kc;
-			int l;
-			int aasqrt = this.antialiasSqrt;
-			uint[] aaCache = new uint[aasqrt*aasqrt];
-			RayTracer rt = new RayTracer(this.acc, this.lights, this.maxDepth, this.lightTests);
-			int aa = aasqrt*aasqrt, aac;
+			uint l;
+			uint aasqrt = this.antialiasSqrt;
+			ulong aaCache;
+			RayTracer rt = new RayTracer(this.acc, this.lights, settings);
+			uint aa = aasqrt*aasqrt, aac;
 			yg = dwh*yfrom-0.5d*(sh+dwh);
 			for(; k < ks;) {
 				kc = k+Width;
 				xg = -0.5d*(sw+dwh);
 				for(; k < kc;) {
 					l = 0x00;
+					aaCache = 0x00;
 					for(; l < aa;) {
 						aac = l+aasqrt;
 						for(; l < aac;) {
@@ -238,13 +201,15 @@ namespace Renderer {
 							ray.Direction.SetValues(xg, -yg, this.screenDistance);
 							ray.NormalizeDirection();
 							ray.Transform(this.matrix);
-							aaCache[l++] = rt.CalculateColor(ray, 0);
+							aaCache += Color.ToColor64(rt.CalculateColor(ray, 0));
 							xg += dwha;
 						}
 						yg += dwha;
 						xg -= dwh;
 					}
-					pixel[k++] = Color.AlphaChannel|Color.Mix(aaCache);
+					Console.WriteLine(aaCache);
+					Console.WriteLine(aa);
+					pixel[k++] = Color.AlphaChannel|Color.MixFrom64(aaCache, aa);
 					xg += dwh;
 					yg -= dwh;
 				}

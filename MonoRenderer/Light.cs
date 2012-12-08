@@ -30,9 +30,9 @@ namespace Renderer {
 		public readonly uint Color;
 		public readonly double Radius;
 		
-		public Light (uint color, Point3 position, double radius = 1.0d) : this(position,color) {
+		public Light (uint color, Point3 position, double radius = 0.0d) : this(position,color,radius) {
 		}
-		public Light (Point3 position, uint color = 0xffffff, double radius = 1.0d) {
+		public Light (Point3 position, uint color = 0xffffff, double radius = 0.0d) {
 			this.Position = position;
 			this.Color = color;
 			this.Radius = radius;

@@ -47,19 +47,20 @@ namespace Renderer {
 		private readonly Point3 lp = new Point3();
 		private readonly Point3 hp = new Point3();
 		private readonly Ray sr;
-		private readonly int lightTest;
+		private readonly uint lightTest;
 		private readonly Ray[] rayCache;
-		private readonly int maxDepth;
+		private readonly uint maxDepth;
 		
-		public RayTracer (Accelerator acc, Light[] lights, int maxDepth, int lightTest = 0x08) {
+		public RayTracer (Accelerator acc, Light[] lights, EnvironmentSettings settings) {
 			this.acc = acc;
-			this.maxDepth = maxDepth;
+			this.maxDepth = settings.RecursionDepth;
 			this.rayCache = new Ray[maxDepth];
 			for(int i = 0x00; i < this.maxDepth; i++) {
 				this.rayCache[i] = new Ray(0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d);
 			}
 			this.lights = lights;
-			this.lightTest = lightTest;
+			this.ambientColor = settings.AmbientColor.Color;
+			this.lightTest = settings.LightTest;
 			this.sr = new Ray(new Point3(0.0d, 0.0d, 0.0d), dis);
 		}
 		
@@ -140,16 +141,17 @@ namespace Renderer {
 			lo.Load(null, fs);
 			fs.Close();
 			Light[] lights = new Light[] {
-				new Light(0x808080, new Point3(-5.0d, 5.0d, 0.0d)),
-				new Light(0x808080, new Point3(5.0d, -5.0d, 0.0d))
+				new Light(0x808080, new Point3(-5.0d, 5.0d, 1.0d)),
+				new Light(0x808080, new Point3(5.0d, -5.0d, 1.0d))
 			};
 			/*Matrix4 M = new Matrix4();
 			M.RotateY(Math.PI);
 			M.Shift(0.0d, 0.0d, 30.0d);*/
 			//Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
 			List<CameraPostProcessor> cpps = new List<CameraPostProcessor>();
+			EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x08, 0x40, 0x01);
 			cpps.Add(new NoisePostProcessor());
-			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, 0x01, 0x08, 0x40, cpps);
+			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, es, cpps);
 			RenderWindow rw = new RenderWindow(cam);
 			rw.ShowDialog();
 			/*TimeSpan ts = new TimeSpan();

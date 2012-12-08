@@ -27,20 +27,27 @@ namespace Renderer.SceneBuilding {
 	public sealed class EnvironmentSettings {
 
 		[XmlElement("AmbientColor")]
-		private ColorWrapper
-			AmbientColor = new ColorWrapper();
+		public ColorWrapper
+			AmbientColor = new ColorWrapper(0x00101010);
 		[XmlElement("RecursionDepth")]
-		private int
+		public uint
 			RecursionDepth = 0x01;
 		[XmlElement("LightTest")]
-		private int
-			LightTest = 0x01;
+		public uint
+			LightTest = 0x01;//maximum 0x0101
 		[XmlElement("AntiAliasingSqt")]
-		private int
-			AntiAliasingSqrt = 0x01;
+		public uint
+			AntiAliasingSqrt = 0x01;//maximum 0x10
 
 		public EnvironmentSettings () {
 		}
+		public EnvironmentSettings (uint ambientcolor, uint recursionDepth, uint lightTest, uint antialiassingSqrt) {
+			this.AmbientColor = new ColorWrapper(ambientcolor);
+			this.RecursionDepth = recursionDepth;
+			this.LightTest = lightTest;
+			this.AntiAliasingSqrt = antialiassingSqrt;
+		}
+
 	}
 }
 

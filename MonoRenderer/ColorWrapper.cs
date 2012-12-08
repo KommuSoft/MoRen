@@ -52,6 +52,9 @@ namespace Renderer.SceneBuilding {
 
 		public ColorWrapper () {
 		}
+		public ColorWrapper (uint color) {
+			this.color = color;
+		}
 	}
 }
 

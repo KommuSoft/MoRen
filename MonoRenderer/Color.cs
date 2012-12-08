@@ -9,6 +9,9 @@ namespace Renderer {
 		public const uint RedChannel = 0x00ff0000;
 		public const uint GreenChannel = 0x0000ff00;
 		public const uint BlueChannel = 0x000000ff;
+		public const ulong RedChannel64 = 0xffff00000000;
+		public const ulong GreenChannel64 = 0x0000ffff0000;
+		public const ulong BlueChannel64 = 0x00000000ffff;
 		public const uint RedGreenBlue = 0x00ffffff;
 		public const uint Mask7Bit = 0x00fefeff;
 		public const uint MaskOverflow = 0x01010100;
@@ -52,6 +55,16 @@ namespace Renderer {
 			uint g = (uint)Maths.Border(0x00, (int)Math.Round(0xff*fg), 0xff);
 			uint b = (uint)Maths.Border(0x00, (int)Math.Round(0xff*fb), 0xff);
 			return (r<<0x10)|(g<<8)|b;
+		}
+		public static ulong ToColor64 (uint color) {
+			ulong cu = color;
+			return ((cu&RedChannel)<<0x32)|((cu&GreenChannel)<<0x10)|(cu&BlueChannel);
+		}
+		public static uint MixFrom64 (ulong color, uint n) {
+			uint red = (uint)(((color&RedChannel64)>>0x20)/n);
+			uint green = (uint)(((color&GreenChannel64)>>0x10)/n);
+			uint blue = (uint)((color&BlueChannel64)/n);
+			return (red<<0x10)|(green<<0x08)|blue;
 		}
 		public static uint Random (uint color, uint delta) {
 			int r = (int)(color>>16)&255;
