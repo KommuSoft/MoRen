@@ -148,7 +148,7 @@ namespace Renderer {
 			//Accelerator acc = new OctTreeAccelerator(lo.Inject(M));
 			List<CameraPostProcessor> cpps = new List<CameraPostProcessor>();
 			//EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x08, 0x40, 0x01);
-			EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x01, 0x01, 0x01);
+			//EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x01, 0x01, 0x01);
 			cpps.Add(new NoisePostProcessor());
 			//RenderWindow rw = new RenderWindow(cam);
 			//rw.ShowDialog();
@@ -157,7 +157,7 @@ namespace Renderer {
 			//for(int i = 0x00; alpha < 2.0d*Math.PI; i++, alpha += Math.PI/80) {
 			SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
 			Accelerator acc = new OctTreeAccelerator(sd.SceneGraph.Inject());
-			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, es, cpps);
+			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, sd.EnvironmentSettings, cpps);
 			DateTime start = DateTime.Now;
 			cam.CalculateImage();
 			DateTime stop = DateTime.Now;

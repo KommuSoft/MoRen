@@ -26,7 +26,7 @@ namespace Renderer {
 	public static class ParserUtils {
 
 		public const string Real = @"-?[0-9]+(\.[0-9]*)?";
-		public static readonly Regex colorRegex = new Regex(@"^#?(<color>[0-9a-fA-F]{6})$", RegexOptions.Compiled|RegexOptions.CultureInvariant|RegexOptions.IgnoreCase|RegexOptions.Singleline|RegexOptions.ExplicitCapture);
+		public static readonly Regex colorRegex = new Regex(@"^#?(?<color>[0-9a-fA-F]{6})$", RegexOptions.Compiled|RegexOptions.CultureInvariant|RegexOptions.IgnoreCase|RegexOptions.Singleline|RegexOptions.ExplicitCapture);
 
 		public static string FormGroup (string regex, string name) {
 			return string.Format(@"(?<{0}>{1})", name, regex);

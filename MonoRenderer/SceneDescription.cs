@@ -30,6 +30,7 @@ namespace Renderer.SceneBuilding {
 		
 		private readonly List<Camera> cameras = new List<Camera>();
 		private SceneGraph sg;
+		private EnvironmentSettings es;
 
 		/*[XmlArray("Cameras")]
 		[XmlArrayItem("Camera")]
@@ -44,6 +45,15 @@ namespace Renderer.SceneBuilding {
 				}
 			}
 		}*/
+		[XmlElement("EnvironmentSettings")]
+		public EnvironmentSettings EnvironmentSettings {
+			get {
+				return this.es;
+			}
+			set {
+				this.es = value;
+			}
+		}
 		[XmlElement("SceneGraph")]
 		public SceneGraph SceneGraph {
 			get {

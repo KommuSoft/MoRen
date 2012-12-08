@@ -133,6 +133,7 @@ namespace Renderer {
 			this.acc = acc;
 			this.lights = lights;
 			this.antialiasSqrt = settings.AntiAliasingSqrt;
+			this.dispersion = settings.Dispersion;
 			this.settings = settings;
 			if(postprocessors != null) {
 				this.postProcessors = postprocessors;

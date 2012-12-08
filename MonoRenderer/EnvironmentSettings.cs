@@ -28,24 +28,27 @@ namespace Renderer.SceneBuilding {
 
 		[XmlElement("AmbientColor")]
 		public ColorWrapper
-			AmbientColor = new ColorWrapper(0x00101010);
-		[XmlElement("RecursionDepth")]
+			AmbientColor = new ColorWrapper(0x101010);
+		[XmlAttribute("RecursionDepth")]
 		public uint
 			RecursionDepth = 0x01;
-		[XmlElement("LightTest")]
+		[XmlAttribute("LightTest")]
 		public uint
 			LightTest = 0x01;//maximum 0x0101
-		[XmlElement("AntiAliasingSqt")]
+		[XmlAttribute("AntiAliasingSqt")]
 		public uint
 			AntiAliasingSqrt = 0x01;//maximum 0x10
+		[XmlAttribute("Dispersion")]
+		public double
+			Dispersion = 0.0d;
 
 		public EnvironmentSettings () {
 		}
-		public EnvironmentSettings (uint ambientcolor, uint recursionDepth, uint lightTest, uint antialiassingSqrt) {
+		public EnvironmentSettings (uint ambientcolor, uint recursionDepth, uint lightTest, uint antialiasingSqrt, double dispersion = 0.0d) {
 			this.AmbientColor = new ColorWrapper(ambientcolor);
 			this.RecursionDepth = recursionDepth;
 			this.LightTest = lightTest;
-			this.AntiAliasingSqrt = antialiassingSqrt;
+			this.AntiAliasingSqrt = antialiasingSqrt;
 		}
 
 	}
