@@ -346,6 +346,21 @@ namespace Renderer {
 			this.M22 = n22;
 			this.M23 = n23;
 		}
+		public Matrix4 CopyTransform (Matrix4 N) {
+			double n00 = M00*N.M00+M10*N.M01+M20*N.M02;
+			double n01 = M01*N.M00+M11*N.M01+M21*N.M02;
+			double n02 = M02*N.M00+M12*N.M01+M22*N.M02;
+			double n03 = M03*N.M00+M13*N.M01+M23*N.M02+N.M03;
+			double n10 = M00*N.M10+M10*N.M11+M20*N.M12;
+			double n11 = M01*N.M10+M11*N.M11+M21*N.M12;
+			double n12 = M02*N.M10+M12*N.M11+M22*N.M12;
+			double n13 = M03*N.M10+M13*N.M11+M23*N.M12+N.M13;
+			double n20 = M00*N.M20+M10*N.M21+M20*N.M22;
+			double n21 = M01*N.M20+M11*N.M21+M21*N.M22;
+			double n22 = M02*N.M20+M12*N.M21+M22*N.M22;
+			double n23 = M03*N.M20+M13*N.M21+M23*N.M22+N.M23;
+			return new Matrix4(n00, n01, n02, n03, n10, n11, n12, n13, n20, n21, n22, n23);
+		}
 		public static void TransformMatrix (Matrix4 source, Matrix4 manipulator) {
 			source.Transform(manipulator);
 		}

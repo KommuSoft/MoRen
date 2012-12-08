@@ -20,14 +20,27 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 using System.Xml.Serialization;
+using System.IO;
 
 namespace Renderer {
 	
 	[XmlType("Mesh")]
 	public class Mesh {
 		
-		private string filename;
+		[XmlIgnore]
+		private string
+			filename;
+		[XmlIgnore]
+		private string
+			environment;
+		[XmlIgnore]
+		private MeshLoader
+			loader;
+		[XmlIgnore]
+		private string[]
+			parameters;
 		
 		[XmlAttribute("Filename")]
 		public string Filename {
@@ -38,11 +51,56 @@ namespace Renderer {
 				this.filename = value;
 			}
 		}
+		[XmlAttribute("Environment")]
+		public string Environment {
+			get {
+				return this.environment;
+			}
+			set {
+				this.environment = value;
+			}
+		}
+		[XmlArray("Parameters")]
+		[XmlArrayItem("Parameter")]
+		public string[] Parameters {
+			get {
+				return this.parameters;
+			}
+			set {
+				this.parameters = value;
+			}
+		}
 		
 		public Mesh () {
 		}
 		public Mesh (string Filename) {
 			this.Filename = filename;
+		}
+
+		public void Resolve () {
+			if(this.filename == null) {
+				return;
+			}
+			else if(this.filename.EndsWith(".obj")) {
+				this.loader = new LoaderObj();
+			}
+			else if(this.filename.EndsWith(".3ds")) {
+				this.loader = new Loader3ds();
+			}
+			if(this.loader != null) {
+				FileStream fs = File.Open(this.filename, FileMode.Open, FileAccess.Read);
+				this.loader.Load(this.environment, fs);
+				fs.Close();
+			}
+		}
+
+		public List<RenderItem> GenerateItemCollection (Matrix4 transformation) {
+			if(this.loader != null) {
+				return this.loader.Inject(transformation, this.parameters);
+			}
+			else {
+				return new List<RenderItem>();
+			}
 		}
 		
 		

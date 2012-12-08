@@ -21,6 +21,8 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using System.IO;
+
 namespace Renderer.SceneBuilding {
 
 	[XmlRoot("SceneDescription")]
@@ -29,7 +31,7 @@ namespace Renderer.SceneBuilding {
 		private readonly List<Camera> cameras = new List<Camera>();
 		private SceneGraph sg;
 
-		[XmlArray("Cameras")]
+		/*[XmlArray("Cameras")]
 		[XmlArrayItem("Camera")]
 		public List<Camera> Cameras {
 			get {
@@ -41,7 +43,7 @@ namespace Renderer.SceneBuilding {
 					this.cameras.Add(c);
 				}
 			}
-		}
+		}*/
 		[XmlElement("SceneGraph")]
 		public SceneGraph SceneGraph {
 			get {
@@ -54,9 +56,33 @@ namespace Renderer.SceneBuilding {
 		
 		public SceneDescription () {
 		}
-		public SceneDescription (RayTracer rt, SceneGraph sg, params Camera[] cameras) {
+		public SceneDescription (SceneGraph sg) {
+			this.sg = sg;
+		}
+		public SceneDescription (SceneGraph sg, params Camera[] cameras) {
 			this.sg = sg;
 			this.cameras.AddRange(cameras);
+		}
+
+		public static SceneDescription ParseFromStream (Stream stream) {
+			XmlSerializer ser = new XmlSerializer(typeof(SceneDescription));
+			SceneDescription sd = (SceneDescription)ser.Deserialize(stream);
+			return sd;
+		}
+		public static SceneDescription ParseFromStream (string filename) {
+			FileStream fs = File.Open(filename, FileMode.Open, FileAccess.Read);
+			SceneDescription sd = ParseFromStream(fs);
+			fs.Close();
+			return sd;
+		}
+		public void Save (Stream s) {
+			XmlSerializer ser = new XmlSerializer(typeof(SceneDescription));
+			ser.Serialize(s, this);
+		}
+		public void Save (string filename) {
+			FileStream fs = File.Open(filename, FileMode.Create, FileAccess.Write);
+			this.Save(fs);
+			fs.Close();
 		}
 		
 	}

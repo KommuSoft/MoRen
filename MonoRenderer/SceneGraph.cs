@@ -30,7 +30,7 @@ namespace Renderer.SceneBuilding {
 		
 		[XmlIgnore]
 		public readonly MatrixStack
-			Stack = new MatrixStack();
+			matrixStack = new MatrixStack();
 
 		[XmlIgnore]
 		private readonly Dictionary<string,SceneGraphNode>
@@ -47,7 +47,12 @@ namespace Renderer.SceneBuilding {
 		[XmlAttribute("Root")]
 		public string RootGuid {
 			get {
-				return this.Root.Name;
+				if(this.Root != null) {
+					return this.Root.Name;
+				}
+				else {
+					return null;
+				}
 			}
 			set {
 				this.rootName = value;

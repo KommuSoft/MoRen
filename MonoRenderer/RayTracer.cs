@@ -32,6 +32,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.IO;
 using System.Xml.Serialization;
+using Renderer.SceneBuilding;
 
 namespace Renderer {
 	[XmlType("RayTracer")]
@@ -126,6 +127,9 @@ namespace Renderer {
 		}
 		
 		public static int Main (string[] args) {
+			/*SceneDescription sd = new SceneDescription(new SceneGraph());
+			sd.Save("Scene.xml");*/
+			SceneDescription.ParseFromStream("Scene.xml");
 			PerlinCache.InitializeNoiseBuffer();
 			LoaderObj lo = new LoaderObj();
 			//double alpha = 0.0d;

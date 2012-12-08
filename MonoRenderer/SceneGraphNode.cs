@@ -29,7 +29,7 @@ namespace Renderer.SceneBuilding {
 	public sealed class SceneGraphNode : NameBase {
 		[XmlIgnore]
 		private List<string>
-			childGuids = null;
+			childNames = null;
 		[XmlIgnore]
 		public readonly List<SceneGraphNode>
 			SubNodes = new List<SceneGraphNode>();
@@ -53,13 +53,18 @@ namespace Renderer.SceneBuilding {
 				return lg;
 			}
 			set {
-				this.childGuids = value;
+				this.childNames = value;
 			}
 		}
-		[XmlElement("TransformationMatrix")]
+		[XmlElement("Transformation")]
 		public string TransformerString {
 			get {
-				return this.Transformer.ToString();
+				if(this.Transformer != null) {
+					return this.Transformer.ToString();
+				}
+				else {
+					return null;
+				}
 			}
 			set {
 				this.Transformer = Matrix4.Parse(value);
@@ -102,10 +107,13 @@ namespace Renderer.SceneBuilding {
 		}
 
 		public void Resolve (Dictionary<string,SceneGraphNode> dictionary) {
-			if(this.childGuids != null) {
-				this.SubNodes.AddRange(this.childGuids.Select(x => dictionary[x]));
+			if(this.childNames != null) {
+				this.SubNodes.AddRange(this.childNames.Select(x => dictionary[x]));
 			}
-			this.childGuids = null;
+			this.childNames = null;
+			if(this.Mesh != null) {
+				this.Mesh.Resolve();
+			}
 		}
 		
 	}
