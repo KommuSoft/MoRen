@@ -74,11 +74,12 @@ namespace Renderer {
 		public Mesh () {
 		}
 		public Mesh (string Filename) {
-			this.filename = filename;
+			this.Filename = Filename;
+			this.Resolve();
 		}
 
 		public void Resolve () {
-			if(this.filename == null) {
+			if(this.filename == null || this.loader != null) {
 				return;
 			}
 			else if(this.filename.EndsWith(".obj")) {

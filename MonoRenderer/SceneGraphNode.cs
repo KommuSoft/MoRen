@@ -29,7 +29,7 @@ namespace Renderer.SceneBuilding {
 	public sealed class SceneGraphNode : NameBase {
 		[XmlIgnore]
 		private List<string>
-			childNames = null;
+			childNames = new List<string>();
 		[XmlIgnore]
 		public readonly List<SceneGraphNode>
 			SubNodes = new List<SceneGraphNode>();
@@ -39,24 +39,18 @@ namespace Renderer.SceneBuilding {
 		[XmlIgnore]
 		private Matrix4
 			Transformer;
+		private Mesh mesh = null;
 		[XmlArray("SubNodes")]
 		[XmlArrayItem("SubNode")]
 		public List<string> SubNodeNames {
 			get {
-				if(this.SubNodes.Count <= 0x00) {
-					return null;
-				}
-				List<string> lg = new List<string>();
-				foreach(SceneGraphNode sgn in this.SubNodes) {
-					lg.Add(sgn.Name);
-				}
-				return lg;
+				return this.childNames;
 			}
 			set {
 				this.childNames = value;
 			}
 		}
-		[XmlElement("Transformation")]
+		[XmlAttribute("Transformation")]
 		public string TransformerString {
 			get {
 				if(this.Transformer != null) {
@@ -71,8 +65,14 @@ namespace Renderer.SceneBuilding {
 			}
 		}
 		[XmlElement("Mesh")]
-		public Mesh
-			Mesh = null;
+		public Mesh Mesh {
+			get {
+				return this.mesh;
+			}
+			set {
+				this.mesh = value;
+			}
+		}
 		[XmlElement("Light")]
 		public LightWrapper
 			LightWrapper = null;
@@ -100,6 +100,7 @@ namespace Renderer.SceneBuilding {
 		
 		public void AddChild (SceneGraphNode subNode) {
 			this.SubNodes.Add(subNode);
+			this.childNames.Add(subNode.Name);
 		}
 		
 		public override int GetHashCode () {
@@ -121,7 +122,7 @@ namespace Renderer.SceneBuilding {
 		}
 
 		public void Resolve (Dictionary<string,SceneGraphNode> dictionary) {
-			Console.WriteLine("resolving {0}", this.Name);
+			Console.WriteLine("resolving {0} with childs {1}", this.Name, string.Join(",", this.childNames));
 			if(this.childNames != null) {
 				this.SubNodes.AddRange(this.childNames.Select(x => dictionary[x]));
 			}

@@ -21,12 +21,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace Renderer.SceneBuilding {
 	
 	[XmlType("SceneGraph")]
 	public sealed class SceneGraph {
+
+		private SceneGraphNode[] nodes;
 
 		[XmlIgnore]
 		private readonly Dictionary<string,SceneGraphNode>
@@ -41,7 +44,7 @@ namespace Renderer.SceneBuilding {
 		public SceneGraphNode
 			Root;
 		[XmlAttribute("Root")]
-		public string RootGuid {
+		public string RootName {
 			get {
 				if(this.Root != null) {
 					return this.Root.Name;
@@ -55,39 +58,34 @@ namespace Renderer.SceneBuilding {
 			}
 		}
 		
-		[XmlArray("Nodes")]
-		[XmlArrayItem("Node")]
-		public List<SceneGraphNode> Nodes {
+		[XmlArray("SceneGraphNodes")]
+		[XmlArrayItem("SceneGraphNode")]
+		public SceneGraphNode[] GraphNodes {
 			get {
-				List<SceneGraphNode> nodes = new List<SceneGraphNode>();
-				HashSet<SceneGraphNode> visited = new HashSet<SceneGraphNode>(new SceneGraphNode[] { this.Root });
-				Stack<SceneGraphNode> stack = new Stack<SceneGraphNode>(new SceneGraphNode[] { this.Root });
-				while(stack.Count > 0) {
-					SceneGraphNode sgn = stack.Pop();
-					nodes.Add(sgn);
-					if(sgn.SubNodes != null) {
-						foreach(SceneGraphNode c in sgn.SubNodes) {
-							if(!visited.Contains(c)) {
-								visited.Add(c);
-								stack.Push(c);
-							}
-						}
-					}
-				}
-				return nodes;
+				return this.nodes;
 			}
 			set {
-				Console.WriteLine("resolving");
-				foreach(SceneGraphNode sgn in value) {
-					this.cachedNodes.Add(sgn.Name, sgn);
-				}
-				foreach(SceneGraphNode sgn in this.cachedNodes.Values) {
-					sgn.Resolve(this.cachedNodes);
-				}
+				this.nodes = value;
+				this.Resolve();
 			}
 		}
 		public SceneGraph () {
-			this.Root = new SceneGraphNode();
+		}
+
+		public SceneGraph (SceneGraphNode root) {
+			this.Root = root;
+		}
+
+		public void Resolve () {
+			foreach(SceneGraphNode sgn in this.nodes) {
+				this.cachedNodes.Add(sgn.Name, sgn);
+			}
+			foreach(SceneGraphNode sgn in this.cachedNodes.Values) {
+				sgn.Resolve(this.cachedNodes);
+			}
+			if(this.Root == null && this.cachedNodes.ContainsKey(this.rootName)) {
+				this.Root = this.cachedNodes[this.rootName];
+			}
 		}
 
 		public List<RenderItem> Inject () {

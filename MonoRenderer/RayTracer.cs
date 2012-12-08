@@ -127,10 +127,11 @@ namespace Renderer {
 		}
 		
 		public static int Main (string[] args) {
-			SceneDescription sd = new SceneDescription(new SceneGraph());
+			/*SceneDescription sd = new SceneDescription(new SceneGraph());
+			sd.SceneGraph.Root.TransformerString = "Shift 0 0 40";
 			sd.SceneGraph.Root.AddChild(new SceneGraphNode(new Mesh("venus.obj")));
-			sd.Save("Scene2.xml");
-			/*SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");*/
+			sd.Save("Scene2.xml");*/
+			SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
 			Accelerator acc = new OctTreeAccelerator(sd.SceneGraph.Inject());
 			PerlinCache.InitializeNoiseBuffer();
 			LoaderObj lo = new LoaderObj();

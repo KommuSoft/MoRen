@@ -22,7 +22,7 @@ namespace Renderer {
 				Content.Push(this.Top);//simply add a reference to save time
 			}
 			else {
-				Content.Push(this.Top.CopyTransform(matrix));
+				Content.Push(matrix.CopyTransform(this.Top));
 			}
 		}
 		public void PopMatrix () {
