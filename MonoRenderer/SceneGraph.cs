@@ -88,11 +88,12 @@ namespace Renderer.SceneBuilding {
 			}
 		}
 
-		public List<RenderItem> Inject () {
-			List<RenderItem> items = new List<RenderItem>();
+		public Tuple<List<RenderItem>,List<Light>> Inject () {
+			List<RenderItem> ris = new List<RenderItem>();
+			List<Light> lis = new List<Light>();
 			MatrixStack ms = new MatrixStack();
-			this.Root.Inject(this.MaxDepth, ms, items, 0x00);
-			return items;
+			this.Root.Inject(this.MaxDepth, ms, ris, lis, 0x00);
+			return new Tuple<List<RenderItem>, List<Light>>(ris, lis);
 		}
 		
 	}

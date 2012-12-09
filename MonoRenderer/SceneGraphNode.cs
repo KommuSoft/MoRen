@@ -34,9 +34,6 @@ namespace Renderer.SceneBuilding {
 		public readonly List<SceneGraphNode>
 			SubNodes = new List<SceneGraphNode>();
 		[XmlIgnore]
-		private Light
-			light;
-		[XmlIgnore]
 		private Matrix4
 			Transformer;
 		private Mesh mesh = null;
@@ -91,11 +88,11 @@ namespace Renderer.SceneBuilding {
 			this.Mesh = mesh;
 		}
 		public SceneGraphNode (Light light) : this() {
-			this.light = light;
+			this.LightWrapper = new LightWrapper(light);
 		}
 		public SceneGraphNode (Matrix4 transformer, IEnumerable<SceneGraphNode> subNodes, Mesh mesh, Light light) : this(transformer,subNodes) {
 			this.Mesh = mesh;
-			this.light = light;
+			this.LightWrapper = new LightWrapper(light);
 		}
 		
 		public void AddChild (SceneGraphNode subNode) {
@@ -107,14 +104,17 @@ namespace Renderer.SceneBuilding {
 			return this.Name.GetHashCode();
 		}
 
-		public void Inject (int maxDepth, MatrixStack stack, List<RenderItem> items, int depth) {
+		public void Inject (int maxDepth, MatrixStack stack, List<RenderItem> ris, List<Light> lis, int depth) {
 			if(depth < maxDepth) {
 				stack.PushMatrix(this.Transformer);
 				if(this.Mesh != null) {
-					this.Mesh.Inject(stack.Top, items);
+					this.Mesh.Inject(stack.Top, ris);
+				}
+				if(this.LightWrapper != null) {
+					this.LightWrapper.Inject(stack.Top, lis);
 				}
 				foreach(SceneGraphNode sgn in SubNodes) {
-					sgn.Inject(maxDepth, stack, items, depth+1);
+					sgn.Inject(maxDepth, stack, ris, lis, depth+1);
 				}
 				stack.PopMatrix();
 			}

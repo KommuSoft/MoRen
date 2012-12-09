@@ -40,11 +40,11 @@ namespace Renderer.SceneBuilding {
 			Roll = 0.0d;
 		[XmlAttribute("FoVH")]
 		public double
-			FoVH = 0.5d*Math.PI;
-		[XmlAttribute("FoVH")]
+			FoVH = 0.25d*Math.PI;
+		[XmlAttribute("Width")]
 		public uint
 			width;
-		[XmlAttribute("FoVH")]
+		[XmlAttribute("Height")]
 		public uint
 			height;
 
@@ -52,8 +52,13 @@ namespace Renderer.SceneBuilding {
 		public CameraWrapper () {
 		}
 
-		public Camera CreateCamera (Accelerator acc, Light[] lights, EnvironmentSettings es) {
-			return new Camera((int)this.width, (int)this.height, this.ScreenDistance, this.FoVH, acc, lights, es);
+		public Camera Camera (Accelerator acc, Light[] lights, EnvironmentSettings es) {
+			Camera cam = new Camera((int)this.width, (int)this.height, this.ScreenDistance, this.FoVH, acc, lights, es);
+			cam.Position = this.Position;
+			cam.LookAt = this.Lookat;
+			cam.Roll = Roll;
+			cam.MakeDirty();
+			return cam;
 		}
 
 	}

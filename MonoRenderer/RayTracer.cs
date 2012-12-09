@@ -69,7 +69,7 @@ namespace Renderer {
 		public uint CalculateColor (Ray ray, int depth, uint intensityHint) {
 			RenderItem best = null;
 			double t, tdummy;
-			string tabString = new string('\t', depth);
+			//string tabString = new string('\t', depth);
 			best = acc.CalculateHit(ray, out t);
 			if(best != null) {
 				best.Cast(ray, nw);
@@ -79,7 +79,6 @@ namespace Renderer {
 				uint ambient, diffuse, specular, reflectance, refraction;
 				mat.ADSAtAndBump(nw, ray.Direction, out ambient, out diffuse, out specular, out reflectance, out refraction);
 				uint clr = Color.Multiply(this.ambientColor, ambient);
-				Ray srf = new Ray();
 				Point3.ReflectRefract(ray.Direction, nw.Normal, mat.NFactor, rl, rf);
 				rayCache[depth].SetWithEpsilon(hp, rf);
 				foreach(Light li in this.lights) {
@@ -122,9 +121,9 @@ namespace Renderer {
 						clr = Color.Add(clr, Color.Multiply(this.CalculateColor(ray, depth+1, reflint), reflectance));
 					}
 					uint refrint = Color.Multiply(intensityHint, refraction);
-					if(!double.IsNaN(srf.Direction.X) && (refrint&DepthThresholdMask) != 0x00) {
-						uint res = this.CalculateColor(srf, depth+1, refrint);
-						clr = Color.Add(clr, Color.Multiply(res, refraction));
+					if(!double.IsNaN(rayCache[depth].Direction.X)) {// && (refrint&DepthThresholdMask) != 0x00
+						uint res = this.CalculateColor(rayCache[depth], depth+1, refrint);
+						clr = Color.Add(clr, res);
 					}
 				}//*/
 				return Color.loseIntensity(clr, t);
@@ -135,33 +134,20 @@ namespace Renderer {
 		}
 		
 		public static int Main (string[] args) {
-			//SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
 			PerlinCache.InitializeNoiseBuffer();
+			SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
 			Light[] lights = new Light[] {
 				new Light(0x808080, new Point3(-10.0d, 5.0d, 1.0d)),
 				new Light(0x808080, new Point3(10.0d, 20.0d, 22.0d)),
 			};
 			List<CameraPostProcessor> cpps = new List<CameraPostProcessor>();
-			double alpha = 0.0d;
 			TimeSpan ts = new TimeSpan();
-			double depth = 8.0d;
-			EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x10, 0x01, 0x01);
-			List<RenderItem> ris = new List<RenderItem>();
-			//ris.Add(new Sphere(new Point3(0.0d, 2.0d-depth, 60.0d), 2.0d, Material.GlassMaterial));
-			//ris.Add(new Sphere(new Point3(3.0d, 2.0d-depth, 40.0d), 2.0d, Material.MetalMaterial));
-			//ris.Add(new Sphere(new Point3(3.0d, 4.0d-depth, 20.0d), 2.0d, Material.MetalMaterial));
-			ris.Add(new Sphere(new Point3(-3.0d, 2.0d-depth, 30.0d), 2.0d, Material.GlassMaterial));
-			Material globe = new Material(0xffffff, 0xffffff, 0xffffff, 15.0d, 0.0d, new Texture("_nyt.gif"));
-			ris.Add(new Triangle(new Point3(-20.0d, -depth, -2.0d), new Point3(-20.0d, -depth, 50.0d), new Point3(20.0d, -depth, 50.0d), null, null, null, Point3.DummyPoint, Point3.DummyXPoint, Point3.DummyXYPoint, globe));
-			ris.Add(new Triangle(new Point3(-20.0d, -depth, -2.0d), new Point3(20.0d, -depth, 50.0d), new Point3(20.0d, -depth, -2.0d), null, null, null, Point3.DummyPoint, Point3.DummyXYPoint, Point3.DummyYPoint, globe));
-			Accelerator acc = new OctTreeAccelerator(ris);
-			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, es, cpps);
-			cam.Position.SetValues(0.0d, 20.0d, 0.0d);
-			cam.MakeDirty();
-			DateTime start = DateTime.Now;
-			cam.CalculateImage();
+			Accelerator acc = new OctTreeAccelerator(sd.SceneGraph.Inject().Item1);
+			//Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, sd.EnvironmentSettings, cpps);
+			new RenderWindow(sd.BuildScene()).ShowDialog();
+			/*DateTime start = DateTime.Now;
 			DateTime stop = DateTime.Now;
-			ts = ts.Add(stop-start);
+			ts = ts.Add(stop-start);*/
 			//cam.Save("fluttershy/result.png");
 			Console.WriteLine("Testcase took {0}", ts);
 			return 0x00;

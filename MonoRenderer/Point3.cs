@@ -252,16 +252,15 @@ namespace Renderer {
 		}
 		public static void ReflectRefract (Point3 init, Point3 normal, double nfrac, Point3 reflect, Point3 refract) {
 			double cost1 = -init.X*normal.X-init.Y*normal.Y-init.Z*normal.Z;//cosi
-			/*if(cost1 < 0.0d) {
-				Point3 nnorm = new Point3(-normal.X, -normal.Y, -normal.Z);
-				ReflectRefract(init, nnorm, 1.0d/nfrac, reflect, refract);
+			if(cost1 < 0.0d) {
+				Point3 nnormal = new Point3(-normal.X, -normal.Y, -normal.Z);
+				ReflectRefract(init, nnormal, 1.0d/nfrac, reflect, refract);
 				return;
 			}
-			else {*/
 			double ncost1 = nfrac*cost1;
 			double cost2 = Math.Sqrt(1.0d+nfrac*nfrac*(cost1*cost1-1.0d));
 			double factora = 2.0d*cost1;
-			double factorb = (ncost1-cost2)*Math.Sign(cost1);
+			double factorb = (ncost1-cost2);//*Math.Sign(cost1);
 			reflect.X = factora*normal.X+init.X;
 			reflect.Y = factora*normal.Y+init.Y;
 			reflect.Z = factora*normal.Z+init.Z;
@@ -270,7 +269,6 @@ namespace Renderer {
 			refract.Y = nfrac*init.Y+factorb*normal.Y;
 			refract.Z = nfrac*init.Z+factorb*normal.Z;
 			refract.Normalize();
-			//}
 		}
 		public void Mix3Normalize (Point3 xv, Point3 yv, double xf, double yf) {
 			double zf = Math.Sqrt(1.0d-xf*xf-yf*yf);

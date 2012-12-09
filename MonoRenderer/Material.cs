@@ -5,7 +5,7 @@ namespace Renderer {
 
 	public sealed class Material {
 
-		public static readonly Material DefaultMaterial = new Material();
+		public static readonly Material DefaultMaterial = new Material(0xffffff, 0x101010, 0xffffff, 88.0d, 0.75d, null, null, null, 1.0d, 1.1d, double.NaN, null, 0.001d);
 		public static readonly Material RedMaterial = new Material(0xc00000, 0xc00000);
 		public static readonly Material GreenMaterial = new Material(0xc000, 0xc000);
 		public static readonly Material BlueMaterial = new Material(0xc0, 0xc0, 0xc0);

@@ -186,7 +186,7 @@ namespace Renderer {
 			uint aa = aasqrt*aasqrt, aac, aad = aadsqrt*aadsqrt, aadc;
 			Point3 tmp = new Point3(0.0d, 0.0d, 0.0d);
 			double focusLength = Point3.DiffLength(this.position, this.lookAt);
-			double frac = focusLength/this.screenDistance;
+			double frac = 1.0d+focusLength/this.screenDistance;
 			uint aaaad = aa*aad;
 			double dwha = dwh/aasqrt;
 			double dwhad = dispersion*dwh;
@@ -215,6 +215,7 @@ namespace Renderer {
 								for(; m < aadc; m++) {
 									ray.Offset.SetValues(xp+xd, -yp-yd, 0.0d);
 									ray.Direction.SetValues(ray.Offset, tmp);
+									ray.Direction.Normalize();
 									ray.NormalizeDirection();
 									ray.Transform(this.matrix);
 									Color.AddComponents(rt.CalculateColor(ray, 0, 0xffffff), ref aaRedCache, ref aaGreenCache, ref aaBlueCache);

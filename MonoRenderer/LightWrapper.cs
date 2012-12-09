@@ -19,6 +19,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace Renderer.SceneBuilding {
@@ -26,38 +27,34 @@ namespace Renderer.SceneBuilding {
 	[XmlType("Light")]
 	public class LightWrapper {
 
-		[XmlIgnore]
-		private ColorWrapper
-			color;
-
 		[XmlElement("Color")]
-		public ColorWrapper ColorString {
-			get {
-				return this.color;
-			}
-			set {
-				this.color = value;
-			}
-		}
+		public ColorWrapper
+			Color;
+
 		[XmlAttribute("Radius")]
 		public double
-			Radius;
+			Radius = 0.0d;
 
 		[XmlElement("Position")]
 		public Point3
-			Position;
+			Position = new Point3(0.0d, 0.0d, 0.0d);
 
 		public LightWrapper () {
 		}
 
+		public LightWrapper (Light light) {
+			this.Position = light.Position;
+			this.Color = new ColorWrapper(light.Color);
+			this.Radius = light.Radius;
+		}
 		public LightWrapper (ColorWrapper cw, double radius, Point3 pos) {
 			this.Position = pos;
 			this.Radius = radius;
-			this.color = color;
+			this.Color = cw;
 		}
 
-		public Light toLight () {
-			return new Light(this.color.Color, this.Position, this.Radius);
+		public void Inject (Matrix4 matrix, List<Light> lis) {
+			lis.Add(new Light(this.Color.Color, this.Position, this.Radius));
 		}
 
 	}
