@@ -52,6 +52,7 @@ namespace Renderer {
 		private readonly uint lightTest;
 		private readonly Ray[] rayCache;
 		private readonly uint maxDepth;
+		private readonly double distanceUnit = 255000000.0d;
 		
 		public RayTracer (Accelerator acc, Light[] lights, EnvironmentSettings settings) {
 			this.acc = acc;
@@ -111,7 +112,7 @@ namespace Renderer {
 						dis.Normalize();
 						uint clrl = Color.Scale(Color.Multiply(li.Color, diffuse), Point3.CosAngleNorm(dis, norm));
 						clrl = Color.Add(clrl, Color.Scale(Color.Multiply(li.Color, specular), Math.Pow(Point3.CosAngleNorm(rl, dis), mat.Shininess)));
-						clr = Color.Add(clr, Color.loseIntensity(Color.Scale(clrl, light), len));
+						clr = Color.Add(clr, Color.loseIntensity(Color.Scale(clrl, light), distanceUnit, len));
 					}
 				}
 				if(depth < maxDepth) {
@@ -126,7 +127,7 @@ namespace Renderer {
 						clr = Color.Add(clr, Color.Multiply(res, refrint));
 					}
 				}//*/
-				return Color.loseIntensity(clr, t);
+				return Color.loseIntensity(clr, distanceUnit, t);
 			}
 			else {
 				return 0x00000000;

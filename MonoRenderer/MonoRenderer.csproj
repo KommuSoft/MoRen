@@ -106,6 +106,10 @@
     <Compile Include="FactorFromAngle.cs" />
     <Compile Include="MaterialWrapper.cs" />
     <Compile Include="SystemDiagnostics.cs" />
+    <Compile Include="SplitDimensionHeuristic.cs" />
+    <Compile Include="SplitDimensionHeuristics.cs" />
+    <Compile Include="RenderItemStartComparator.cs" />
+    <Compile Include="RenderItemStopComparator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

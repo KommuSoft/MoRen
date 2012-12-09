@@ -34,9 +34,11 @@ namespace Renderer {
 		private readonly FastOctTreeNode root;
 		private readonly RenderItem[] ris;
 
-		public OctTreeAccelerator (List<RenderItem> items) : this(items,(int)Math.Ceiling(Math.Log(Math.Max(items.Count,8.0d), 8.0d))) {
+		public OctTreeAccelerator (List<RenderItem> items) : this(items,(int)Math.Ceiling(Math.Log(Math.Max(items.Count,8.0d), 8.0d)),SplitDimensionHeuristics.SplitHalfDimensionHeuristic) {
 		}
-		public OctTreeAccelerator (List<RenderItem> items, int maxDepth, int maxNodeItems = 8) {
+		public OctTreeAccelerator (List<RenderItem> items, SplitDimensionHeuristic sdh) : this(items,(int)Math.Ceiling(Math.Log(Math.Max(items.Count,8.0d), 8.0d)),sdh) {
+		}
+		public OctTreeAccelerator (List<RenderItem> items, int maxDepth, SplitDimensionHeuristic sdh, int maxNodeItems = 8) {
 			this.maxDepth = maxDepth;
 			this.maxNodeItems = maxNodeItems;
 			List<MarkedItem>[] buildingCaches = new List<MarkedItem>[Math.Max(0x02, maxDepth)+0x01];
@@ -45,7 +47,7 @@ namespace Renderer {
 			}
 			Utils.CalculateBoundingBox(items, out x0, out x1, out y0, out y1, out z0, out z1);
 			buildingCaches[0x00].AddRange(items.Mark());
-			OctTreeNode otn = Order(buildingCaches, 0x00, x0, x1, y0, y1, z0, z1);
+			OctTreeNode otn = Order(sdh, buildingCaches, 0x00, x0, x1, y0, y1, z0, z1);
 			FinalList fl = new FinalList(otn.PropagateSubLists());
 			this.root = new FastOctTreeNode(otn);
 			this.ris = fl.list.Select(x => items[x]).ToArray();
@@ -136,35 +138,38 @@ namespace Renderer {
 			}
 		}
 
-		private OctTreeNode Order (List<MarkedItem>[] caches, int depth, double x0, double x1, double y0, double y1, double z0, double z1) {
+		private OctTreeNode Order (SplitDimensionHeuristic sdh, List<MarkedItem>[] caches, int depth, double x0, double x1, double y0, double y1, double z0, double z1) {
 			List<MarkedItem> currentCache = caches[depth];
 			if(currentCache.Count > maxNodeItems && (depth < maxDepth || depth <= 0x00)) {
 				List<MarkedItem> nextCache = caches[depth+0x01];
-				double x2 = 0.5d*(x0+x1), y2 = 0.5d*(y0+y1), z2 = 0.5d*(z0+z1);
+				double dummy;
+				double x2 = sdh(currentCache.Select(r => r.Item2), 0x00, x0, x1, out dummy);
+				double y2 = sdh(currentCache.Select(r => r.Item2), 0x01, y0, y1, out dummy);
+				double z2 = sdh(currentCache.Select(r => r.Item2), 0x02, z0, z1, out dummy);
 				OctTreeNode[] children = new OctTreeNode[0x08];
 				nextCache.AddRange(currentCache.Where(x => x.Item2.BoxOverlap(x0, x2, y0, y2, z0, z2) && x.Item2.InBox(x0, x2, y0, y2, z0, z2)));
-				children[0x00] = Order(caches, depth+0x01, x0, x2, y0, y2, z0, z2);
+				children[0x00] = Order(sdh, caches, depth+0x01, x0, x2, y0, y2, z0, z2);
 				nextCache.Clear();
 				nextCache.AddRange(currentCache.Where(x => x.Item2.BoxOverlap(x0, x2, y0, y2, z2, z1) && x.Item2.InBox(x0, x2, y0, y2, z2, z1)));
-				children[0x01] = Order(caches, depth+0x01, x0, x2, y0, y2, z2, z1);
+				children[0x01] = Order(sdh, caches, depth+0x01, x0, x2, y0, y2, z2, z1);
 				nextCache.Clear();
 				nextCache.AddRange(currentCache.Where(x => x.Item2.BoxOverlap(x0, x2, y2, y1, z0, z2) && x.Item2.InBox(x0, x2, y2, y1, z0, z2)));
-				children[0x02] = Order(caches, depth+0x01, x0, x2, y2, y1, z0, z2);
+				children[0x02] = Order(sdh, caches, depth+0x01, x0, x2, y2, y1, z0, z2);
 				nextCache.Clear();
 				nextCache.AddRange(currentCache.Where(x => x.Item2.BoxOverlap(x0, x2, y2, y1, z2, z1) && x.Item2.InBox(x0, x2, y2, y1, z2, z1)));
-				children[0x03] = Order(caches, depth+0x01, x0, x2, y2, y1, z2, z1);
+				children[0x03] = Order(sdh, caches, depth+0x01, x0, x2, y2, y1, z2, z1);
 				nextCache.Clear();
 				nextCache.AddRange(currentCache.Where(x => x.Item2.BoxOverlap(x2, x1, y0, y2, z0, z2) && x.Item2.InBox(x2, x1, y0, y2, z0, z2)));
-				children[0x04] = Order(caches, depth+0x01, x2, x1, y0, y2, z0, z2);
+				children[0x04] = Order(sdh, caches, depth+0x01, x2, x1, y0, y2, z0, z2);
 				nextCache.Clear();
 				nextCache.AddRange(currentCache.Where(x => x.Item2.BoxOverlap(x2, x1, y0, y2, z2, z1) && x.Item2.InBox(x2, x1, y0, y2, z2, z1)));
-				children[0x05] = Order(caches, depth+0x01, x2, x1, y0, y2, z2, z1);
+				children[0x05] = Order(sdh, caches, depth+0x01, x2, x1, y0, y2, z2, z1);
 				nextCache.Clear();
 				nextCache.AddRange(currentCache.Where(x => x.Item2.BoxOverlap(x2, x1, y2, y1, z0, z2) && x.Item2.InBox(x2, x1, y2, y1, z0, z2)));
-				children[0x06] = Order(caches, depth+0x01, x2, x1, y2, y1, z0, z2);
+				children[0x06] = Order(sdh, caches, depth+0x01, x2, x1, y2, y1, z0, z2);
 				nextCache.Clear();
 				nextCache.AddRange(currentCache.Where(x => x.Item2.BoxOverlap(x2, x1, y2, y1, z2, z1) && x.Item2.InBox(x2, x1, y2, y1, z2, z1)));
-				children[0x07] = Order(caches, depth+0x01, x2, x1, y2, y1, z2, z1);
+				children[0x07] = Order(sdh, caches, depth+0x01, x2, x1, y2, y1, z2, z1);
 				nextCache.Clear();
 				return new OctTreeInnerNode(x2, y2, z2, children);
 

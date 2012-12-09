@@ -29,45 +29,56 @@ namespace Renderer.SceneBuilding {
 		public string
 			Texture = null;
 		[XmlAttribute("Reflection")]
-		private string
-			Reflection;
+		public string
+			Reflection = null;
 		[XmlAttribute("Bump")]
-		private string
-			Bump;
+		public string
+			Bump = null;
 		[XmlElement("Ambient")]
 		public ColorWrapper
-			Ambient;
+			Ambient = new ColorWrapper(0xc0c0c0);
 		[XmlElement("Specular")]
 		public ColorWrapper
-			Specular;
+			Specular = new ColorWrapper(0xc0c0c0);
 		[XmlElement("Diffuse")]
 		public ColorWrapper
-			Diffuse;
+			Diffuse = new ColorWrapper(0xc0c0c0);
 		[XmlElement("NI")]
 		public double
-			NI;
+			NI = 1.0d;
 		[XmlElement("NT")]
 		public double
-			NT;
+			NT = 1.0d;
 		[XmlElement("Shininess")]
 		public double
-			Shininess;
+			Shininess = 15.0d;
 		[XmlElement("Transparent")]
 		public double
-			Transparent;
+			Transparent = 0.0d;
 		[XmlElement("Reflectance")]
 		public double
-			Reflectance;
+			Reflectance = double.NaN;
 		[XmlAttribute("ReflectedThreshold")]
 		public double
-			ReflectedThreshold;
+			ReflectedThreshold = 0.5d;
 
 		public MaterialWrapper () {
 		}
 
 		public Material GenerateMaterial () {
+			uint ambient = this.Ambient.Color;
 			return null;
 		}
+
+		private ColorAtMethod PerlinNullTexture (string name) {
+			if(name == null || name == string.Empty) {
+				return null;
+			}
+			else {
+				return null;
+			}
+		}
+
 	}
 
 }
