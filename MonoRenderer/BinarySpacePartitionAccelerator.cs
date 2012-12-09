@@ -178,7 +178,6 @@ namespace Renderer {
 
 		private sealed class BinarySpaceNode {
 
-			private readonly double x0, x1;
 			private readonly double x;
 			private readonly int dim;
 			private readonly BinarySpaceNode[] children;

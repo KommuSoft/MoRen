@@ -378,6 +378,11 @@ namespace Renderer {
 				return false;
 			}
 		}
+		public override int GetHashCode () {
+			return this.M00.GetHashCode()^this.M01.GetHashCode()^this.M02.GetHashCode()^this.M03.GetHashCode()
+				^this.M10.GetHashCode()^this.M11.GetHashCode()^this.M12.GetHashCode()^this.M13.GetHashCode()
+				^this.M20.GetHashCode()^this.M21.GetHashCode()^this.M22.GetHashCode()^this.M23.GetHashCode();
+		}
 		public static Matrix4 Parse (string toParse) {
 			if(toParse == null || toParse == string.Empty) {
 				return null;

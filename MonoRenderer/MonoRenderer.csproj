@@ -47,15 +47,11 @@
     <Compile Include="CastResult.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="CombinedList.cs" />
-    <Compile Include="DebugFile.cs" />
-    <Compile Include="Dequeue.cs" />
     <Compile Include="Face.cs" />
     <Compile Include="FinalList.cs" />
     <Compile Include="GlobalClock.cs" />
     <Compile Include="GridAccelerator.cs" />
     <Compile Include="IRenderable.cs" />
-    <Compile Include="KdeTreeAccelerator.cs" />
-    <Compile Include="LazyFunc.cs" />
     <Compile Include="Lensflare.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="Loader3ds.cs" />
@@ -110,6 +106,7 @@
     <Compile Include="SplitDimensionHeuristics.cs" />
     <Compile Include="RenderItemStartComparator.cs" />
     <Compile Include="RenderItemStopComparator.cs" />
+    <Compile Include="NormalTweaker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

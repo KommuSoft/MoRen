@@ -2,7 +2,7 @@ using System;
 
 namespace Renderer {
 
-	public class Lensflare {
+	public class Lensflare : CameraPostProcessor {
 		
 		private int flares = 0;
 		private Texture[] flare;
@@ -19,73 +19,41 @@ namespace Renderer {
 		}
 	
 		public Lensflare () {
+			Reset();
+			WithFlaceCircle(144, 0x330099);
+			WithFlareStrike(320, 48, 0x003267);
+			WithFlareStrike(48, 240, 0x670032);
+			WithFlareRing(120, 0x670000);
+			WithFlareRays(320, 32, 20, 0x121212);
+			WithSecundary(12, 100, 64, 0x6732cd, 64);
 		}
 	
-		public void preset1 () {
-			Clear();
-			addGlow(144, 0x330099);
-			addStrike(320, 48, 0x003366);
-			addStrike(48, 240, 0x660033);
-			addRing(120, 0x660000);
-			addRays(320, 32, 20, 0x111111);
-			addSecs(12, 100, 64, 0x6633cc, 64);
-		}
-		
-		public void preset2 () {
-			Clear();
-			addGlow(144, 0x995500);
-			addStrike(640, 64, 0xCC0000);
-			addStrike(32, 480, 0x0000FF);
-			addStrike(64, 329, 0x330099);
-			addRing(160, 0x990000);
-			addRays(320, 24, 32, 0x332211);
-			addSecs(12, 100, 64, 0x333333, 100);
-			addSecs(12, 60, 40, 0x336699, 80);
-		}
-		
-		public void preset3 () {
-			Clear();
-			addGlow(144, 0x993322);
-			addStrike(400, 200, 0xCC00FF);
-			addStrike(480, 32, 0x0000FF);
-			addRing(180, 0x990000);
-			addRays(240, 32, 48, 0x332200);
-			addSecs(12, 80, 64, 0x555555, 50);
-			addSecs(12, 60, 40, 0x336699, 80);
-		}
-	
-		public void Clear () {
+		public void Reset () {
 			flares = 0;
 			flare = null;
 			flareDist = null;
 		}
-		public void addGlow (int size, uint color) {
-			addFlare(createGlow(size, size, color, 256), 0.0f);
+		public void WithFlaceCircle (int size, uint color) {
+			AddFlareTexture(CreateGlow(size, size, color, 256), 0.0f);
 		}
-		public void addStrike (int width, int height, uint color) {
-			addFlare(createGlow(width, height, color, 48), 0.0f);
+		public void WithFlareStrike (int width, int height, uint color) {
+			AddFlareTexture(CreateGlow(width, height, color, 48), 0.0f);
 		}
-		public void addRing (int size, uint color) {
-			addFlare(createRing(size, color), 0.0f);
+		public void WithFlareRing (int size, uint color) {
+			AddFlareTexture(CreateRing(size, color), 0.0f);
 		}
-		public void addRays (int size, int num, int rad, uint color) {
-			addFlare(createRays(size, num, rad, color), 0.0f);
+		public void WithFlareRays (int size, int num, int rad, uint color) {
+			AddFlareTexture(CreateRays(size, num, rad, color), 0.0f);
 		}
-		public void addSecs (int count, int averidgeSize, int sizeDelta, uint averidgeColor, uint colorDelta) {
+		public void WithSecundary (int count, int averidgeSize, int sizeDelta, uint averidgeColor, uint colorDelta) {
 			for(int i = 0; i < count; i++) {
-				addFlare(createSec(averidgeSize, sizeDelta, averidgeColor, colorDelta), Maths.Random(-0.5f, 3f));
+				AddFlareTexture(CreateSecundary(averidgeSize, sizeDelta, averidgeColor, colorDelta), Maths.Random(-0.5f, 3f));
 			}
 		}
-					
 
-		public void Apply (Texture screen) {
-			//TODO: calculate position
-			//int px=flareObject.vertex[0].x;
-			//int py=flareObject.vertex[0].y;
+		public override void Process (Camera cam, Texture output, Accelerator acc) {
 			int px = 250;
 			int py = 250;
-			//if(!flareObject.vertex[0].visible) return;
-			//if(zBufferSensitive&&(flareObject.vertex[0].z>scene.renderPipeline.zBuffer[px+py*screen.w])) return;
 			int cx = 500;
 			int cy = 500;
 			float dx = (float)(cx-px);
@@ -99,10 +67,10 @@ namespace Renderer {
 				ysize = flare[i].Height;
 				posx = px+(int)(dx*flareDist[i]);
 				posy = py+(int)(dy*flareDist[i]);
-				screen.Add(flare[i], posx-xsize/2, posy-ysize/2, xsize, ysize);
+				cam.Raster.AddWithAlpha(flare[i], posx-xsize/2, posy-ysize/2, xsize, ysize);
 			}
 		}
-		private void addFlare (Texture texture, float relPos) {
+		private void AddFlareTexture (Texture texture, float relPos) {
 			flares++;
 			if(flares == 1) {
 				flare = new Texture[1];
@@ -121,7 +89,7 @@ namespace Renderer {
 			flareDist[flares-1] = relPos;
 		}
 			
-		private Texture createRadialTexture (int w, int h, uint[] colormap, uint[] alphamap) {
+		private Texture CreateCircle (int w, int h, uint[] colormap, uint[] alphamap) {
 			int offset;
 			float relX, relY;
 			Texture newTexture = new Texture(w, h);
@@ -149,22 +117,22 @@ namespace Renderer {
 			return palette;
 		}
 		
-		private Texture createGlow (int w, int h, uint color, uint alpha) {
-			return createRadialTexture(w, h, getGlowPalette(color), getConstantAlpha(alpha));
+		private Texture CreateGlow (int w, int h, uint color, uint alpha) {
+			return CreateCircle(w, h, GetGlowPalette(color), getConstantAlpha(alpha));
 		}
 		
-		private Texture createRing (int size, uint color) {
-			return createRadialTexture(size, size, getColorPalette(color, color), getRingAlpha(40));
+		private Texture CreateRing (int size, uint color) {
+			return CreateCircle(size, size, getColorPalette(color, color), getRingAlpha(40));
 		}
 		
-		private Texture createSec (int size, int sizedelta, uint color, uint colordelta) {
+		private Texture CreateSecundary (int size, int sizedelta, uint color, uint colordelta) {
 			int s = (int)Maths.RandomWithDelta(size, sizedelta);
 			uint c1 = Color.Random(color, colordelta);
 			uint c2 = Color.Random(color, colordelta);
-			return createRadialTexture(s, s, getColorPalette(c1, c2), getSecAlpha());
+			return CreateCircle(s, s, getColorPalette(c1, c2), getSecAlpha());
 		}
 		
-		private Texture createRays (int size, int rays, int rad, uint color) {
+		private Texture CreateRays (int size, int rays, int rad, uint color) {
 			int pos;
 			float relPos;
 			Texture texture = new Texture(size, size);
@@ -192,17 +160,17 @@ namespace Renderer {
 			return texture;
 		}
 		
-		private uint[] getGlowPalette (uint color) {
+		private uint[] GetGlowPalette (uint color) {
 			int r, g, b;
 			float relDist, diffuse, specular;
-			uint[] palette = new uint[256];
-			uint cr = (color>>16)&255;
-			uint cg = (color>>8)&255;
-			uint cb = color&255;
-			for(int i = 255; i >= 0; i--) {
-				relDist = (float)i/255;
-				diffuse = (float)Math.Cos(relDist*1.57);
-				specular = (float)(255/Math.Pow(2.718, relDist*2.718)-(float)i/16);
+			uint[] palette = new uint[0x100];
+			uint cr = (color>>0x10)&0xff;
+			uint cg = (color>>0x08)&0xff;
+			uint cb = color&0xff;
+			for(int i = 0xff; i >= 0x00; i--) {
+				relDist = (float)i/0xff;
+				diffuse = (float)Math.Cos(relDist*Maths.PI_2);
+				specular = (float)(0xff/Math.Pow(Math.E, relDist*Math.E)-(float)i/0x10);
 				r = (int)((float)cr*diffuse+specular);
 				g = (int)((float)cg*diffuse+specular);
 				b = (int)((float)cb*diffuse+specular);
@@ -212,8 +180,8 @@ namespace Renderer {
 		}
 		
 		private uint[] getConstantAlpha (uint alpha) {
-			uint[] alphaPalette = new uint[256];
-			for(int i = 255; i >= 0; i--) {
+			uint[] alphaPalette = new uint[0x100];
+			for(int i = 0xff; i >= 0x00; i--) {
 				alphaPalette[i] = alpha;
 			}
 			return alphaPalette;

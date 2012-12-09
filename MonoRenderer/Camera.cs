@@ -39,8 +39,8 @@ namespace Renderer {
 		private bool dirty = true;
 		private double roll = 0.0d;
 		private double foVH = 0.5d*Math.PI;
-		private readonly Light[] lights;
-		private readonly List<CameraPostProcessor> postProcessors;
+		public readonly Light[] Lights;
+		public readonly List<CameraPostProcessor> postProcessors;
 		private readonly uint antialiasSqrt = 0x01;
 		private readonly EnvironmentSettings settings;
 		private readonly double dispersion = 0.0d;
@@ -125,7 +125,7 @@ namespace Renderer {
 			this.raster = new Texture(w, h);
 			this.foVH = foVH;
 			this.acc = acc;
-			this.lights = lights;
+			this.Lights = lights;
 			this.antialiasSqrt = settings.AntiAliasingSqrt;
 			this.dispersion = settings.Dispersion;
 			this.dispersionAntialiasSqrt = settings.DispersingAntiAliasingSqrt;
@@ -184,7 +184,7 @@ namespace Renderer {
 			uint aasqrt = this.antialiasSqrt;
 			uint aadsqrt = this.dispersionAntialiasSqrt;
 			uint aaRedCache, aaGreenCache, aaBlueCache;
-			RayTracer rt = new RayTracer(this.acc, this.lights, settings);
+			RayTracer rt = new RayTracer(this.acc, this.Lights, settings);
 			uint aa = aasqrt*aasqrt, aac, aad = aadsqrt*aadsqrt, aadc;
 			Point3 tmp = new Point3(0.0d, 0.0d, 0.0d);
 			double focusLength = Point3.DiffLength(this.position, this.lookAt);

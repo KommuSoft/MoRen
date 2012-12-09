@@ -131,7 +131,6 @@ namespace Renderer {
 				perms[i] = new SubList();
 			}
 			int ixm, ixM, iym, iyM, izm, izM;
-			double rix0, riy0, riz0;
 			int rii = 0x00;
 			double xm, xM, ym, yM, zm, zM;
 			foreach(RenderItem ri in items) {

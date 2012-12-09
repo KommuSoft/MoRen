@@ -19,6 +19,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.IO;
 using System.Xml.Serialization;
 
 namespace Renderer.SceneBuilding {
@@ -43,19 +44,19 @@ namespace Renderer.SceneBuilding {
 		[XmlElement("Diffuse")]
 		public ColorWrapper
 			Diffuse = new ColorWrapper(0xc0c0c0);
-		[XmlElement("NI")]
+		[XmlAttribute("NI")]
 		public double
 			NI = 1.0d;
-		[XmlElement("NT")]
+		[XmlAttribute("NT")]
 		public double
 			NT = 1.0d;
-		[XmlElement("Shininess")]
+		[XmlAttribute("Shininess")]
 		public double
 			Shininess = 15.0d;
-		[XmlElement("Transparent")]
+		[XmlAttribute("Transparent")]
 		public double
 			Transparent = 0.0d;
-		[XmlElement("Reflectance")]
+		[XmlAttribute("Reflectance")]
 		public double
 			Reflectance = double.NaN;
 		[XmlAttribute("ReflectedThreshold")]
@@ -67,12 +68,40 @@ namespace Renderer.SceneBuilding {
 
 		public Material GenerateMaterial () {
 			uint ambient = this.Ambient.Color;
-			return null;
+			uint diffuse = this.Diffuse.Color;
+			uint specular = this.Specular.Color;
+			ColorAtMethod texture = PerlinNullOrTexture(this.Texture);
+			ColorAtMethod reflection = PerlinNullOrTexture(this.Reflection);
+			Texture bump = NullOrTexture(this.Bump);
+			return new Material(ambient, diffuse, specular, Shininess, Transparent, texture, reflection, bump, NI, NT, Reflectance, null, ReflectedThreshold);
 		}
 
-		private ColorAtMethod PerlinNullTexture (string name) {
-			if(name == null || name == string.Empty) {
+		private ColorAtMethod PerlinNullOrTexture (string name) {
+			if(name != null && name != string.Empty) {
+				string namelow = name.ToLower();
+				if(namelow.StartsWith("perlin")) {
+					switch(namelow) {
+						case "perlinmarble":
+							return PerlinCache.Marble3;
+						case "perlinwood":
+							return PerlinCache.Wood3;
+						case "perlinsky":
+							return PerlinCache.Sky3;
+						default :
+							return NullOrTexture(name);
+					}
+				}
+				else {
+					return NullOrTexture(name);
+				}
+			}
+			else {
 				return null;
+			}
+		}
+		private Texture NullOrTexture (string name) {
+			if(name != null && name != string.Empty && File.Exists(name)) {
+				return new Texture(name);
 			}
 			else {
 				return null;

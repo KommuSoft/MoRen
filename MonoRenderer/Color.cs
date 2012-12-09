@@ -184,7 +184,6 @@ namespace Renderer {
 				return 0x00;
 			}
 			else {
-				double Gamma = 1.00;
 				uint r = 0x00;
 				uint g = 0x00;
 				uint b = 0x00;

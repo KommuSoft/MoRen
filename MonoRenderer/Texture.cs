@@ -10,22 +10,16 @@ namespace Renderer {
 		public int BitWidth;
 		public int Height;
 		public int Width;
-		public double XStep;
-		public double YStep;
 		public uint[] Pixel;
 		
 		public Texture (int w, int h) {
 			this.Height = h;
 			this.Width = w;
-			this.XStep = 1.0d/Width;
-			this.YStep = 1.0d/Height;
 			this.Pixel = new uint[w*h];
 		}
 		public Texture (int w, int h, uint[] data) {
 			this.Height = h;
 			this.Width = w;
-			this.XStep = 1.0d/Width;
-			this.YStep = 1.0d/Height;
 			int n = w*h;
 			int nn = System.Math.Min(n, data.Length);
 			this.Pixel = new uint[n];
@@ -38,8 +32,6 @@ namespace Renderer {
 		public unsafe Texture (Bitmap bmp) {
 			this.Height = bmp.Height;
 			this.Width = bmp.Width;
-			this.XStep = 1.0d/Width;
-			this.YStep = 1.0d/Height;
 			this.Pixel = new uint[this.Width*this.Height];
 			BitmapData bmd = bmp.LockBits(new Rectangle(0x00, 0x00, this.Width, this.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppPArgb);
 			byte* pix = (byte*)bmd.Scan0;
@@ -82,9 +74,6 @@ namespace Renderer {
 			return (int)(Math.Floor(x*Width)+Math.Floor(y*Height)*Width);
 		}
 		public uint ColorAt (Point3 tu) {
-			//normalize
-			//double x = ((tu.X%1.0d)+1.0d)%1.0d;
-			//double y = ((tu.Y%1.0d)+1.0d)%1.0d;
 			return Pixel[Coordinate(tu.X, tu.Y)];
 		}
 		public void TweakNormal (Point3 tu, Point3 normal, Point3 bumpx, Point3 bumpy) {
@@ -119,7 +108,7 @@ namespace Renderer {
 			uint[] data = additive.Pixel;
 			int n = System.Math.Min(this.Pixel.Length, data.Length);
 			for(int i = 0x00; i < n; i++)
-				this.Pixel[i] = Renderer.Color.Add(this.Pixel[i], data[i]);
+				this.Pixel[i] = Color.Add(this.Pixel[i], data[i]);
 			return this;
 		}
 		public void Add (Texture texture, int posx, int posy, int xsize, int ysize) {
@@ -146,6 +135,35 @@ namespace Renderer {
 				offset2 = (ty>>8)*tw;
 				for(int i = xBase; i < xend; i++) {
 					Pixel[i+offset1] = Color.Add(texture.Pixel[(tx>>8)+offset2], Pixel[i+offset1]);
+					tx += dtx;
+				}
+				ty += dty;
+			}
+		}
+		public void AddWithAlpha (Texture texture, int posx, int posy, int xsize, int ysize) {
+			int w = xsize;
+			int h = ysize;
+			int xBase = posx;
+			int yBase = posy;
+			int tx = texture.Width*255;
+			int ty = texture.Height*255;
+			int tw = texture.Width;
+			int dtx = tx/w;
+			int dty = ty/h;
+			int txBase = Maths.Border(0, -xBase*dtx, 255*tx);
+			int tyBase = Maths.Border(0, -yBase*dty, 255*ty);
+			int xend = Maths.Border(0, xBase+w, Width);
+			int yend = Maths.Border(0, yBase+h, Height);
+			int offset1, offset2;
+			xBase = Maths.Border(0, xBase, Width);
+			yBase = Maths.Border(0, yBase, Height);
+			ty = tyBase;
+			for(int j = yBase; j < yend; j++) {
+				tx = txBase;
+				offset1 = j*Width;
+				offset2 = (ty>>8)*tw;
+				for(int i = xBase; i < xend; i++) {
+					Pixel[i+offset1] = Color.AlphaChannel|Color.Add(texture.Pixel[(tx>>8)+offset2], Pixel[i+offset1]);
 					tx += dtx;
 				}
 				ty += dty;
@@ -265,7 +283,20 @@ namespace Renderer {
 			return this;
 		}
 		public static implicit operator ColorAtMethod (Texture tex) {
-			return tex.ColorAt;
+			if(tex != null) {
+				return tex.ColorAt;
+			}
+			else {
+				return null;
+			}
+		}
+		public static implicit operator NormalTweaker (Texture tex) {
+			if(tex != null) {
+				return tex.TweakNormal;
+			}
+			else {
+				return null;
+			}
 		}
 		
 	}

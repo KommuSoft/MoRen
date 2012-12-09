@@ -28,6 +28,7 @@ namespace Renderer {
 	public class RenderWindow : Form {
 		
 		private Camera cam;
+		private bool constructed = false;
 		
 		public RenderWindow (Camera cam) {
 			this.cam = cam;
@@ -48,10 +49,12 @@ namespace Renderer {
 		private void KeepCameraBusy () {
 			while(true) {
 				this.cam.CalculateImage();
+				this.constructed = true;
+				this.Invalidate();
 			}
 		}
 		private void UpdateForm () {
-			while(true) {
+			while(!constructed) {
 				Thread.Sleep(0x400);
 				if(this.Visible && this.Focused && this.WindowState != FormWindowState.Minimized) {
 					this.Invalidate();

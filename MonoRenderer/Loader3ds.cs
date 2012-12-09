@@ -75,7 +75,6 @@ namespace Renderer {
 		private void readJunk (BinaryReader br, Stream st, Junk3ds parent, ParsingContext ctx) {
 			this.readHeader(br, st);
 			string f;
-			double pct;
 			long until = st.Position+this.nextJunkOffset-6;
 			Junk3ds child;
 			switch(this.currentJunk) {

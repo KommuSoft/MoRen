@@ -47,6 +47,9 @@ namespace Renderer {
 		public abstract double Surface ();
 		public abstract double SplitSurface (double sweep, int dimension);
 		public abstract Tuple<ProxyRenderItem[],ProxyRenderItem[]> SplitAt (double sweep, int dimension);
+		public override int GetHashCode () {
+			return this.Id.GetHashCode();
+		}
 		
 	}
 	

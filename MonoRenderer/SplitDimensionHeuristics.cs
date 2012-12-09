@@ -28,7 +28,7 @@ namespace Renderer {
 
 		public static double SplitHalfDimensionHeuristic (IEnumerable<RenderItem> items, int dim, double x0, double x1, out double heuristicValue) {
 			heuristicValue = 0.0d;
-			return 0.5d*(x0+x1);
+			return 0.5d*x0+0.5d*x1;
 		}
 		public static double HalfTriangleCountHeuristic (IEnumerable<RenderItem> items, int dim, double x0, double x1, out double heuristicValue) {
 			SortedSet<RenderItem> starts = new SortedSet<RenderItem>(items, new RenderItemStartComparator(dim));

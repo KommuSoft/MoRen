@@ -84,8 +84,12 @@ namespace Renderer {
 				yield return new Tuple<ushort, ushort, ushort, ushort>(k, (ushort)(k+0x01), (ushort)(k+0x02), 0x00);
 			}
 		}
-		public static void UnitBox (IEnumerable<Point3> vertices) {
-			//TODO: implement
+		public static T[] GenerateConstantList<T> (T item, int n) {
+			T[] result = new T[n];
+			for(int i = n-0x01; i >= 0x00; i--) {
+				result[i] = item;
+			}
+			return result;
 		}
 		public static Matrix4 ReadMatrixChunk (BinaryReader br) {
 			float t0 = br.ReadSingle();

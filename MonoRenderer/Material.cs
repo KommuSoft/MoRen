@@ -21,14 +21,14 @@ namespace Renderer {
 		public readonly double Transparent;
 		public readonly ColorAtMethod Texture;
 		public readonly ColorAtMethod Reflection;
-		public readonly Texture Bump;
+		public readonly NormalTweaker Bump;
 		public readonly double FresnelR0;
 		public readonly double BrewesterAngle;
 		public readonly double Reflectance;
 		public readonly double ReflectanceThreshold = 1.0d;
 		public readonly FactorFromAngle ReflectanceGetter;
 		
-		public Material (uint ambient = 0xc0c0c0, uint diffuse = 0xc0c0c0, uint specular = 0xc0c0c0, double shininess = 15.0d, double transparent = 0.0d, ColorAtMethod texture = null, ColorAtMethod reflection = null, Texture bump = null, double ni=1.0d, double nt = 1.1d, double reflectance = double.NaN, FactorFromAngle reflectanceGetter = null, double reflectanceThreshold = 0.5d) {
+		public Material (uint ambient = 0xc0c0c0, uint diffuse = 0xc0c0c0, uint specular = 0xc0c0c0, double shininess = 15.0d, double transparent = 0.0d, ColorAtMethod texture = null, ColorAtMethod reflection = null, NormalTweaker bump = null, double ni=1.0d, double nt = 1.1d, double reflectance = double.NaN, FactorFromAngle reflectanceGetter = null, double reflectanceThreshold = 0.5d) {
 			this.Ambient = ambient;
 			this.Specular = specular;
 			this.Diffuse = diffuse;
@@ -53,39 +53,44 @@ namespace Renderer {
 					ReflectanceGetter = ReflectanceConstant;
 				}
 			}
+			if(this.Texture == null) {
+				this.Texture = NullTexture;
+			}
+			if(this.Reflection == null) {
+				this.Reflection = NullTexture;
+			}
+			if(this.Bump == null) {
+				this.Bump = NullBump;
+			}
+		}
+
+		private static uint NullTexture (Point3 p) {
+			return 0xffffff;
+		}
+		private static void NullBump (Point3 tu, Point3 normal, Point3 bumpx, Point3 bumpy) {
 		}
 
 		public void ADSAtAndBump (CastResult cr, Point3 raydir, out uint ambient, out uint diffuse, out uint specular, out uint reflectance, out uint refraction) {
-			//ambient = specular = diffuse = Color.FromWavelength((int)(430*cos+350));
 			Point3 tu = cr.TU;
-			if(this.Bump != null) {
-				this.Bump.TweakNormal(tu, cr.Normal, cr.BumpX, cr.BumpY);
-			}
+			this.Bump(tu, cr.Normal, cr.BumpX, cr.BumpY);
 			double cos = -Point3.CosAngleNorm(raydir, cr.Normal);
 			ambient = this.Ambient;
 			diffuse = this.Diffuse;
 			specular = this.Specular;
-			uint tex;
-			if(this.Texture != null) {
-				tex = this.Texture(tu);
-				ambient = Color.Multiply(ambient, tex);
-				diffuse = Color.Multiply(diffuse, tex);
-				specular = Color.Multiply(specular, tex);
-			}
+			uint tex = this.Texture(tu);
+			ambient = Color.Multiply(ambient, tex);
+			diffuse = Color.Multiply(diffuse, tex);
+			specular = Color.Multiply(specular, tex);
 			double fres = this.ReflectanceGetter(cos);
 			double ta = Math.Max(0.0d, this.ReflectanceThreshold*fres-this.Transparent);
-			//Console.WriteLine("FRES {0} TB {1}", fres, tb);
 			reflectance = Color.FromFrac(ta);
-			if(this.Reflection != null) {
-				tex = this.Reflection(tu);
-				specular = Color.Multiply(specular, tex);
-				reflectance = Color.Multiply(reflectance, tex);
-			}
+			tex = this.Reflection(tu);
+			specular = Color.Multiply(specular, tex);
+			reflectance = Color.Multiply(reflectance, tex);
 			refraction = Color.FromFrac(this.Transparent);
 		}
 
 		public double FresnelLaw (double cos) {
-			//Console.WriteLine("x {0} f {1}", cos, FresnelR0+(1.0d-FresnelR0)*Math.Pow(1.0d-cos, 5.0d));
 			return (FresnelR0+(1.0d-FresnelR0)*Math.Pow(1.0d-cos, 5.0d));
 		}
 		public double ReflectanceConstant (double cos) {

@@ -10,7 +10,6 @@ namespace Renderer {
 		
 		private delegate void LineAction (Match m);
 
-		private static readonly Regex rgx_com = new Regex(@"#.*", RegexOptions.Compiled);
 		private static readonly Regex rgx_pos = new Regex(@"v +([0-9.-]+) ([0-9.-]+) ([0-9.-]+)", RegexOptions.Compiled);
 		private static readonly Regex rgx_tex = new Regex(@"vt +([0-9.-]+) ([0-9.-]+)", RegexOptions.Compiled);
 		private static readonly Regex rgx_nor = new Regex(@"vn +([0-9.-]+) ([0-9.-]+) ([0-9.-]+)", RegexOptions.Compiled);
@@ -140,7 +139,6 @@ namespace Renderer {
 			checkNormTeX();
 			double x0, x1, y0, y1, z0, z1;
 			Utils.CalculateBoundingBox(this.pos, out x0, out x1, out y0, out y1, out z0, out z1);
-			Utils.UnitBox(this.pos);
 		}
 
 		private void checkNormTeX () {
