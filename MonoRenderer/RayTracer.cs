@@ -72,18 +72,16 @@ namespace Renderer {
 			string tabString = new string('\t', depth);
 			best = acc.CalculateHit(ray, out t);
 			if(best != null) {
-				//Console.WriteLine(tabString+"Hitted {0}", best);
 				best.Cast(ray, nw);
 				Point3 norm = nw.Normal;
 				ray.PointAt(t, hp);
 				Material mat = best.Material;
 				uint ambient, diffuse, specular, reflectance, refraction;
 				mat.ADSAtAndBump(nw, ray.Direction, out ambient, out diffuse, out specular, out reflectance, out refraction);
-				//Console.WriteLine(tabString+"Material {0} {1} {2} {3} {4}", ambient.ToString("X"), diffuse.ToString("X"), specular.ToString("X"), reflectance.ToString("X"), refraction.ToString("X"));
 				uint clr = Color.Multiply(this.ambientColor, ambient);
 				Ray srf = new Ray();
-				Point3.ReflectRefract(ray.Direction, nw.Normal, mat.NFactor, rl, srf.Direction);
-				srf.SetOffsetWithEpsilon(hp);
+				Point3.ReflectRefract(ray.Direction, nw.Normal, mat.NFactor, rl, rf);
+				rayCache[depth].SetWithEpsilon(hp, rf);
 				foreach(Light li in this.lights) {
 					double len = Point3.DiffLength(hp, li.Position);
 					double thetafrac = Math.PI-Math.Asin(li.Radius/len);
@@ -117,7 +115,6 @@ namespace Renderer {
 						clr = Color.Add(clr, Color.loseIntensity(Color.Scale(clrl, light), len));
 					}
 				}
-				Console.WriteLine(tabString+"{0} < {1}", depth, maxDepth);
 				if(depth < maxDepth) {
 					uint reflint = Color.Multiply(intensityHint, reflectance);
 					if((reflint&DepthThresholdMask) != 0x00) {
@@ -125,9 +122,7 @@ namespace Renderer {
 						clr = Color.Add(clr, Color.Multiply(this.CalculateColor(ray, depth+1, reflint), reflectance));
 					}
 					uint refrint = Color.Multiply(intensityHint, refraction);
-					Console.WriteLine(tabString+"Looking for refraction: {0}", refraction.ToString("X"));
-					if(!double.IsNaN(srf.Direction.X) && (refrint&DepthThresholdMask) != 0x00) {//
-						//Console.WriteLine(new String('\t', depth)+srf);
+					if(!double.IsNaN(srf.Direction.X) && (refrint&DepthThresholdMask) != 0x00) {
 						uint res = this.CalculateColor(srf, depth+1, refrint);
 						clr = Color.Add(clr, Color.Multiply(res, refraction));
 					}
@@ -140,12 +135,6 @@ namespace Renderer {
 		}
 		
 		public static int Main (string[] args) {
-			Point3 p = new Point3(Maths.Sqrt_2, Maths.Sqrt_2, 0.0d);
-			Point3 q = new Point3(0.0d, 1.0d, 0.0d);
-			Point3 refl = new Point3(), refr = new Point3();
-			Point3.ReflectRefract(p, q, 1.0d, refl, refr);
-			Console.WriteLine("refl {0} refr {1}", refl, refr);
-			//return 0x00;
 			//SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
 			PerlinCache.InitializeNoiseBuffer();
 			Light[] lights = new Light[] {
@@ -173,7 +162,7 @@ namespace Renderer {
 			cam.CalculateImage();
 			DateTime stop = DateTime.Now;
 			ts = ts.Add(stop-start);
-			cam.Save("fluttershy/result.png");
+			//cam.Save("fluttershy/result.png");
 			Console.WriteLine("Testcase took {0}", ts);
 			return 0x00;
 		}

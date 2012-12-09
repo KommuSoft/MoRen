@@ -28,23 +28,12 @@ namespace Renderer.SceneBuilding {
 	[XmlRoot("SceneDescription")]
 	public class SceneDescription {
 		
-		private readonly List<Camera> cameras = new List<Camera>();
+		private CameraWrapper camera;
+		private AcceleratorWrapper acceleratorWrapper;
 		private SceneGraph sg;
 		private EnvironmentSettings es;
 
-		/*[XmlArray("Cameras")]
-		[XmlArrayItem("Camera")]
-		public List<Camera> Cameras {
-			get {
-				return this.cameras;
-			}
-			set {
-				this.cameras.Clear();
-				foreach(Camera c in value) {
-					this.cameras.Add(c);
-				}
-			}
-		}*/
+
 		[XmlElement("EnvironmentSettings")]
 		public EnvironmentSettings EnvironmentSettings {
 			get {
@@ -63,15 +52,29 @@ namespace Renderer.SceneBuilding {
 				this.sg = value;
 			}
 		}
+		[XmlElement("Camera")]
+		public CameraWrapper Camera {
+			get {
+				return this.camera;
+			}
+			set {
+				this.camera = value;
+			}
+		}
+		[XmlElement("Accelerator")]
+		public AcceleratorWrapper AcceleratorWrapper {
+			get {
+				return this.acceleratorWrapper;
+			}
+			set {
+				this.acceleratorWrapper = value;
+			}
+		}
 		
 		public SceneDescription () {
 		}
 		public SceneDescription (SceneGraph sg) {
 			this.sg = sg;
-		}
-		public SceneDescription (SceneGraph sg, params Camera[] cameras) {
-			this.sg = sg;
-			this.cameras.AddRange(cameras);
 		}
 
 		public static SceneDescription ParseFromStream (Stream stream) {
