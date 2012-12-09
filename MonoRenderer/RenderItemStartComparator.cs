@@ -1,5 +1,5 @@
 //
-//  RenderItemComparator.cs
+//  RenderItemStartComparator.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>

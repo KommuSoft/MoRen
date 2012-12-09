@@ -23,7 +23,7 @@ using System;
 namespace Renderer {
 	public static class PerlinCache {
 
-		private static readonly int[] p = new int[512];
+		private static readonly int[] permutationResult = new int[512];
 		private static readonly int[] permutation = { 151,160,137,91,90,15,
    131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
    190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,
@@ -52,20 +52,11 @@ namespace Renderer {
 			double u = PerlinFade(xf);
 			double v = PerlinFade(yf);
 			double w = PerlinFade(zf);
-			int A = p[xi]+yi, AA = p[A]+zi, AB = p[A+0x01]+zi,
-			B = p[xi+0x01]+yi, BA = p[B]+zi, BB = p[B+0x01]+zi;
+			int L = permutationResult[xi]+yi, LL = permutationResult[L]+zi, LR = permutationResult[L+0x01]+zi,
+			R = permutationResult[xi+0x01]+yi, RL = permutationResult[R]+zi, RR = permutationResult[R+0x01]+zi;
 
-			return Maths.LinearInterpolate(w, Maths.LinearInterpolate(v, Maths.LinearInterpolate(u, PerlinGradient(p[AA], xf, yf, zf),
-                                     PerlinGradient(p[BA], xf-0x01, yf, zf)),
-                             Maths.LinearInterpolate(u, PerlinGradient(p[AB], xf, yf-0x01, zf),
-                                     PerlinGradient(p[BB], xf-0x01, yf-0x01, zf))
-			),
-                     Maths.LinearInterpolate(v, Maths.LinearInterpolate(u, PerlinGradient(p[AA+0x01], xf, yf, zf-1),
-                                     PerlinGradient(p[BA+0x01], xf-0x01, yf, zf-0x01)),
-                             Maths.LinearInterpolate(u, PerlinGradient(p[AB+0x01], xf, yf-1, zf-0x01),
-                                     PerlinGradient(p[BB+0x01], xf-0x01, yf-0x01, zf-0x01))
-			)
-			);
+			return Maths.LinearInterpolate(w, Maths.LinearInterpolate(v, Maths.LinearInterpolate(u, PerlinGradient(permutationResult[LL], xf, yf, zf), PerlinGradient(permutationResult[RL], xf-0x01, yf, zf)), Maths.LinearInterpolate(u, PerlinGradient(permutationResult[LR], xf, yf-0x01, zf), PerlinGradient(permutationResult[RR], xf-0x01, yf-0x01, zf))),
+												Maths.LinearInterpolate(v, Maths.LinearInterpolate(u, PerlinGradient(permutationResult[LL+0x01], xf, yf, zf-1), PerlinGradient(permutationResult[RL+0x01], xf-0x01, yf, zf-0x01)), Maths.LinearInterpolate(u, PerlinGradient(permutationResult[LR+0x01], xf, yf-1, zf-0x01), PerlinGradient(permutationResult[RR+0x01], xf-0x01, yf-0x01, zf-0x01))));
 		}
 		static double PerlinFade (double t) {
 			return t*t*t*(t*(0x06*t-0x0f)+0x0a);
@@ -99,7 +90,7 @@ namespace Renderer {
 		}
 		public static void InitializeNoiseBuffer () {
 			for(int i=0; i < 256; i++)
-				p[256+i] = p[i] = permutation[i];
+				permutationResult[256+i] = permutationResult[i] = permutation[i];
 		}
 
 	}

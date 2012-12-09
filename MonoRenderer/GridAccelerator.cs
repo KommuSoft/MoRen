@@ -1,5 +1,5 @@
 //
-//  AcceleratorGrid.cs
+//  GridAccelerator.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>

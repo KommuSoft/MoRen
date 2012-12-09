@@ -1,3 +1,24 @@
+//
+//  Material.cs
+//
+//  Author:
+//       Willem Van Onsem <vanonsem.willem@gmail.com>
+//
+//  Copyright (c) 2012 Willem Van Onsem
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 using System;
 using System.IO;
 
@@ -6,13 +27,6 @@ namespace Renderer {
 	public sealed class Material {
 
 		public static readonly Material DefaultMaterial = new Material();
-		public static readonly Material RedMaterial = new Material(0xc00000, 0xc00000);
-		public static readonly Material GreenMaterial = new Material(0xc000, 0xc000);
-		public static readonly Material BlueMaterial = new Material(0xc0, 0xc0, 0xc0);
-		public static readonly Material YellowMaterial = new Material(0xc0c000, 0xc0c000, 0xc0c000);
-		public static readonly Material PurpleMaterial = new Material(0x800080, 0x800080, 0x800080);
-		public static readonly Material MetalMaterial = new Material(0x303030, 0x303030, 0xffffff, 15.0d, 0.0d, null, null, null, 1.0d, 2.0d, 0.92d, null);
-		public static readonly Material GlassMaterial = new Material(0xffffff, 0x101010, 0xffffff, 88.0d, 0.75d, null, null, null, 1.0d, 1.0d, double.NaN, null, 0.001d);
 		public readonly uint Ambient;
 		public readonly uint Specular;
 		public readonly uint Diffuse;
