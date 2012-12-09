@@ -41,25 +41,6 @@ namespace TestRenderer {
 				}
 			}
 		}
-
-		/*[Test()]
-		public void TestInBox2 () {
-			Random rnd = new Random();
-			Point3 pa = new Point3(), pb = new Point3(), pc = new Point3();
-			Triangle t = new Triangle(pa, pb, pc, null, null, null, null, null, null, null);
-			long j = 0x00;
-			for(int i = int.MinValue; i < int.MaxValue; i++) {
-				pa.SetValues(rnd.NextDouble(), rnd.NextDouble(), rnd.NextDouble());
-				pb.SetValues(rnd.NextDouble(), rnd.NextDouble(), rnd.NextDouble());
-				pc.SetValues(rnd.NextDouble(), rnd.NextDouble(), rnd.NextDouble());
-				double a = rnd.NextDouble(), b = rnd.NextDouble(), c = rnd.NextDouble(), d = rnd.NextDouble(), e = rnd.NextDouble(), f = rnd.NextDouble();
-				double mx = Math.Min(a, b), Mx = Math.Max(a, b), my = Math.Min(c, d), My = Math.Max(c, d), mz = Math.Min(e, f), Mz = Math.Max(e, f);
-				if(t.InBox(mx, Mx, my, My, mz, Mz)) {
-					j++;
-				}
-			}
-			Console.WriteLine(j/((double)int.MaxValue-int.MinValue));
-		}*/
 	}
 }
 
