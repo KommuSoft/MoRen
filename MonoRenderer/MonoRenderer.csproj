@@ -104,6 +104,8 @@
     <Compile Include="AcceleratorType.cs" />
     <Compile Include="ColorAtMethod.cs" />
     <Compile Include="FactorFromAngle.cs" />
+    <Compile Include="MaterialWrapper.cs" />
+    <Compile Include="SystemDiagnostics.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

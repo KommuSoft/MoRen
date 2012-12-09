@@ -18,10 +18,12 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#undef FALSE_COLOR
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Xml.Serialization;
 using Renderer.SceneBuilding;
 
 namespace Renderer {
@@ -218,7 +220,15 @@ namespace Renderer {
 									ray.Direction.Normalize();
 									ray.NormalizeDirection();
 									ray.Transform(this.matrix);
+#if FALSE_COLOR
+									rt.CalculateColor(ray, 0, 0xffffff);
+									aaRedCache += SystemDiagnostics.Intersections;
+									aaGreenCache += SystemDiagnostics.Intersections;
+									aaBlueCache += SystemDiagnostics.Intersections;
+									SystemDiagnostics.Intersections = 0x00;
+#else
 									Color.AddComponents(rt.CalculateColor(ray, 0, 0xffffff), ref aaRedCache, ref aaGreenCache, ref aaBlueCache);
+#endif
 									xd += dwhad;
 								}
 								yd += dwhad;

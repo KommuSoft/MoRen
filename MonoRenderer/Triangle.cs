@@ -1,5 +1,29 @@
+//
+//  Triangle.cs
+//
+//  Author:
+//       Willem Van Onsem <vanonsem.willem@gmail.com>
+//
+//  Copyright (c) 2012 Willem Van Onsem
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#undef FALSE_COLOR
+
 using System;
 using System.Collections.Generic;
+
 
 namespace Renderer {
 	
@@ -145,7 +169,6 @@ namespace Renderer {
 			return invPlaneBoxOverlap(normalx, normaly, normalz, v0x, v0y, v0z, bhx, bhy, bhz);
 		}
 		private bool invPlaneBoxOverlap (double normalx, double normaly, double normalz, double v0x, double v0y, double v0z, double bhx, double bhy, double bhz) {
-			int q;
 			double s0 = Math.Sign(normalx), s1 = Math.Sign(normaly), s2 = Math.Sign(normalz);
 			s0 = s0-s0*s0+1;
 			s1 = s1-s1*s1+1;
@@ -163,7 +186,7 @@ namespace Renderer {
 			return false;
 		}
 		private bool invAxisTestYZ (double bhy, double bhz, double a, double b, double fa, double fb, double v0y, double v0z, double v2y, double v2z) {
-			double min, max, p0, p1, p2, rad;
+			double min, max, p0, p2, rad;
 			p0 = a*v0y-b*v0z;
 			p2 = a*v2y-b*v2z;
 			min = Math.Min(p0, p2);
@@ -177,6 +200,9 @@ namespace Renderer {
 			return (min > bh || max < -bh);
 		}
 		public override double HitAt (Ray ray) {
+#if FALSE_COLOR
+			SystemDiagnostics.Intersections++;
+#endif
 			double j = ray.X0-p0.X;
 			double k = ray.Y0-p0.Y;
 			double l = ray.Z0-p0.Z;

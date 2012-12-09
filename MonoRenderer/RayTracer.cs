@@ -121,9 +121,9 @@ namespace Renderer {
 						clr = Color.Add(clr, Color.Multiply(this.CalculateColor(ray, depth+1, reflint), reflectance));
 					}
 					uint refrint = Color.Multiply(intensityHint, refraction);
-					if(!double.IsNaN(rayCache[depth].Direction.X)) {// && (refrint&DepthThresholdMask) != 0x00
+					if(!double.IsNaN(rayCache[depth].Direction.X) && (refrint&DepthThresholdMask) != 0x00) {// && (refrint&DepthThresholdMask) != 0x00
 						uint res = this.CalculateColor(rayCache[depth], depth+1, refrint);
-						clr = Color.Add(clr, res);
+						clr = Color.Add(clr, Color.Multiply(res, refrint));
 					}
 				}//*/
 				return Color.loseIntensity(clr, t);

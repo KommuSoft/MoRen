@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.IO;
+using Renderer.SceneBuilding;
 
 namespace Renderer {
 	
@@ -41,6 +42,9 @@ namespace Renderer {
 		[XmlIgnore]
 		private string[]
 			parameters;
+		[XmlIgnore]
+		private MaterialWrapper
+			material;
 		
 		[XmlAttribute("Filename")]
 		public string Filename {
@@ -70,6 +74,15 @@ namespace Renderer {
 				this.parameters = value;
 			}
 		}
+		[XmlElement("Material")]
+		public MaterialWrapper Material {
+			get {
+				return this.material;
+			}
+			set {
+				this.material = value;
+			}
+		}
 		
 		public Mesh () {
 		}
@@ -90,6 +103,9 @@ namespace Renderer {
 			}
 			if(this.loader != null) {
 				FileStream fs = File.Open(this.filename, FileMode.Open, FileAccess.Read);
+				if(this.material != null) {
+					this.loader.DefaultMaterial = this.material.GenerateMaterial();
+				}
 				this.loader.Load(this.environment, fs);
 				fs.Close();
 			}

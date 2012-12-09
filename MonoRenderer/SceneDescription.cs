@@ -93,8 +93,8 @@ namespace Renderer.SceneBuilding {
 			Accelerator acc = this.AcceleratorWrapper.CreateAccelerator(ris);
 			//return cam;
 			Camera cam = this.camera.Camera(acc, lights, es);
-			cam.CalculateImage();
-			cam.Save("refraction.png");
+			//cam.CalculateImage();
+			//cam.Save("refraction.png");
 			return cam;
 		}
 		public static SceneDescription ParseFromStream (Stream stream) {

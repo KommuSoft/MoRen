@@ -5,7 +5,7 @@ namespace Renderer {
 
 	public sealed class Material {
 
-		public static readonly Material DefaultMaterial = new Material(0xffffff, 0x101010, 0xffffff, 88.0d, 0.75d, null, null, null, 1.0d, 1.1d, double.NaN, null, 0.001d);
+		public static readonly Material DefaultMaterial = new Material();
 		public static readonly Material RedMaterial = new Material(0xc00000, 0xc00000);
 		public static readonly Material GreenMaterial = new Material(0xc000, 0xc000);
 		public static readonly Material BlueMaterial = new Material(0xc0, 0xc0, 0xc0);
@@ -19,17 +19,16 @@ namespace Renderer {
 		public readonly double NFactor;
 		public readonly double Shininess;
 		public readonly double Transparent;
-		public readonly Texture Texture;
-		public readonly Texture Reflection;
+		public readonly ColorAtMethod Texture;
+		public readonly ColorAtMethod Reflection;
 		public readonly Texture Bump;
-		public readonly Texture Envmap;
 		public readonly double FresnelR0;
 		public readonly double BrewesterAngle;
 		public readonly double Reflectance;
 		public readonly double ReflectanceThreshold = 1.0d;
 		public readonly FactorFromAngle ReflectanceGetter;
 		
-		public Material (uint ambient = 0xc0c0c0, uint diffuse = 0xc0c0c0, uint specular = 0xc0c0c0, double shininess = 15.0d, double transparent = 0.0d, Texture texture = null, Texture reflection = null, Texture bump = null, double ni=1.0d, double nt = 1.1d, double reflectance = double.NaN, FactorFromAngle reflectanceGetter = null, double reflectanceThreshold = 0.5d) {
+		public Material (uint ambient = 0xc0c0c0, uint diffuse = 0xc0c0c0, uint specular = 0xc0c0c0, double shininess = 15.0d, double transparent = 0.0d, ColorAtMethod texture = null, ColorAtMethod reflection = null, Texture bump = null, double ni=1.0d, double nt = 1.1d, double reflectance = double.NaN, FactorFromAngle reflectanceGetter = null, double reflectanceThreshold = 0.5d) {
 			this.Ambient = ambient;
 			this.Specular = specular;
 			this.Diffuse = diffuse;
@@ -68,7 +67,7 @@ namespace Renderer {
 			specular = this.Specular;
 			uint tex;
 			if(this.Texture != null) {
-				tex = this.Texture.ColorAt(tu);
+				tex = this.Texture(tu);
 				ambient = Color.Multiply(ambient, tex);
 				diffuse = Color.Multiply(diffuse, tex);
 				specular = Color.Multiply(specular, tex);
@@ -78,7 +77,7 @@ namespace Renderer {
 			//Console.WriteLine("FRES {0} TB {1}", fres, tb);
 			reflectance = Color.FromFrac(ta);
 			if(this.Reflection != null) {
-				tex = this.Reflection.ColorAt(tu);
+				tex = this.Reflection(tu);
 				specular = Color.Multiply(specular, tex);
 				reflectance = Color.Multiply(reflectance, tex);
 			}
@@ -91,21 +90,6 @@ namespace Renderer {
 		}
 		public double ReflectanceConstant (double cos) {
 			return Reflectance;
-		}
-
-		public void ADSAt11 (Point3 tu, out uint ambient, out uint diffuse, out uint specular) {
-			ambient = this.Ambient;
-			diffuse = this.Diffuse;
-			specular = this.Specular;
-			uint tex;
-			tex = this.Texture.ColorAt(tu);
-			ambient = Color.Multiply(ambient, tex);
-			diffuse = Color.Multiply(diffuse, tex);
-			specular = Color.Multiply(specular, tex);
-			tex = this.Reflection.ColorAt(tu);
-			//ambient = Color.Multiply(ambient, tex);
-			//diffuse = Color.Multiply(diffuse, tex);
-			specular = Color.Multiply(specular, tex);
 		}
 		
 	}
