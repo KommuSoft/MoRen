@@ -9,6 +9,7 @@ namespace Renderer {
 		public const uint RedChannel = 0x00ff0000;
 		public const uint GreenChannel = 0x0000ff00;
 		public const uint BlueChannel = 0x000000ff;
+		public const uint ColorChannel = RedChannel|GreenChannel|BlueChannel;
 		public const ulong RedChannel64 = 0xffff00000000;
 		public const ulong GreenChannel64 = 0x0000ffff0000;
 		public const ulong BlueChannel64 = 0x00000000ffff;

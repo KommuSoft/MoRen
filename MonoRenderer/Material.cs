@@ -8,10 +8,11 @@ namespace Renderer {
 		public static readonly Material DefaultMaterial = new Material();
 		public static readonly Material RedMaterial = new Material(0xc00000, 0xc00000);
 		public static readonly Material GreenMaterial = new Material(0xc000, 0xc000);
-		public static readonly Material BlueMaterial = new Material(0xc0, 0xc0);
-		public static readonly Material YellowMaterial = new Material(0xffff00, 0xffff00);
-		public static readonly Material PurpleMaterial = new Material(0xffff, 0xffff);
+		public static readonly Material BlueMaterial = new Material(0xc0, 0xc0, 0xc0);
+		public static readonly Material YellowMaterial = new Material(0xc0c000, 0xc0c000, 0xc0c000);
+		public static readonly Material PurpleMaterial = new Material(0x800080, 0x800080, 0x800080);
 		public static readonly Material MetalMaterial = new Material(0x101010, 0x101010, 0xffffff, 15.0d, 0.0d, null, null, null, 1.0d, 2.0d, 0.92d, null);
+		public static readonly Material GlassMaterial = new Material(0xffffff, 0x303030, 0xffffff, 88.0d, 0.75d, null, null, null, 1.0d, 1.52d, double.NaN, null);
 		public readonly uint Ambient;
 		public readonly uint Specular;
 		public readonly uint Diffuse;
@@ -25,9 +26,10 @@ namespace Renderer {
 		public readonly double FresnelR0;
 		public readonly double BrewesterAngle;
 		public readonly double Reflectance;
+		public readonly double ReflectanceThreshold = 0.5d;
 		public readonly FactorFromAngle ReflectanceGetter;
 		
-		public Material (uint ambient = 0xc0c0c0, uint diffuse = 0xc0c0c0, uint specular = 0xffffff, double shininess = 15.0d, double transparent = 0.0d, Texture texture = null, Texture reflection = null, Texture bump = null, double ni=1.0d, double nt = 1.553d, double reflectance = double.NaN, FactorFromAngle reflectanceGetter = null) {
+		public Material (uint ambient = 0xc0c0c0, uint diffuse = 0xc0c0c0, uint specular = 0xc0c0c0, double shininess = 15.0d, double transparent = 0.0d, Texture texture = null, Texture reflection = null, Texture bump = null, double ni=1.0d, double nt = 1.1d, double reflectance = double.NaN, FactorFromAngle reflectanceGetter = null) {
 			this.Ambient = ambient;
 			this.Specular = specular;
 			this.Diffuse = diffuse;
@@ -36,8 +38,10 @@ namespace Renderer {
 			this.Shininess = shininess;
 			this.Texture = texture;
 			this.Reflection = reflection;
+			this.Transparent = transparent;
 			this.Bump = bump;
 			this.FresnelR0 = (this.NFactor-1.0d)/(this.NFactor+1.0d);
+			NFactor = 1.0d/NFactor;
 			this.FresnelR0 *= this.FresnelR0;
 			this.Reflectance = reflectance;
 			this.ReflectanceGetter = reflectanceGetter;
@@ -51,12 +55,13 @@ namespace Renderer {
 			}
 		}
 
-		public void ADSAt (Point3 tu, double cos, out uint ambient, out uint diffuse, out uint specular, out uint reflectance) {
+		public void ADSAtAndBump (CastResult cr, double cos, out uint ambient, out uint diffuse, out uint specular, out uint reflectance, out uint refraction) {
 			//ambient = specular = diffuse = Color.FromWavelength((int)(430*cos+350));
 			ambient = this.Ambient;
 			diffuse = this.Diffuse;
 			specular = this.Specular;
 			uint tex;
+			Point3 tu = cr.TU;
 			if(this.Texture != null) {
 				tex = this.Texture.ColorAt(tu);
 				ambient = Color.Multiply(ambient, tex);
@@ -67,12 +72,21 @@ namespace Renderer {
 				tex = this.Reflection.ColorAt(tu);
 				specular = Color.Multiply(specular, tex);
 			}
-			reflectance = Color.Scale(specular, this.ReflectanceGetter(cos));
+			if(this.Bump != null) {
+				this.Bump.TweakNormal(tu, cr.Normal, cr.BumpX, cr.BumpY);
+			}
+			double fres = this.ReflectanceGetter(cos);
+			reflectance = Color.Scale(specular, fres);
+			refraction = Color.FromFrac(this.Transparent-fres);
+			/*if(this.Transparent > 0.5d) {
+				Console.WriteLine("REFR {0}", refraction.ToString("X"));
+			}*/
 			//reflectance = specular;
 		}
 
 		public double FresnelLaw (double cos) {
-			return FresnelR0+(1.0d-FresnelR0)*Math.Pow(cos, 5.0d);
+			//Console.WriteLine("x {0} f {1}", cos, FresnelR0+(1.0d-FresnelR0)*Math.Pow(1.0d-cos, 5.0d));
+			return this.ReflectanceThreshold*(FresnelR0+(1.0d-FresnelR0)*Math.Pow(1.0d-cos, 5.0d));
 		}
 		public double ReflectanceConstant (double cos) {
 			return Reflectance;

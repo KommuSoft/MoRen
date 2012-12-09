@@ -11,11 +11,14 @@ namespace Renderer {
 		public const double PI4 = 4.0d*PI;
 		public const double PI_4 = 0.25d*PI;
 		public const double PI2Inv = 1.0d/PI2;
+		public static readonly double Sqrt_2 = Math.Sqrt(0.5d);
 		public const double OneThird = 1.0d/3.0d;
 		public const double GlobalEpsilon = 1e-6;
 		public const int NotBinaryIntMask = ~0x01;
 		public const double UShortToPercentage = 1.0d/ushort.MaxValue;
 		public const double ToPercentage = 0.01d;
+		public const double ColorChannelInv = 1.0d/Color.ColorChannel;
+		public static readonly double ColorChannelInvSqrt_2 = Sqrt_2*ColorChannelInv;
 			
 		///<summary>
 		///Borders the given value between the given borders. If the value isn't outside the borders, the method returns

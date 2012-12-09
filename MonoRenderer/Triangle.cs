@@ -7,6 +7,7 @@ namespace Renderer {
 		
 		private readonly Point3 p0, p1, p2, n0, n1, n2;
 		private readonly Point3 t0, t1, t2;
+		private readonly Point3 bumpx, bumpy;
 		
 		public Triangle (Point3 a, Point3 b, Point3 c, Material material) : this(a,b,c,null,null,null,null,null,null,material) {
 		}
@@ -29,11 +30,40 @@ namespace Renderer {
 				this.t0 = Point3.DummyPoint;
 				this.t1 = Point3.DummyPoint;
 				this.t2 = Point3.DummyPoint;
+				this.bumpx = Point3.DummyPoint;
+				this.bumpy = Point3.DummyPoint;
 			}
 			else {
 				this.t0 = ta;
 				this.t1 = tb;
 				this.t2 = tc;
+				double txa = tb.X-ta.X;
+				double tya = tb.Y-ta.Y;
+				double txb = tc.X-ta.X;
+				double tyb = tc.Y-ta.Y;
+				double frac = txb*tya-txa*tyb;
+				double alpha, beta, gamma;
+				if(Math.Abs(frac) >= Maths.GlobalEpsilon) {
+					frac = 1.0d/frac;
+					alpha = -tyb*frac;
+					beta = tya*frac;
+					gamma = 1.0d-alpha-beta;
+					this.bumpx = new Point3(a.X*gamma+b.X*alpha+c.X*beta,
+					                        a.Y*gamma+b.Y*alpha+c.Y*beta,
+					                        a.Z*gamma+b.Z*alpha+c.Z*beta);
+					this.bumpx.Normalize();
+					alpha = txb*frac;
+					beta = -txa*frac;
+					gamma = 1.0d-alpha-beta;
+					this.bumpy = new Point3(a.X*gamma+b.X*alpha+c.X*beta,
+					                        a.Y*gamma+b.Y*alpha+c.Y*beta,
+					                        a.Z*gamma+b.Z*alpha+c.Z*beta);
+					this.bumpy.Normalize();
+				}
+				else {
+					this.bumpx = Point3.DummyPoint;
+					this.bumpy = Point3.DummyPoint;
+				}
 			}
 		}
 		
@@ -194,7 +224,9 @@ namespace Renderer {
 			        alpha*n0.Z+beta*n1.Z+gamma*n2.Z,
 			        alpha*t0.X+beta*t1.X+gamma*t2.X,
 			        alpha*t0.Y+beta*t1.Y+gamma*t2.Y,
-			        alpha*t0.Z+beta*t1.Z+gamma*t2.Z);
+			        alpha*t0.Z+beta*t1.Z+gamma*t2.Z,
+			        this.bumpx,
+			        this.bumpy);
 			cr.NormalizeNormal();
 		}
 

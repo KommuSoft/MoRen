@@ -6,20 +6,26 @@ namespace Renderer {
 	
 	public sealed class Texture {
 		
-		internal int BitHeight;
-		internal int BitWidth;
-		internal int Height;
-		internal int Width;
-		internal uint[] Pixel;
+		public int BitHeight;
+		public int BitWidth;
+		public int Height;
+		public int Width;
+		public double XStep;
+		public double YStep;
+		public uint[] Pixel;
 		
 		public Texture (int w, int h) {
 			this.Height = h;
 			this.Width = w;
+			this.XStep = 1.0d/Width;
+			this.YStep = 1.0d/Height;
 			this.Pixel = new uint[w*h];
 		}
 		public Texture (int w, int h, uint[] data) {
 			this.Height = h;
 			this.Width = w;
+			this.XStep = 1.0d/Width;
+			this.YStep = 1.0d/Height;
 			int n = w*h;
 			int nn = System.Math.Min(n, data.Length);
 			this.Pixel = new uint[n];
@@ -32,6 +38,8 @@ namespace Renderer {
 		public unsafe Texture (Bitmap bmp) {
 			this.Height = bmp.Height;
 			this.Width = bmp.Width;
+			this.XStep = 1.0d/Width;
+			this.YStep = 1.0d/Height;
 			this.Pixel = new uint[this.Width*this.Height];
 			BitmapData bmd = bmp.LockBits(new Rectangle(0x00, 0x00, this.Width, this.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppPArgb);
 			byte* pix = (byte*)bmd.Scan0;
@@ -68,13 +76,27 @@ namespace Renderer {
 		public unsafe void Save (string name) {
 			this.ToBitmap().Save(name);
 		}
+		private int Coordinate (double tux, double tuy) {
+			double x = tux;
+			double y = tuy;
+			//double x = Math.Abs(tux%1.0d);
+			//double y = 1.0d-Math.Abs(tuy%1.0d);
+			//Console.WriteLine("fetch {0} {1}", tux, tuy);
+			//Console.WriteLine("also known as {0} {1}", Math.Floor(x*Width), Math.Floor(y*Height));
+			return (int)(Math.Floor(x*Width)+Math.Floor(y*Height)*Width);
+		}
 		public uint ColorAt (Point3 tu) {
 			//normalize
 			//double x = ((tu.X%1.0d)+1.0d)%1.0d;
 			//double y = ((tu.Y%1.0d)+1.0d)%1.0d;
-			double x = Math.Abs(tu.X%1.0d);
-			double y = 1.0d-Math.Abs(tu.Y%1.0d);
-			return Pixel[(int)Math.Floor(x*Width)+(int)Math.Floor(y*Height)*Width];
+			return Pixel[Coordinate(tu.X, tu.Y)];
+		}
+		public void TweakNormal (Point3 tu, Point3 normal, Point3 bumpx, Point3 bumpy) {
+			double xdiff = Pixel[Coordinate(tu.X+XStep, tu.Y)]&Color.ColorChannel-Pixel[Coordinate(tu.X-XStep, tu.Y)]&Color.ColorChannel;
+			double ydiff = Pixel[Coordinate(tu.X, tu.Y+YStep)]&Color.ColorChannel-Pixel[Coordinate(tu.X, tu.Y-YStep)]&Color.ColorChannel;
+			//Console.WriteLine("XDiff {0} YDiff {1}", xdiff, ydiff);
+			//Console.WriteLine(Maths.ColorChannelInvSqrt_2);
+			normal.Mix3Normalize(bumpx, bumpy, xdiff*Maths.ColorChannelInvSqrt_2, ydiff*Maths.ColorChannelInvSqrt_2);
 		}
 		private void setSize (int width, int height) {
 			int offset = width*height;

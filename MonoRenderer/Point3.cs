@@ -31,6 +31,12 @@ namespace Renderer {
 		[XmlIgnore]
 		public static readonly Point3
 			DummyPoint = new Point3(0.0d, 0.0d, 0.0d);
+		[XmlIgnore]
+		public static readonly Point3
+			DummyXPoint = new Point3(1.0d, 0.0d, 0.0d);
+		[XmlIgnore]
+		public static readonly Point3
+			DummyYPoint = new Point3(0.0d, 1.0d, 0.0d);
 
 		[XmlIgnore]
 		public static readonly IComparer<Point3>
@@ -236,15 +242,33 @@ namespace Renderer {
 			result.Y = factor*normal.Y+init.Y;
 			result.Z = factor*normal.Z+init.Z;
 		}
-		public static void ReflectRefract (Point3 init, Point3 normal, double nfrac, ref Point3 reflect) {
-			double cost1 = -init.X*normal.X-init.Y*normal.Y-init.Z*normal.Z;
+		public static void ReflectRefract (Point3 init, Point3 normal, double nfrac, Point3 reflect, Point3 refract) {
+			double cost1 = -init.X*normal.X-init.Y*normal.Y-init.Z*normal.Z;//cosi
+			if(cost1 < 0.0d) {
+				//Console.WriteLine("YES");
+				nfrac = 1.0d/nfrac;
+				//cost1 = -cost1;
+			}
 			double ncost1 = nfrac*cost1;
+			//Console.WriteLine(1.0d+ncost1*ncost1-nfrac*nfrac);
 			double cost2 = Math.Sqrt(1.0d+ncost1*ncost1-nfrac*nfrac);
 			double factora = 2.0d*cost1;
-			double factorb = (ncost1-cost2)*Math.Sign(ncost1);
+			double factorb = (Math.Abs(ncost1)-cost2)*Math.Sign(cost1);
 			reflect.X = factora*normal.X+init.X;
 			reflect.Y = factora*normal.Y+init.Y;
 			reflect.Z = factora*normal.Z+init.Z;
+			refract.X = nfrac*init.X+factorb*normal.X;
+			refract.Y = nfrac*init.Y+factorb*normal.Y;
+			refract.Z = nfrac*init.Z+factorb*normal.Z;
+		}
+		public void Mix3Normalize (Point3 xv, Point3 yv, double xf, double yf) {
+			//Console.WriteLine("mix {0} {1}/{3} {2}/{4}", this, xv, yv, xf, yf);
+			double zf = Math.Sqrt(1.0d-xf*xf-yf*yf);
+			this.X = this.X*zf+xv.X*xf+yv.X*yf;
+			this.Y = this.Y*zf+xv.Y*xf+yv.Y*yf;
+			this.Z = this.Z*zf+xv.Z*xf+yv.Z*yf;
+			this.Normalize();
+			//Console.WriteLine("Result is {0}/{1}", this, this.Length);
 		}
 		public static double CosAngle (Point3 pa, Point3 pb) {
 			return pa.X*pb.X+pa.Y*pb.Y+pa.Z*pb.Z/Math.Sqrt((pa.X*pa.X+pa.Y*pa.Y+pa.Z*pa.Z)*(pb.X*pb.X+pb.Y*pb.Y+pb.Z*pb.Z));

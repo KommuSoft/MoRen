@@ -23,12 +23,13 @@ using System;
 
 namespace Renderer {
 	
-	public sealed class CastResult
-	{
+	public sealed class CastResult {
 		
 		public double T = double.PositiveInfinity;
-		public Point3 Normal = new Point3(0.0d, 0.0d, 0.0d);
-		public Point3 TU = new Point3(0.0d, 0.0d, 0.0d);
+		public readonly Point3 Normal = new Point3(0.0d, 0.0d, 0.0d);
+		public readonly Point3 TU = new Point3(0.0d, 0.0d, 0.0d);
+		public Point3 BumpX = Point3.DummyXPoint;
+		public Point3 BumpY = Point3.DummyYPoint;
 		
 		public void SetNull () {
 			this.T = double.PositiveInfinity;
@@ -50,18 +51,21 @@ namespace Renderer {
 			this.TU.X = tu;
 			this.TU.Y = tv;
 		}
-		public void Copy (double t, double nx, double ny, double nz, double tu, double tv) {
-			this.T = t;
-			this.Normal.SetValues(nx, ny, nz);
-			this.TU.X = tu;
-			this.TU.Y = tv;
-		}
 		public void Copy (double t, double nx, double ny, double nz, double tu, double tv, double tw) {
 			this.T = t;
 			this.Normal.SetValues(nx, ny, nz);
 			this.TU.X = tu;
 			this.TU.Y = tv;
 			this.TU.Z = tw;
+		}
+		public void Copy (double t, double nx, double ny, double nz, double tu, double tv, double tw, Point3 bumpX, Point3 bumpY) {
+			this.T = t;
+			this.Normal.SetValues(nx, ny, nz);
+			this.TU.X = tu;
+			this.TU.Y = tv;
+			this.TU.Z = tw;
+			this.BumpX = bumpX;
+			this.BumpY = bumpY;
 		}
 		public void Copy (CastResult cr) {
 			this.T = cr.T;

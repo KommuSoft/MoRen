@@ -71,13 +71,13 @@ namespace Renderer {
 			double D_4 = b_2*b_2-c;
 			D_4 = Math.Sqrt(D_4);
 			double t = Maths.MinGeqZero(-D_4-b_2, D_4-b_2);
-			Point3 norm = new Point3(Rinv*(x0+t*dx), Rinv*(y0+t*dy), Rinv*(z0+t*dz));
-			double tu = 0.5d*Math.Atan2(norm.Z, norm.X)/Math.PI-0.5d+0.3d;
-			if(tu >= 1.0d) {
-				tu -= 1.0d;
-			}
-			double tv = 0.5d-Math.Asin(norm.Y)/Math.PI;
-			cr.Copy(t, norm, tu, tv);
+			double normx = Rinv*(x0+t*dx);
+			double normy = Rinv*(y0+t*dy);
+			double normz = Rinv*(z0+t*dz);
+			double phi = Math.Atan2(normz, normx);
+			double tu = 0.5d*phi/Math.PI+0.5d;
+			double tv = 0.5d-Math.Asin(normy)/Math.PI;
+			cr.Copy(t, normx, normy, normz, tu, tv, 0.0d, new Point3(-normz, normy, normx), new Point3(-normy, normx, normz));
 		}
 
 		public override double Surface () {

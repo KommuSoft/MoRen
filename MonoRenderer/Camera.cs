@@ -217,7 +217,8 @@ namespace Renderer {
 									ray.Direction.SetValues(ray.Offset, tmp);
 									ray.NormalizeDirection();
 									ray.Transform(this.matrix);
-									Color.AddComponents(rt.CalculateColor(ray, 0), ref aaRedCache, ref aaGreenCache, ref aaBlueCache);
+									//Console.WriteLine("START RAY");
+									Color.AddComponents(rt.CalculateColor(ray, 0, 0xffffff), ref aaRedCache, ref aaGreenCache, ref aaBlueCache);
 									//Console.WriteLine("{3} {4}: {0} {1} {2}", aaRedCache, aaGreenCache, aaBlueCache, l, m);
 									xd += dwhad;
 								}
