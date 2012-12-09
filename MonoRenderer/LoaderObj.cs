@@ -21,14 +21,14 @@ namespace Renderer {
 		private List<Point3> tex = new List<Point3>();
 		private List<Point3> nor = new List<Point3>();
 		private List<int[]> tri = new List<int[]>();
-		private Material material = Material.DefaultMaterial;
+		private Material defaultMaterial = Material.DefaultMaterial;
 
-		public Material Material {
+		public Material DefaultMaterial {
 			get {
-				return this.material;
+				return this.defaultMaterial;
 			}
 			set {
-				this.material = value;
+				this.defaultMaterial = value;
 			}
 		}
 		
@@ -101,7 +101,7 @@ namespace Renderer {
 				                     ItemOrNull(nor, seq[0x07]),
 				                     ItemOrNull(tex, seq[0x02]),
 				                     ItemOrNull(tex, seq[0x05]),
-				                     ItemOrNull(tex, seq[0x08]), this.material)
+				                     ItemOrNull(tex, seq[0x08]), this.defaultMaterial)
 				);
 			}
 		}

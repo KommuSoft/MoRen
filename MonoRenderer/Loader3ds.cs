@@ -31,6 +31,16 @@ namespace Renderer {
 		private ushort currentJunk;
 		private int nextJunkOffset;
 		private RootJunk root;
+		private Material defaultMaterial = Material.DefaultMaterial;
+
+		public Material DefaultMaterial {
+			get {
+				return this.defaultMaterial;
+			}
+			set {
+				this.defaultMaterial = value;
+			}
+		}
 
 		public Loader3ds () {
 			
@@ -152,7 +162,7 @@ namespace Renderer {
 			}
 			parent.AddChild(child);
 			this.readChildren(br, st, child, until, ctx);
-			child.Resolve(ctx);
+			child.Resolve(ctx, this.defaultMaterial);
 		}
 
 		private class ParsingContext {
@@ -239,7 +249,7 @@ namespace Renderer {
 					return null;
 				}
 			}
-			public virtual void Resolve (ParsingContext ctx) {
+			public virtual void Resolve (ParsingContext ctx, Material material) {
 			}
 			protected void Collapse () {
 				this.children = null;
@@ -312,7 +322,7 @@ namespace Renderer {
 			public IndexJunk (List<ushort> items) : base(items,ListPurpose.Index) {
 			}
 
-			public override void Resolve (ParsingContext ctx) {
+			public override void Resolve (ParsingContext ctx, Material material) {
 				List<ushort> l = this.list;
 				this.list = null;
 				this.materials = new List<string>();
@@ -366,9 +376,9 @@ namespace Renderer {
 			public ObjectJunk (string name) : base(name) {
 			}
 
-			public void CacheMaterial (ParsingContext pc) {
+			public void CacheMaterial (ParsingContext pc, Material material) {
 				foreach(LoadModeJunk lmj in this.FindChild<LoadModeJunk>()) {
-					lmj.CacheMaterial(pc);
+					lmj.CacheMaterial(pc, material);
 				}
 			}
 
@@ -440,7 +450,7 @@ namespace Renderer {
 				return string.Format("{0} {1} {2}%", this.GetType().Name, this.type, (this.percentage*100.0d));
 			}
 
-			public override void Resolve (ParsingContext ctx) {
+			public override void Resolve (ParsingContext ctx, Material material) {
 				this.texture = ctx.CreateTexture(this.FindChild<TextureNameJunk>().First().name);
 				this.Collapse();
 			}
@@ -492,7 +502,7 @@ namespace Renderer {
 			public string name;
 			public Material material;
 
-			public override void Resolve (ParsingContext ctx) {
+			public override void Resolve (ParsingContext ctx, Material material) {
 				this.name = this.FindChild<MaterialNameJunk>().First().name;
 				uint ambient = Color.White, diffuse = Color.Black, specular = Color.Black;
 				double shininess = 15.0d, transparent = 0.0d;
@@ -541,12 +551,12 @@ namespace Renderer {
 
 		private class MeshJunk : Junk3ds {
 
-			public override void Resolve (ParsingContext ctx) {
+			public override void Resolve (ParsingContext ctx, Material material) {
 				foreach(MaterialJunk mj in this.FindChild<MaterialJunk>()) {
 					ctx.material.Add(mj.name, mj.material);
 				}
 				foreach(ObjectJunk oj in this.FindChild<ObjectJunk>()) {
-					oj.CacheMaterial(ctx);
+					oj.CacheMaterial(ctx, material);
 				}
 				this.Collapse<MaterialJunk>();
 			}
@@ -579,7 +589,7 @@ namespace Renderer {
 				return string.Format("LoadMode: {0}", this.lm);
 			}
 
-			public override void Resolve (ParsingContext ctx) {
+			public override void Resolve (ParsingContext ctx, Material material) {
 				ListJunk<Point3> plj;
 				MatrixJunk mj;
 				this.vertices = this.FindChild<ListJunk<Point3>>(x => x.purpose == ListPurpose.Vertex).First().list;
@@ -611,9 +621,9 @@ namespace Renderer {
 				this.Collapse();
 			}
 
-			public void CacheMaterial (ParsingContext pc) {
+			public void CacheMaterial (ParsingContext pc, Material material) {
 				this.materials = this.materialstr.Select(x => pc.material[x]).ToList();
-				this.materials.Add(Material.DefaultMaterial);
+				this.materials.Add(material);
 				this.materialstr = null;
 			}
 

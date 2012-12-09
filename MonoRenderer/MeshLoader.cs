@@ -26,6 +26,11 @@ using System.IO;
 namespace Renderer {
 	public interface MeshLoader {
 
+		Material DefaultMaterial {
+			get;
+			set;
+		}
+
 		void Load (string currentDir, Stream stream);
 		void Inject (List<RenderItem> items, Matrix4 transform, params string[] args);
 
