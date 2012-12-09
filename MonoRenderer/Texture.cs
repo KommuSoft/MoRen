@@ -95,14 +95,8 @@ namespace Renderer {
 			int y0 = Math.Max(0x00, y-0x01)*Width;
 			int y1 = Math.Min(Height-0x01, y+0x01)*Width;
 			y *= Width;
-			double xdiff = (Pixel[y+x0]&Color.ColorChannel-Pixel[y+x1]&Color.ColorChannel)*Maths.ColorChannelInv;
-			double ydiff = (Pixel[y0+x]&Color.ColorChannel-Pixel[y1+x]&Color.ColorChannel)*Maths.ColorChannelInv;
-			double fact = xdiff*ydiff+ydiff*ydiff;
-			if(fact > 1.0d) {
-				fact = 1.0d/Math.Sqrt(fact);
-				xdiff *= fact;
-				ydiff *= fact;
-			}
+			double xdiff = (Pixel[y+x0]&Color.ColorChannel-Pixel[y+x1]&Color.ColorChannel)*Maths.ColorChannelInvSqrt_2;
+			double ydiff = (Pixel[y0+x]&Color.ColorChannel-Pixel[y1+x]&Color.ColorChannel)*Maths.ColorChannelInvSqrt_2;
 			normal.Mix3Normalize(bumpx, bumpy, xdiff, ydiff);
 		}
 		private void setSize (int width, int height) {
