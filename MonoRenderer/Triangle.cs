@@ -304,7 +304,6 @@ namespace Renderer {
 			if(pb[dim] != sweep) {
 				lb = new ProxyRenderItem[2];
 				if(pb[dim] > sweep) {
-					//left 1/right 2
 					fac = (sweep-pa[dim])/(pb[dim]-pa[dim]);
 					fad = 1.0d-fac;
 					pabc = new Point3(fac*pb.X+fad*pa.X, fac*pb.Y+fad*pa.Y, fac*pb.Z+fad*pa.Z);
@@ -314,7 +313,6 @@ namespace Renderer {
 					return new Tuple<ProxyRenderItem[],ProxyRenderItem[]>(la, lb);
 				}
 				else {
-					//left 2/right 1
 					fac = (sweep-pb[dim])/(pc[dim]-pb[dim]);
 					fad = 1.0d-fac;
 					pabc = new Point3(fac*pc.X+fad*pb.X, fac*pc.Y+fad*pb.Y, fac*pc.Z+fad*pb.Z);

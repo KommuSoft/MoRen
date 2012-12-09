@@ -19,7 +19,7 @@ namespace Renderer {
 		
 		public void PushMatrix (Matrix4 matrix) {
 			if(matrix == null) {
-				Content.Push(this.Top);//simply add a reference to save time
+				Content.Push(this.Top);
 			}
 			else {
 				Content.Push(matrix.CopyTransform(this.Top));

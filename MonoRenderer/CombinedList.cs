@@ -22,8 +22,7 @@ using System;
 using System.Collections.Generic;
 
 namespace Renderer {
-	public class CombinedList
-	{
+	public class CombinedList {
 
 		private readonly List<int> left, right, middle;
 		private readonly List<Tuple<int,SubList>> subLists = new List<Tuple<int, SubList>>();
@@ -67,17 +66,16 @@ namespace Renderer {
 		public void Fill (int offset) {
 			foreach(Tuple<int,SubList> sl in subLists) {
 				sl.Item2.Offset = offset+sl.Item1;
-				//Console.WriteLine("now low {0} high {1} (length {2})", sl.Item2.Offset, sl.Item2.Offset+sl.Item2.Indices.Count, sl.Item2.Indices.Count);
 			}
 		}
 
 		public bool AddSubList (SubList list) {
 			List<int> sli = list.Indices;
 			if(sli.Count < this.middle.Count) {
-				int offset = this.middle.BinarySearch(sli [0x00]);
+				int offset = this.middle.BinarySearch(sli[0x00]);
 				if(offset >= 0x00 && offset < this.middle.Count-list.Indices.Count) {
 					for(int i = 1; i < list.Indices.Count; i++) {
-						if(list.Indices [i] != this.middle [offset+i]) {
+						if(list.Indices[i] != this.middle[offset+i]) {
 							return false;
 						}
 					}
@@ -97,10 +95,12 @@ namespace Renderer {
 				if(ea.Current < eb.Current) {
 					left.Add(ea.Current);
 					aa = ea.MoveNext();
-				} else if(ea.Current > eb.Current) {
+				}
+				else if(ea.Current > eb.Current) {
 					right.Add(eb.Current);
 					ab = eb.MoveNext();
-				} else {
+				}
+				else {
 					middle.Add(ea.Current);
 					aa = ea.MoveNext();
 					ab = eb.MoveNext();
@@ -125,9 +125,11 @@ namespace Renderer {
 			while(aa && ab) {
 				if(ea.Current < eb.Current) {
 					aa = ea.MoveNext();
-				} else if(ea.Current > eb.Current) {
+				}
+				else if(ea.Current > eb.Current) {
 					ab = eb.MoveNext();
-				} else {
+				}
+				else {
 					n++;
 					aa = ea.MoveNext();
 					ab = eb.MoveNext();

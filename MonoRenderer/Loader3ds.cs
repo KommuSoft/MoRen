@@ -154,7 +154,7 @@ namespace Renderer {
 					break;
 				default :
 #if DEBUG
-					Console.Error.WriteLine("unknown chunk is {0}/{1}/{2} @ {3}", this.currentJunk.ToString("X"), this.nextJunkOffset, this.nextJunkOffset.ToString("X"), st.Position.ToString("X"));
+					Console.Error.WriteLine("unknown chunk is {0}/{1} @ {2}", this.currentJunk.ToString("X"), this.nextJunkOffset.ToString("X"), st.Position.ToString("X"));
 #endif
 					readToNext(br, st);
 					return;

@@ -251,7 +251,7 @@ namespace Renderer {
 			result.Z = factor*normal.Z+init.Z;
 		}
 		public static void ReflectRefract (Point3 init, Point3 normal, double nfrac, Point3 reflect, Point3 refract) {
-			double cost1 = -init.X*normal.X-init.Y*normal.Y-init.Z*normal.Z;//cosi
+			double cost1 = -init.X*normal.X-init.Y*normal.Y-init.Z*normal.Z;
 			if(cost1 < 0.0d) {
 				Point3 nnormal = new Point3(-normal.X, -normal.Y, -normal.Z);
 				ReflectRefract(init, nnormal, 1.0d/nfrac, reflect, refract);
@@ -283,8 +283,9 @@ namespace Renderer {
 		public static int Order (double x, double y, double z, double a, double b, double c, double d) {
 			return (3+(int)Math.Sign(x*a+b*y+c*z+d))>>1;
 		}
+		//assumption: both vectors are normalized
 		public static double CosAngleNorm (Point3 pa, Point3 pb) {
-			return pa.X*pb.X+pa.Y*pb.Y+pa.Z*pb.Z;//assumption: both vectors are normalized
+			return pa.X*pb.X+pa.Y*pb.Y+pa.Z*pb.Z;
 		}
 		public static double DiffLength (Point3 a, Point3 b) {
 			double dx = a.X-b.X;
