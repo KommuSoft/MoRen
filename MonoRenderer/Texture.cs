@@ -79,10 +79,6 @@ namespace Renderer {
 		private int Coordinate (double tux, double tuy) {
 			double x = tux;
 			double y = tuy;
-			//double x = Math.Abs(tux%1.0d);
-			//double y = 1.0d-Math.Abs(tuy%1.0d);
-			//Console.WriteLine("fetch {0} {1}", tux, tuy);
-			//Console.WriteLine("also known as {0} {1}", Math.Floor(x*Width), Math.Floor(y*Height));
 			return (int)(Math.Floor(x*Width)+Math.Floor(y*Height)*Width);
 		}
 		public uint ColorAt (Point3 tu) {
@@ -92,11 +88,22 @@ namespace Renderer {
 			return Pixel[Coordinate(tu.X, tu.Y)];
 		}
 		public void TweakNormal (Point3 tu, Point3 normal, Point3 bumpx, Point3 bumpy) {
-			double xdiff = Pixel[Coordinate(tu.X+XStep, tu.Y)]&Color.ColorChannel-Pixel[Coordinate(tu.X-XStep, tu.Y)]&Color.ColorChannel;
-			double ydiff = Pixel[Coordinate(tu.X, tu.Y+YStep)]&Color.ColorChannel-Pixel[Coordinate(tu.X, tu.Y-YStep)]&Color.ColorChannel;
-			//Console.WriteLine("XDiff {0} YDiff {1}", xdiff, ydiff);
-			//Console.WriteLine(Maths.ColorChannelInvSqrt_2);
-			normal.Mix3Normalize(bumpx, bumpy, xdiff*Maths.ColorChannelInvSqrt_2, ydiff*Maths.ColorChannelInvSqrt_2);
+			int y = Maths.Border(0x00, (int)Math.Round(Height*tu.Y), Height-0x01);
+			int x = Maths.Border(0x00, (int)Math.Round(Width*tu.X), Width-0x01);
+			int x0 = Math.Max(0x00, x-0x01);
+			int x1 = Math.Min(Width-0x01, x+0x01);
+			int y0 = Math.Max(0x00, y-0x01)*Width;
+			int y1 = Math.Min(Height-0x01, y+0x01)*Width;
+			y *= Width;
+			double xdiff = (Pixel[y+x0]&Color.ColorChannel-Pixel[y+x1]&Color.ColorChannel)*Maths.ColorChannelInv;
+			double ydiff = (Pixel[y0+x]&Color.ColorChannel-Pixel[y1+x]&Color.ColorChannel)*Maths.ColorChannelInv;
+			double fact = xdiff*ydiff+ydiff*ydiff;
+			if(fact > 1.0d) {
+				fact = 1.0d/Math.Sqrt(fact);
+				xdiff *= fact;
+				ydiff *= fact;
+			}
+			normal.Mix3Normalize(bumpx, bumpy, xdiff, ydiff);
 		}
 		private void setSize (int width, int height) {
 			int offset = width*height;

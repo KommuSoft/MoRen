@@ -80,7 +80,7 @@ namespace Renderer {
 				uint clr;
 				clr = Color.Multiply(this.ambientColor, ambient);
 				uint clrl;
-				Point3.ReflectRefract(ray.Direction, nw.Normal, mat.NFactor, rl, rf);
+				Point3.Reflect(ray.Direction, nw.Normal, rl);
 				rf.Normalize();
 				rayCache[depth].SetWithEpsilon(hp, rf);
 				/*if(refraction > 0x00) {

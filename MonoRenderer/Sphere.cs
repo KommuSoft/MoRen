@@ -32,7 +32,6 @@ namespace Renderer {
 			double xmin = Maths.ClosestInterval(this.Center.X, xm, xM)-Center.X;
 			double ymin = Maths.ClosestInterval(this.Center.Y, ym, yM)-Center.Y;
 			double zmin = Maths.ClosestInterval(this.Center.Z, zm, zM)-Center.Z;
-			//Console.WriteLine("Tested inbox {7}/{8}: {0} -> {1}/{2} -> {3}/{4} -> {5} {6} | {9} {10} {11}", xm, xM, ym, yM, zm, zM, xmin*xmin+ymin*ymin+zmin*zmin <= Radius*Radius, this.Center, Radius, xmin, ymin, zmin);
 			return (xmin*xmin+ymin*ymin+zmin*zmin <= Radius*Radius);
 		}
 		public override double HitAt (Ray ray) {
@@ -74,7 +73,7 @@ namespace Renderer {
 			double normx = Rinv*(x0+t*dx);
 			double normy = Rinv*(y0+t*dy);
 			double normz = Rinv*(z0+t*dz);
-			double phi = Math.Atan2(normz, normx);
+			double phi = Math.Atan2(normx, -normz);
 			double tu = 0.5d*phi/Math.PI+0.5d;
 			double tv = 0.5d-Math.Asin(normy)/Math.PI;
 			cr.Copy(t, normx, normy, normz, tu, tv, 0.0d, new Point3(-normz, normy, normx), new Point3(-normy, normx, normz));

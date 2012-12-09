@@ -141,7 +141,6 @@ namespace Renderer {
 			double x0, x1, y0, y1, z0, z1;
 			Utils.CalculateBoundingBox(this.pos, out x0, out x1, out y0, out y1, out z0, out z1);
 			Utils.UnitBox(this.pos);
-			//Console.WriteLine("0.5*({0},{2},{4})+0.5*({1},{3},{5})", x0, x1, y0, y1, z0, z1);
 		}
 
 		private void checkNormTeX () {

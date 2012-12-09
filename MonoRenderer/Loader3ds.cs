@@ -494,7 +494,6 @@ namespace Renderer {
 
 			public override void Resolve (ParsingContext ctx) {
 				this.name = this.FindChild<MaterialNameJunk>().First().name;
-				//Console.WriteLine(this.name);
 				uint ambient = Color.White, diffuse = Color.Black, specular = Color.Black;
 				double shininess = 15.0d, transparent = 0.0d;
 				Texture texture = null, bump = null, reflection = null;
@@ -511,7 +510,6 @@ namespace Renderer {
 							break;
 					}
 				}
-				//Console.WriteLine("Colors: {0};{1};{2}", ambient.ToString("X"), diffuse.ToString("X"), specular.ToString("X"));
 				foreach(MaterialPercentageJunk mpj in this.FindChild<MaterialPercentageJunk>()) {
 					switch(mpj.type) {
 						case MaterialPercentageType.Shininess:

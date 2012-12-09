@@ -194,7 +194,6 @@ namespace Renderer {
 				kc = k+Width;
 				xp = -0.5d*sw-0.5d*dwha*aasqrt;
 				for(; k < kc;) {
-					//Console.WriteLine("Pixel {0}/{1}", xp/dwh, yp/dwh);
 					l = 0x00;
 					aaRedCache = 0x00;
 					aaGreenCache = 0x00;
@@ -206,20 +205,16 @@ namespace Renderer {
 							m = 0x00;
 							tmp.SetValues(xp*frac, -yp*frac, focusLength);
 							yd = -0.5d*dwhad*(aadsqrt-0x01);
-							//Console.WriteLine("SubPixel {0}/{1}", xg/dwha, yg/dwha);
 							#region DISPERSION
 							for(; m < aad;) {
 								xd = -0.5d*dwhad*(aadsqrt-0x01);
 								aadc = m+aadsqrt;
 								for(; m < aadc; m++) {
-									//Console.WriteLine("DisSubpixel {0}/{1}", xd/dwhad, yd/dwhad);
 									ray.Offset.SetValues(xp+xd, -yp-yd, 0.0d);
 									ray.Direction.SetValues(ray.Offset, tmp);
 									ray.NormalizeDirection();
 									ray.Transform(this.matrix);
-									//Console.WriteLine("START RAY");
 									Color.AddComponents(rt.CalculateColor(ray, 0, 0xffffff), ref aaRedCache, ref aaGreenCache, ref aaBlueCache);
-									//Console.WriteLine("{3} {4}: {0} {1} {2}", aaRedCache, aaGreenCache, aaBlueCache, l, m);
 									xd += dwhad;
 								}
 								yd += dwhad;
