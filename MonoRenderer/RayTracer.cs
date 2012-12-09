@@ -38,7 +38,7 @@ namespace Renderer {
 	[XmlType("RayTracer")]
 	public sealed class RayTracer {
 
-		public const uint DepthThresholdMask = 0xe0e0e0;
+		public const uint DepthThresholdMask = 0xfcfcfc;
 		private readonly Accelerator acc;
 		private readonly Light[] lights;
 		private readonly uint ambientColor = 0x00101010;
@@ -69,24 +69,21 @@ namespace Renderer {
 		public uint CalculateColor (Ray ray, int depth, uint intensityHint) {
 			RenderItem best = null;
 			double t, tdummy;
+			string tabString = new string('\t', depth);
 			best = acc.CalculateHit(ray, out t);
 			if(best != null) {
+				//Console.WriteLine(tabString+"Hitted {0}", best);
 				best.Cast(ray, nw);
 				Point3 norm = nw.Normal;
 				ray.PointAt(t, hp);
 				Material mat = best.Material;
 				uint ambient, diffuse, specular, reflectance, refraction;
-				mat.ADSAtAndBump(nw, -Point3.CosAngle(ray.Direction, norm), out ambient, out diffuse, out specular, out reflectance, out refraction);
-				uint clr;
-				clr = Color.Multiply(this.ambientColor, ambient);
-				uint clrl;
-				Point3.Reflect(ray.Direction, nw.Normal, rl);
-				rf.Normalize();
-				rayCache[depth].SetWithEpsilon(hp, rf);
-				/*if(refraction > 0x00) {
-					Console.WriteLine("Refraction @{0} IN {1} OUT {2}", best.GetType(), ray, rayCache[depth]);
-				}*/
-				//Point3.Reflect(ray.Direction, nw.Normal, rl);
+				mat.ADSAtAndBump(nw, ray.Direction, out ambient, out diffuse, out specular, out reflectance, out refraction);
+				//Console.WriteLine(tabString+"Material {0} {1} {2} {3} {4}", ambient.ToString("X"), diffuse.ToString("X"), specular.ToString("X"), reflectance.ToString("X"), refraction.ToString("X"));
+				uint clr = Color.Multiply(this.ambientColor, ambient);
+				Ray srf = new Ray();
+				Point3.ReflectRefract(ray.Direction, nw.Normal, mat.NFactor, rl, srf.Direction);
+				srf.SetOffsetWithEpsilon(hp);
 				foreach(Light li in this.lights) {
 					double len = Point3.DiffLength(hp, li.Position);
 					double thetafrac = Math.PI-Math.Asin(li.Radius/len);
@@ -108,7 +105,6 @@ namespace Renderer {
 							}
 						}
 						light = Math.Min((uint)((light<<0x08)/lightTest), 0xff);
-						//Console.WriteLine("light resulted in {0}", thetafrac);
 					}
 					else {
 						light = 0xff;
@@ -116,34 +112,26 @@ namespace Renderer {
 					if(light > 0x00) {
 						dis.SetValues(hp, li.Position);
 						dis.Normalize();
-						clrl = Color.Scale(Color.Multiply(li.Color, diffuse), Point3.CosAngleNorm(dis, norm));
+						uint clrl = Color.Scale(Color.Multiply(li.Color, diffuse), Point3.CosAngleNorm(dis, norm));
 						clrl = Color.Add(clrl, Color.Scale(Color.Multiply(li.Color, specular), Math.Pow(Point3.CosAngleNorm(rl, dis), mat.Shininess)));
 						clr = Color.Add(clr, Color.loseIntensity(Color.Scale(clrl, light), len));
 					}
 				}
-				/*if(depth < maxDepth) {
+				Console.WriteLine(tabString+"{0} < {1}", depth, maxDepth);
+				if(depth < maxDepth) {
 					uint reflint = Color.Multiply(intensityHint, reflectance);
 					if((reflint&DepthThresholdMask) != 0x00) {
 						ray.SetWithEpsilon(hp, rl);
 						clr = Color.Add(clr, Color.Multiply(this.CalculateColor(ray, depth+1, reflint), reflectance));
 					}
-					Console.WriteLine(refraction.ToString("X"));
-					return refraction;
 					uint refrint = Color.Multiply(intensityHint, refraction);
-					//Console.WriteLine(refrint);
-					if((refrint&DepthThresholdMask) != 0x00) {
-						uint res = this.CalculateColor(rayCache[depth], depth+1, refrint);
-						Console.WriteLine("RESULTED IN {0}", res.ToString("X"));
+					Console.WriteLine(tabString+"Looking for refraction: {0}", refraction.ToString("X"));
+					if(!double.IsNaN(srf.Direction.X) && (refrint&DepthThresholdMask) != 0x00) {//
+						//Console.WriteLine(new String('\t', depth)+srf);
+						uint res = this.CalculateColor(srf, depth+1, refrint);
 						clr = Color.Add(clr, Color.Multiply(res, refraction));
 					}
 				}//*/
-				/*if(depth < maxDepth) {
-					Point3 rl, rf;
-					Point3.ReflectRefract(ray.Direction, norm, mat.NFactor, ref rayCache[depth++].Direction);
-					//srl = Ray.WithEpsilon(hp, rl);
-					//srf = Ray.WithEpsilon(hp, rf);
-					//clr = Color.Merge(new L<Color,Ray,int>(calculateColor, srl, depth+1), new L<Color,Ray,int>(calculateColor, srf, depth+1), new L<Color>(clr), nw.ReflectionFactor, nw.RefractionFactor);
-				}*/
 				return Color.loseIntensity(clr, t);
 			}
 			else {
@@ -152,59 +140,40 @@ namespace Renderer {
 		}
 		
 		public static int Main (string[] args) {
-			//Console.WriteLine(Color.FromWavelength(600).ToString("X"));
-			//SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
+			Point3 p = new Point3(Maths.Sqrt_2, Maths.Sqrt_2, 0.0d);
+			Point3 q = new Point3(0.0d, 1.0d, 0.0d);
 			Point3 refl = new Point3(), refr = new Point3();
-			Point3.ReflectRefract(new Point3(Math.Sqrt(0.5), -Math.Sqrt(0.5), 0.0d), new Point3(0.0d, 1.0d, 0.0d), 0.9d, refl, refr);
-			refr.Normalize();
-			Console.WriteLine("{0}/{1}", refl, refr);
-			Point3.ReflectRefract(new Point3(Math.Sqrt(0.5), -Math.Sqrt(0.5), 0.0d), new Point3(0.0d, 1.0d, 0.0d), 1.0d/0.9d, refl, refr);
-			refr.Normalize();
-			Console.WriteLine("{0}/{1}", refl, refr);
-			Point3.ReflectRefract(new Point3(Math.Sqrt(0.5), -Math.Sqrt(0.5), 0.0d), new Point3(0.0d, -1.0d, 0.0d), 0.9d, refl, refr);
-			refr.Normalize();
-			Console.WriteLine("{0}/{1}", refl, refr);
+			Point3.ReflectRefract(p, q, 1.0d, refl, refr);
+			Console.WriteLine("refl {0} refr {1}", refl, refr);
 			//return 0x00;
+			//SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
 			PerlinCache.InitializeNoiseBuffer();
 			Light[] lights = new Light[] {
-				new Light(0x808080, new Point3(-5.0d, 5.0d, 1.0d)),
-				new Light(0x808080, new Point3(5.0d, -5.0d, 1.0d)),
-			//	new Light(0x808080, new Point3(-5.0d, 0.0d, 60.0d))
+				new Light(0x808080, new Point3(-10.0d, 5.0d, 1.0d)),
+				new Light(0x808080, new Point3(10.0d, 20.0d, 22.0d)),
 			};
 			List<CameraPostProcessor> cpps = new List<CameraPostProcessor>();
-			//EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x08, 0x40, 0x01);
-			//cpps.Add(new NoisePostProcessor());
-			//RenderWindow rw = new RenderWindow(cam);
-			//rw.ShowDialog();
 			double alpha = 0.0d;
 			TimeSpan ts = new TimeSpan();
-			//for(int i = 0x00; alpha < 2.0d*Math.PI; i++, alpha += Math.PI/80) {
-			EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x04, 0x01, 0x01);
+			double depth = 8.0d;
+			EnvironmentSettings es = new EnvironmentSettings(0x00101010, 0x10, 0x01, 0x01);
 			List<RenderItem> ris = new List<RenderItem>();
-			//ris.Add(new Sphere(new Point3(0.0d, 0.0d, 20.0d), 2.0d, Material.GlassMaterial));
-			ris.Add(new Sphere(new Point3(0.0d, 0.0d, 20.0d), 4d, new Material(0xffffff, 0xffffff, 0xffffff, 15.0d, 0.0d, new Texture("earthmap1k.jpg"), new Texture("earthspec1k.jpg"), new Texture("earthbump1k.jpg"))));
-			//ris.Add(new Sphere(new Point3(3.0d, 0.0d, 30.0d), 2.0d, Material.MetalMaterial));
-			/*ris.Add(new Triangle(new Point3(-20.0d, -10.0d, -20.0d), new Point3(-20.0d, -10.0d, 100.0d), new Point3(20.0d, -10.0d, 100.0d), Material.DefaultMaterial));
-			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, -20.0d), new Point3(20.0d, -10.0d, 100.0d), new Point3(20.0d, -10.0d, -20.0d), Material.DefaultMaterial));
-			ris.Add(new Triangle(new Point3(20.0d, 10.0d, -20.0d), new Point3(20.0d, 10.0d, 100.0d), new Point3(-20.0d, 10.0d, 100.0d), Material.RedMaterial));
-			ris.Add(new Triangle(new Point3(20.0d, 10.0d, -20.0d), new Point3(-20.0d, 10.0d, 100.0d), new Point3(-20.0d, 10.0d, -20.0d), Material.RedMaterial));
-			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, -20.0d), new Point3(-20.0d, 10.0d, -20.0d), new Point3(-20.0d, 10.0d, 100.0d), Material.GreenMaterial));
-			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, -20.0d), new Point3(-20.0d, 10.0d, 100.0d), new Point3(-20.0d, -10.0d, 100.0d), Material.GreenMaterial));
-			ris.Add(new Triangle(new Point3(20.0d, 10.0d, -20.0d), new Point3(20.0d, -10.0d, -20.0d), new Point3(20.0d, -10.0d, 100.0d), Material.BlueMaterial));
-			ris.Add(new Triangle(new Point3(20.0d, 10.0d, -20.0d), new Point3(20.0d, -10.0d, 100.0d), new Point3(20.0d, 10.0d, 100.0d), Material.BlueMaterial));
-			ris.Add(new Triangle(new Point3(20.0d, 10.0d, -20.0d), new Point3(-20.0d, 10.0d, -20.0d), new Point3(20.0d, -10.0d, -20.0d), Material.YellowMaterial));
-			ris.Add(new Triangle(new Point3(20.0d, -10.0d, -20.0d), new Point3(-20.0d, 10.0d, -20.0d), new Point3(-20.0d, -10.0d, -20.0d), Material.YellowMaterial));
-			ris.Add(new Triangle(new Point3(-20.0d, 10.0d, 100.0d), new Point3(20.0d, 10.0d, 100.0d), new Point3(-20.0d, -10.0d, 100.0d), Material.PurpleMaterial));
-			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, 100.0d), new Point3(20.0d, 10.0d, 100.0d), new Point3(20.0d, -10.0d, 100.0d), Material.PurpleMaterial))*/
+			//ris.Add(new Sphere(new Point3(0.0d, 2.0d-depth, 60.0d), 2.0d, Material.GlassMaterial));
+			//ris.Add(new Sphere(new Point3(3.0d, 2.0d-depth, 40.0d), 2.0d, Material.MetalMaterial));
+			//ris.Add(new Sphere(new Point3(3.0d, 4.0d-depth, 20.0d), 2.0d, Material.MetalMaterial));
+			ris.Add(new Sphere(new Point3(-3.0d, 2.0d-depth, 30.0d), 2.0d, Material.GlassMaterial));
+			Material globe = new Material(0xffffff, 0xffffff, 0xffffff, 15.0d, 0.0d, new Texture("_nyt.gif"));
+			ris.Add(new Triangle(new Point3(-20.0d, -depth, -2.0d), new Point3(-20.0d, -depth, 50.0d), new Point3(20.0d, -depth, 50.0d), null, null, null, Point3.DummyPoint, Point3.DummyXPoint, Point3.DummyXYPoint, globe));
+			ris.Add(new Triangle(new Point3(-20.0d, -depth, -2.0d), new Point3(20.0d, -depth, 50.0d), new Point3(20.0d, -depth, -2.0d), null, null, null, Point3.DummyPoint, Point3.DummyXYPoint, Point3.DummyYPoint, globe));
 			Accelerator acc = new OctTreeAccelerator(ris);
 			Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, es, cpps);
+			cam.Position.SetValues(0.0d, 20.0d, 0.0d);
+			cam.MakeDirty();
 			DateTime start = DateTime.Now;
 			cam.CalculateImage();
 			DateTime stop = DateTime.Now;
 			ts = ts.Add(stop-start);
-			//cam.Save("fluttershy/result"+i.ToString("000")+".png");
 			cam.Save("fluttershy/result.png");
-			//}
 			Console.WriteLine("Testcase took {0}", ts);
 			return 0x00;
 		}

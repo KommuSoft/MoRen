@@ -1,8 +1,7 @@
 using System;
 
 namespace Renderer {
-	public sealed class Ray
-	{
+	public sealed class Ray {
 		
 		public readonly Point3 Offset;
 		public readonly Point3 Direction;
@@ -43,6 +42,8 @@ namespace Renderer {
 			}
 		}
 
+		public Ray () : this(0.0d,0.0d,0.0d,0.0d,0.0d,0.0d) {
+		}
 		public Ray (Point3 offset, Point3 direction) {
 			this.Offset = offset;
 			this.Direction = direction;

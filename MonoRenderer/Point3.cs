@@ -37,6 +37,9 @@ namespace Renderer {
 		[XmlIgnore]
 		public static readonly Point3
 			DummyYPoint = new Point3(0.0d, 1.0d, 0.0d);
+		[XmlIgnore]
+		public static readonly Point3
+			DummyXYPoint = new Point3(1.0d, 1.0d, 0.0d);
 
 		[XmlIgnore]
 		public static readonly IComparer<Point3>
@@ -103,6 +106,11 @@ namespace Renderer {
 		public Point3 () {
 			this.X = 0.0d;
 			this.Y = 0.0d;
+			this.Z = 0.0d;
+		}
+		public Point3 (double x, double y) {
+			this.X = x;
+			this.Y = y;
 			this.Z = 0.0d;
 		}
 		public Point3 (double x, double y, double z) {
@@ -244,22 +252,25 @@ namespace Renderer {
 		}
 		public static void ReflectRefract (Point3 init, Point3 normal, double nfrac, Point3 reflect, Point3 refract) {
 			double cost1 = -init.X*normal.X-init.Y*normal.Y-init.Z*normal.Z;//cosi
-			if(cost1 < 0.0d) {
-				//Console.WriteLine("YES");
-				nfrac = 1.0d/nfrac;
-				//cost1 = -cost1;
+			/*if(cost1 < 0.0d) {
+				Point3 nnorm = new Point3(-normal.X, -normal.Y, -normal.Z);
+				ReflectRefract(init, nnorm, 1.0d/nfrac, reflect, refract);
+				return;
 			}
+			else {*/
 			double ncost1 = nfrac*cost1;
-			//Console.WriteLine(1.0d+ncost1*ncost1-nfrac*nfrac);
-			double cost2 = Math.Sqrt(1.0d+ncost1*ncost1-nfrac*nfrac);
+			double cost2 = Math.Sqrt(1.0d+nfrac*nfrac*(cost1*cost1-1.0d));
 			double factora = 2.0d*cost1;
-			double factorb = (Math.Abs(ncost1)-cost2)*Math.Sign(cost1);
+			double factorb = (ncost1-cost2)*Math.Sign(cost1);
 			reflect.X = factora*normal.X+init.X;
 			reflect.Y = factora*normal.Y+init.Y;
 			reflect.Z = factora*normal.Z+init.Z;
+			reflect.Normalize();
 			refract.X = nfrac*init.X+factorb*normal.X;
 			refract.Y = nfrac*init.Y+factorb*normal.Y;
 			refract.Z = nfrac*init.Z+factorb*normal.Z;
+			refract.Normalize();
+			//}
 		}
 		public void Mix3Normalize (Point3 xv, Point3 yv, double xf, double yf) {
 			double zf = Math.Sqrt(1.0d-xf*xf-yf*yf);

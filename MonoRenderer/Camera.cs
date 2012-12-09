@@ -136,6 +136,9 @@ namespace Renderer {
 			}
 		}
 
+		public void MakeDirty () {
+			this.dirty = true;
+		}
 		public void RebuildMatrix () {
 			if(!this.dirty) {
 				return;
@@ -210,6 +213,7 @@ namespace Renderer {
 								xd = -0.5d*dwhad*(aadsqrt-0x01);
 								aadc = m+aadsqrt;
 								for(; m < aadc; m++) {
+									Console.WriteLine("START");
 									ray.Offset.SetValues(xp+xd, -yp-yd, 0.0d);
 									ray.Direction.SetValues(ray.Offset, tmp);
 									ray.NormalizeDirection();
