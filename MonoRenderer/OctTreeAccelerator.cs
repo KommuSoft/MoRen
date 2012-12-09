@@ -88,7 +88,6 @@ namespace Renderer {
 			if(fotn.IsLeaf) {
 				long refs = fotn.data;
 				if(refs != 0x00) {
-					//checktile
 					long end = refs>>0x20;
 					for(refs &= 0xffffffff; refs < end; refs++) {
 						tt = ris[refs].HitAt(ray);
@@ -109,7 +108,7 @@ namespace Renderer {
 					seqxyz[0x0a] = fotn.z;
 					tt = double.PositiveInfinity;
 					int pos2 = pos+dpos;
-					calcDim(ref tt, ref nextdim, ray.X0, seqxyz[(pos2&0x03)+0x03], seqxyz[0x00], 0x00);//seqxyz [0x00]
+					calcDim(ref tt, ref nextdim, ray.X0, seqxyz[(pos2&0x03)+0x03], seqxyz[0x00], 0x00);
 					calcDim(ref tt, ref nextdim, ray.Y0, seqxyz[((pos2&0x0c)>>0x02)+0x06], seqxyz[0x01], 0x02);
 					calcDim(ref tt, ref nextdim, ray.Z0, seqxyz[((pos2&0x30)>>0x04)+0x09], seqxyz[0x02], 0x04);
 					xt = seqxyz[0x05-((pos&0x01)<<0x01)];

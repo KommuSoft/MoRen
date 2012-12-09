@@ -42,76 +42,59 @@ namespace Renderer {
 		private static readonly uint[] marbleGradient = Color.MakeGradient(0x0400, 0xff111111, 0xff696070, 0xffffffff);
 		private static readonly uint[] skyGradient = Color.MakeGradient(0x0400, 0x003399, 0xffffff);
 
-		public static double perlin (double xf, double yf, double zf) {
+		public static double Perlin3d (double xf, double yf, double zf) {
 			int xi = (int)Math.Floor(xf)&255;
 			int yi = (int)Math.Floor(yf)&255;
 			int zi = (int)Math.Floor(zf)&255;
 			xf -= (int)Math.Floor(xf);
 			yf -= (int)Math.Floor(yf);
 			zf -= (int)Math.Floor(zf);
-			double u = fade(xf);
-			double v = fade(yf);
-			double w = fade(zf);
-			int A = p[xi]+yi, AA = p[A]+zi, AB = p[A+1]+zi,
-			B = p[xi+1]+yi, BA = p[B]+zi, BB = p[B+1]+zi;
+			double u = PerlinFade(xf);
+			double v = PerlinFade(yf);
+			double w = PerlinFade(zf);
+			int A = p[xi]+yi, AA = p[A]+zi, AB = p[A+0x01]+zi,
+			B = p[xi+0x01]+yi, BA = p[B]+zi, BB = p[B+0x01]+zi;
 
-			return lerp(w, lerp(v, lerp(u, grad(p[AA], xf, yf, zf),
-                                     grad(p[BA], xf-1, yf, zf)),
-                             lerp(u, grad(p[AB], xf, yf-1, zf),
-                                     grad(p[BB], xf-1, yf-1, zf))
+			return Maths.LinearInterpolate(w, Maths.LinearInterpolate(v, Maths.LinearInterpolate(u, PerlinGradient(p[AA], xf, yf, zf),
+                                     PerlinGradient(p[BA], xf-0x01, yf, zf)),
+                             Maths.LinearInterpolate(u, PerlinGradient(p[AB], xf, yf-0x01, zf),
+                                     PerlinGradient(p[BB], xf-0x01, yf-0x01, zf))
 			),
-                     lerp(v, lerp(u, grad(p[AA+1], xf, yf, zf-1),
-                                     grad(p[BA+1], xf-1, yf, zf-1)),
-                             lerp(u, grad(p[AB+1], xf, yf-1, zf-1),
-                                     grad(p[BB+1], xf-1, yf-1, zf-1))
+                     Maths.LinearInterpolate(v, Maths.LinearInterpolate(u, PerlinGradient(p[AA+0x01], xf, yf, zf-1),
+                                     PerlinGradient(p[BA+0x01], xf-0x01, yf, zf-0x01)),
+                             Maths.LinearInterpolate(u, PerlinGradient(p[AB+0x01], xf, yf-1, zf-0x01),
+                                     PerlinGradient(p[BB+0x01], xf-0x01, yf-0x01, zf-0x01))
 			)
 			);
 		}
-		static double fade (double t) {
-			return t*t*t*(t*(t*6-15)+10);
+		static double PerlinFade (double t) {
+			return t*t*t*(t*(0x06*t-0x0f)+0x0a);
 		}
-		static double lerp (double t, double a, double b) {
-			return a+t*(b-a);
-		}
-		static double grad (int hash, double x, double y, double z) {
-			int h = hash&15;                      // CONVERT LO 4 BITS OF HASH CODE
-			double u = h < 8 ? x : y, // INTO 12 GRADIENT DIRECTIONS.
+		static double PerlinGradient (int hash, double x, double y, double z) {
+			int h = hash&15;
+			double u = h < 8 ? x : y,
 			v = h < 4 ? y : h == 12 || h == 14 ? x : z;
 			return ((h&1) == 0 ? u : -u)+((h&2) == 0 ? v : -v);
 		}
 
-		/*public static uint Marble3 (Point3 xyz) {
-			//uint rgb = Maths.Border(0x00, (uint)Math.Round(0xff*Math.Cos(xyz.X+noise(50.0d*xyz.X, 50.0d*xyz.Y, 50.0d*xyz.Z))), 0xff);
-			//Console.WriteLine(noise(50.0d*xyz.X, 50.0d*xyz.Y, 50.0d*xyz.Z));
-			uint rgb = Maths.Border(0x00, (uint)Math.Round(0xff*(Math.Cos(25.0d+xyz.X*perlin(25.0d*xyz.X, 25.0d*xyz.Y, 25.0d*xyz.Z))*0.75d)), 0xff);
-			//uint rgb = Maths.Border(0x00, (uint)Math.Round(0xff*wave3dFuncion((int)(100*xyz.X), (int)(100*xyz.Y), (int)(512*xyz.Z), 0.5f, 0.064f, 0x08)), 0xff);
-			return Color.GetColor(rgb, rgb, rgb);
-		}*/
-		/*public static uint Marble3 (Point3 xyz) {
-			double g = Math.Cos(xyz.X+perlin(xyz.X, xyz.Y, xyz.Z));
-			return Color.FromFrac(g);
-		}*/
 		public static uint Marble3 (Point3 xyz) {
 			double sum = 0.0d;
 			for(int i = 0x01; i < 0x20; i++) {
-				sum += Math.Abs(perlin(xyz.X*i, xyz.Y*i, xyz.Z*i))/i;
+				sum += Math.Abs(Perlin3d(xyz.X*i, xyz.Y*i, xyz.Z*i))/i;
 			}
 			double g = Math.Sin(sum);
 			return Utils.FloatIndex(marbleGradient, g);
-			//return Color.FromFrac(g);
 		}
 		public static uint Sky3 (Point3 xyz) {
 			double sum = 0.0d;
 			for(int i = 0x01; i < 0x20; i++) {
-				sum += Math.Abs(perlin(xyz.X*i, xyz.Y*i, xyz.Z*i))/i;
+				sum += Math.Abs(Perlin3d(xyz.X*i, xyz.Y*i, xyz.Z*i))/i;
 			}
 			return Utils.FloatIndex(skyGradient, sum);
-			//return Color.FromFrac(g);
 		}
 		public static uint Wood3 (Point3 xyz) {
-			double g = perlin(xyz.X, xyz.Y, xyz.Z)*20;
+			double g = Perlin3d(xyz.X, xyz.Y, xyz.Z)*20;
 			g = g-(int)Math.Floor(g);
-			//return Color.FromFrac(0.26*g+0.67, 0.27*g+0.33, 0.13);
 			return Utils.FloatIndex(woodGradient, g);
 		}
 		public static void InitializeNoiseBuffer () {

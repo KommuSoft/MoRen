@@ -200,10 +200,9 @@ namespace Renderer {
 			public void Hit (Ray ray, Point3 rayinv, Point3 inter, ref double t, ref double tHit, ref RenderItem ri) {
 				double tt;
 				if(this.tri == null) {
-					//tt = (x0-inter[dim])/rayinv[dim];
 					if(t < tHit) {
 						int cur = Math.Sign(inter[dim]-x);
-						if(cur*Math.Sign(rayinv[dim]) < 0.0d) {//with migration
+						if(cur*Math.Sign(rayinv[dim]) < 0.0d) {
 							tt = t+(x-inter[dim])*rayinv[dim];
 							double tt2 = Math.Min(tt, tHit);
 							this.children[(cur+0x01)>>0x01].Hit(ray, rayinv, inter, ref t, ref tt2, ref ri);

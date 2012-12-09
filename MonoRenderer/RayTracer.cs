@@ -19,18 +19,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#define AMBIENT
-#define DIFFUSE
-#define SPECULAR
-#undef REFLECTION
-#undef REFRACTION
-#define INTENSITYLOSS
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.IO;
 using System.Xml.Serialization;
 using Renderer.SceneBuilding;
 
@@ -70,7 +59,6 @@ namespace Renderer {
 		public uint CalculateColor (Ray ray, int depth, uint intensityHint) {
 			RenderItem best = null;
 			double t, tdummy;
-			//string tabString = new string('\t', depth);
 			best = acc.CalculateHit(ray, out t);
 			if(best != null) {
 				best.Cast(ray, nw);
@@ -122,11 +110,11 @@ namespace Renderer {
 						clr = Color.Add(clr, Color.Multiply(this.CalculateColor(ray, depth+1, reflint), reflectance));
 					}
 					uint refrint = Color.Multiply(intensityHint, refraction);
-					if(!double.IsNaN(rayCache[depth].Direction.X) && (refrint&DepthThresholdMask) != 0x00) {// && (refrint&DepthThresholdMask) != 0x00
+					if(!double.IsNaN(rayCache[depth].Direction.X) && (refrint&DepthThresholdMask) != 0x00) {
 						uint res = this.CalculateColor(rayCache[depth], depth+1, refrint);
 						clr = Color.Add(clr, Color.Multiply(res, refrint));
 					}
-				}//*/
+				}
 				return Color.loseIntensity(clr, distanceUnit, t);
 			}
 			else {
@@ -137,20 +125,7 @@ namespace Renderer {
 		public static int Main (string[] args) {
 			PerlinCache.InitializeNoiseBuffer();
 			SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
-			Light[] lights = new Light[] {
-				new Light(0x808080, new Point3(-10.0d, 5.0d, 1.0d)),
-				new Light(0x808080, new Point3(10.0d, 20.0d, 22.0d)),
-			};
-			List<CameraPostProcessor> cpps = new List<CameraPostProcessor>();
-			TimeSpan ts = new TimeSpan();
-			Accelerator acc = new OctTreeAccelerator(sd.SceneGraph.Inject().Item1);
-			//Camera cam = new Camera(640, 640, 1.5, 0.25d*Math.PI, acc, lights, sd.EnvironmentSettings, cpps);
 			new RenderWindow(sd.BuildScene()).ShowDialog();
-			/*DateTime start = DateTime.Now;
-			DateTime stop = DateTime.Now;
-			ts = ts.Add(stop-start);*/
-			//cam.Save("fluttershy/result.png");
-			Console.WriteLine("Testcase took {0}", ts);
 			return 0x00;
 		}
 		

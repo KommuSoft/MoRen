@@ -22,8 +22,7 @@ using System;
 
 namespace Renderer {
 
-	public struct AddRemoveEvent : IComparable<AddRemoveEvent>
-	{
+	public struct AddRemoveEvent : IComparable<AddRemoveEvent> {
 
 		public const long RemoveEvent = 0x000000000;
 		public const long AddEvent = 0x100000000;
@@ -57,11 +56,12 @@ namespace Renderer {
 		}
 
 		public int CompareTo (AddRemoveEvent other) {
-			int comp = this.X.CompareTo(other.X);//lower x first
+			int comp = this.X.CompareTo(other.X);
 			if(comp != 0x00) {
 				return comp;
-			} else {
-				return this.Combined.CompareTo(other.Combined);//remove first
+			}
+			else {
+				return this.Combined.CompareTo(other.Combined);
 			}
 		}
 

@@ -260,7 +260,7 @@ namespace Renderer {
 			double ncost1 = nfrac*cost1;
 			double cost2 = Math.Sqrt(1.0d+nfrac*nfrac*(cost1*cost1-1.0d));
 			double factora = 2.0d*cost1;
-			double factorb = (ncost1-cost2);//*Math.Sign(cost1);
+			double factorb = (ncost1-cost2);
 			reflect.X = factora*normal.X+init.X;
 			reflect.Y = factora*normal.Y+init.Y;
 			reflect.Z = factora*normal.Z+init.Z;

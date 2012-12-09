@@ -34,16 +34,16 @@ namespace Renderer.SceneBuilding {
 			RecursionDepth = 0x01;
 		[XmlAttribute("LightTest")]
 		public uint
-			LightTest = 0x01;//maximum 0x0101
+			LightTest = 0x01;
 		[XmlAttribute("AntiAliasingSqt")]
 		public uint
-			AntiAliasingSqrt = 0x01;//maximum 0x10
+			AntiAliasingSqrt = 0x01;
 		[XmlAttribute("Dispersion")]
 		public double
 			Dispersion = 0.0d;
 		[XmlAttribute("DispersionAntiAliasSqt")]
 		public uint
-			DispersingAntiAliasingSqrt = 0x01;//maximum 0x10
+			DispersingAntiAliasingSqrt = 0x01;
 
 		public EnvironmentSettings () {
 		}

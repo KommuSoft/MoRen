@@ -188,6 +188,9 @@ namespace Renderer {
 				return Math.Min(a, b);
 			}
 		}
+		public static double LinearInterpolate (double t, double a, double b) {
+			return a+t*(b-a);
+		}
 		///<summary>
 		///Interpolates between the two given values with an interpolation-factor.
 		///</summary>

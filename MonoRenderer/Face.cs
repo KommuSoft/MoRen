@@ -2,8 +2,7 @@ using System;
 
 namespace Renderer {
 	
-	public class Face : RenderItem
-	{
+	public class Face : RenderItem {
 		
 		public Point3 Normal;
 		public double D;
@@ -28,15 +27,17 @@ namespace Renderer {
 			double t = (D-Normal.X*ray.X0-Normal.Y*ray.Y0-Normal.Z*ray.Z0)/(Normal.X*ray.DX+Normal.Y*ray.DY+Normal.Z*ray.DZ);
 			if(t > 0.0d) {
 				return t;
-			} else {
+			}
+			else {
 				return double.PositiveInfinity;
 			}
 		}
 		public override void Cast (Ray ray, CastResult cr) {
 			double t = (D-Normal.X*ray.X0-Normal.Y*ray.Y0-Normal.Z*ray.Z0)/(Normal.X*ray.DX+Normal.Y*ray.DY+Normal.Z*ray.DZ);
 			if(t > 0.0d) {
-				cr.Copy(t, Normal, 0.0d, 0.0d);//,Clr,30,0,1.0d
-			} else {
+				cr.Copy(t, Normal, 0.0d, 0.0d);
+			}
+			else {
 				cr.SetNull();
 			}
 		}

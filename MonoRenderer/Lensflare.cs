@@ -219,7 +219,7 @@ namespace Renderer {
 			return alphaPalette;
 		}
 		
-		private uint[] getLinearAlpha () {//TODO: needed??
+		private uint[] getLinearAlpha () {
 			uint[] alphaPalette = new uint[256];
 			for(int i = 255; i >= 0; i--) {
 				alphaPalette[i] = (uint)(255-i);
