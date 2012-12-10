@@ -80,12 +80,12 @@ namespace Renderer.SceneBuilding {
 		public Camera BuildScene () {
 			Tuple<List<RenderItem>,List<Light>> scene = this.SceneGraph.Inject();
 			List<RenderItem> ris = scene.Item1;
+			ris.Clear();
+			ris.Add(new Sphere(new Point3(0.0d, 0.0d, 30.0d), 5.0d, new Material(0xffffff, 0xffffff, 0xffffff, 15.0d, 0.0d, null, null, new Texture("orange_bump_01.jpg"))));
 			Light[] lights = scene.Item2.ToArray();
 			EnvironmentSettings es = this.es;
 			Accelerator acc = this.AcceleratorWrapper.CreateAccelerator(ris);
-			Camera cam = this.camera.Camera(acc, lights, es);
-			cam.postProcessors.Add(new Lensflare());
-			return cam;
+			return this.camera.Camera(acc, lights, es);
 		}
 		public static SceneDescription ParseFromStream (Stream stream) {
 			XmlSerializer ser = new XmlSerializer(typeof(SceneDescription));

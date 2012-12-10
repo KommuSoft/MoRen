@@ -271,10 +271,9 @@ namespace Renderer {
 			refract.Normalize();
 		}
 		public void Mix3Normalize (Point3 xv, Point3 yv, double xf, double yf) {
-			double zf = Math.Sqrt(1.0d-xf*xf-yf*yf);
-			this.X = this.X*zf+xv.X*xf+yv.X*yf;
-			this.Y = this.Y*zf+xv.Y*xf+yv.Y*yf;
-			this.Z = this.Z*zf+xv.Z*xf+yv.Z*yf;
+			this.X = this.X+xv.X*xf+yv.X*yf;
+			this.Y = this.Y+xv.Y*xf+yv.Y*yf;
+			this.Z = this.Z+xv.Z*xf+yv.Z*yf;
 			this.Normalize();
 		}
 		public static double CosAngle (Point3 pa, Point3 pb) {
@@ -282,6 +281,28 @@ namespace Renderer {
 		}
 		public static int Order (double x, double y, double z, double a, double b, double c, double d) {
 			return (3+(int)Math.Sign(x*a+b*y+c*z+d))>>1;
+		}
+		public void TweakNormal (double xdiff, double ydiff) {
+			double xyinv = xdiff*xdiff+ydiff*ydiff;
+			if(xyinv > Maths.GlobalEpsilon) {
+				xyinv = 1.0d/Math.Sqrt(xyinv+1.0d);
+				double theta = Math.Acos(xyinv);
+				xdiff *= xyinv;
+				ydiff *= xyinv;
+				double ux, uy, uz;
+				Point3.CrossNormalize(0.0d, 0.0d, 1.0d, xdiff, ydiff, xyinv, out ux, out uy, out uz);
+				Point3.AxisRotate(ux, uy, uz, Math.Acos(xyinv), ref this.X, ref this.Y, ref this.Z);
+			}
+		}
+		public static void AxisRotate (double ux, double uy, double uz, double theta, ref double pointx, ref double pointy, ref double pointz) {
+			double cost = Math.Cos(theta);
+			double costa = 1.0d-cost;
+			double sint = Math.Sin(theta);
+			double nx = (cost+costa*ux*ux)*pointx+(ux*uy*costa-uz*sint)*pointy+(ux*uz*costa+uy*sint)*pointz;
+			double ny = (ux*uy*costa+uz*sint)*pointx+(cost+costa*uy*uy)*pointy+(uy*uz*costa-ux*sint)*pointz;
+			pointz = (ux*uz*costa-uy*sint)*pointx+(uz*uy*costa+ux*sint)*pointy+(cost+costa*uz*uz)*pointz;
+			pointx = nx;
+			pointy = ny;
 		}
 		//assumption: both vectors are normalized
 		public static double CosAngleNorm (Point3 pa, Point3 pb) {

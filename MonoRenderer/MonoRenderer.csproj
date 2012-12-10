@@ -50,7 +50,6 @@
     <Compile Include="FinalList.cs" />
     <Compile Include="GridAccelerator.cs" />
     <Compile Include="IRenderable.cs" />
-    <Compile Include="Lensflare.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="Loader3ds.cs" />
     <Compile Include="LoaderObj.cs" />
@@ -100,6 +99,7 @@
     <Compile Include="RenderItemStartComparator.cs" />
     <Compile Include="RenderItemStopComparator.cs" />
     <Compile Include="NormalTweaker.cs" />
+    <Compile Include="VersioningDictionary.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
