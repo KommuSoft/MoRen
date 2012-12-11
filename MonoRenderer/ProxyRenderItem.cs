@@ -43,6 +43,7 @@ namespace Renderer {
 			this.GetDimensionBounds(0x00, out y0, out y1);
 			this.GetDimensionBounds(0x00, out z0, out z1);
 		}
+		public abstract void GetFaceNormalBounds (Point3 facenormal, out double t0, out double t1);
 		public abstract void GetDimensionBounds (int dim, out double x0, out double x1);
 
 	}

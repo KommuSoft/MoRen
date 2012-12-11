@@ -1,5 +1,5 @@
 //
-//  IRenderable.cs
+//  ImplementedSplitHeuristics.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -19,20 +19,20 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Collections.Generic;
 
 namespace Renderer {
 
-	public interface IRenderable {
+	public static class ImplementedSplitHeuristics {
 
-		RenderItem Root {
-			get;
+		public static void SplitHalfAreaHeuristic (IEnumerable<IRenderable> items, Point3 facenormal, double t0, double t1, out double ta, out double tb, out double heuristic) {
+			tb = ta = 0.5d*(t0+t1);
+			heuristic = 0.0d;
 		}
-		double Surface ();
-		double SplitSurface (double sweep, int dimension);
-		Tuple<ProxyRenderItem[],ProxyRenderItem[]> SplitAt (double sweep, int dimension);
-		void GetBounds (out double x0, out double x1, out double y0, out double y1, out double z0, out double z1);
-		void GetDimensionBounds (int dim, out double x0, out double x1);
-		void GetFaceNormalBounds (Point3 facenormal, out double t0, out double t1);
+		public static void SurfaceAreaHeuristic (IEnumerable<IRenderable> items, Point3 facenormal, double t0, double t1, out double ta, out double tb, out double heuristic) {
+			tb = ta = 0.5d*(t0+t1);
+			heuristic = 0.0d;
+		}
 
 	}
 }

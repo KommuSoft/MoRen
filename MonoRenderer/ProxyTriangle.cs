@@ -22,8 +22,7 @@ using System;
 
 namespace Renderer {
 
-	public class ProxyTriangle : ProxyRenderItem
-	{
+	public class ProxyTriangle : ProxyRenderItem {
 
 		public readonly Point3 pa, pb, pc;
 
@@ -42,8 +41,14 @@ namespace Renderer {
 			z1 = Maths.Max(this.pa.Z, this.pb.Z, this.pc.Z);
 		}
 		public override void GetDimensionBounds (int dim, out double x0, out double x1) {
-			x0 = Maths.Min(this.pa [dim], this.pb [dim], this.pc [dim]);
-			x1 = Maths.Max(this.pa [dim], this.pb [dim], this.pc [dim]);
+			double pat = this.pa[dim], pbt = this.pb[dim], pct = this.pc[dim];
+			x0 = Maths.Min(pat, pbt, pct);
+			x1 = Maths.Max(pat, pbt, pct);
+		}
+		public override void GetFaceNormalBounds (Point3 facenormal, out double t0, out double t1) {
+			double pat = this.pa[facenormal], pbt = this.pb[facenormal], pct = this.pc[facenormal];
+			t0 = Maths.Min(pat, pbt, pct);
+			t1 = Maths.Max(pat, pbt, pct);
 		}
 		public override double Surface () {
 			return Triangle.TriangleSurface(this.pa, this.pb, this.pc);

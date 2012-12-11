@@ -164,5 +164,29 @@ namespace Renderer {
 		public override string ToString () {
 			return string.Format("[BoundingBox: X0={0}, Y0={1}, Z0={2}, X1={3}, Y1={4}, Z1={5}]", X0, Y0, Z0, X1, Y1, Z1);
 		}
+
+		#region implemented abstract members of Renderer.ProxyRenderItem
+		public override void GetFaceNormalBounds (Point3 facenormal, out double t0, out double t1) {
+			double x0 = this.xyz0.X, y0 = this.xyz0.Y, z0 = this.xyz0.Z, x1 = this.xyz1.X, y1 = this.xyz1.Y, z1 = this.xyz1.Z, temp;
+			if(facenormal.X < 0) {
+				temp = x0;
+				x0 = x1;
+				x1 = temp;
+			}
+			if(facenormal.Y < 0) {
+				temp = y0;
+				y0 = y1;
+				y1 = temp;
+			}
+			if(facenormal.Z < 0) {
+				temp = z0;
+				z0 = z1;
+				z1 = temp;
+			}
+			t0 = x0*facenormal.X+y0*facenormal.Y+z0*facenormal.Z;
+			t1 = x1*facenormal.X+y1*facenormal.Y+z1*facenormal.Z;
+		}
+		#endregion
+
 	}
 }

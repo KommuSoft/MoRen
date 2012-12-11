@@ -102,6 +102,8 @@
     <Compile Include="RenderItemDimStopComparator.cs" />
     <Compile Include="RenderItemNormalStartComparator.cs" />
     <Compile Include="RenderItemNormalStopComparator.cs" />
+    <Compile Include="SplitHeuristic.cs" />
+    <Compile Include="ImplementedSplitHeuristics.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
