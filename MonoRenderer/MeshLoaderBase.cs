@@ -26,7 +26,7 @@ namespace Renderer {
 
 	public abstract class MeshLoaderBase : MeshLoader {
 
-		Material DefaultMaterial {
+		public abstract Material DefaultMaterial {
 			get;
 			set;
 		}

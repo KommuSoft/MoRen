@@ -30,17 +30,17 @@ namespace Renderer {
 			tb = ta = 0.5d*(t0+t1);
 			heuristic = 0.0d;
 		}
-		public static void SurfaceAreaHeuristic<T> (IEnumerable<T> items, Point3 facenormal, double t0, double t1, out double ta, out double tb, out double heuristic) where T : ProxyRenderItem {
-			SortedSet<T> starts = new SortedSet<T>(items, new RenderItemNormalStartComparator(facenormal));
-			SortedSet<T> active = new SortedSet<T>(new RenderItemNormalStopComparator(facenormal));
+		public static void SurfaceAreaHeuristic (IEnumerable<ProxyRenderItem> items, Point3 facenormal, double t0, double t1, out double ta, out double tb, out double heuristic) {
+			SortedSet<ProxyRenderItem> starts = new SortedSet<ProxyRenderItem>(items, new RenderItemNormalStartComparator(facenormal));
+			SortedSet<ProxyRenderItem> active = new SortedSet<ProxyRenderItem>(new RenderItemNormalStopComparator(facenormal));
 			tb = ta = 0.5d*(t0+t1);
 			int ln = 0x00, rn = starts.Count;
 			double ls = 0.0d, rs = starts.Sum(a => a.Surface());
 			heuristic = double.PositiveInfinity;
-			T min;
+			ProxyRenderItem min;
 			bool activeRemove;
 			double x, xa, dummy, lastx = t0;
-			IEnumerator<T> prie = starts.GetEnumerator();
+			IEnumerator<ProxyRenderItem> prie = starts.GetEnumerator();
 			bool hasNext = prie.MoveNext();
 			while(hasNext) {
 				min = prie.Current;

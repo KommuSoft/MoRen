@@ -126,10 +126,10 @@ namespace Renderer {
 		public static int Main (string[] args) {
 			PerlinCache.InitializeNoiseBuffer();
 			LoaderObj teapot = new LoaderObj();
-			teapot.Load(null,);
-			double ta, tb, heu;
-			ImplementedSplitHeuristics.SurfaceAreaHeuristic(ri, new Point3(1.0d, 0.0d, 0.0d), 0.0d, 80.0d, out ta, out tb, out heu);
-			Console.WriteLine("{0}/{1}/{2}", ta, tb, heu);
+			teapot.Load(null, "teapot.obj");
+			List<RenderItem> ri = new List<RenderItem>();
+			teapot.Inject(ri, new Matrix4(), null);
+			BSPAccelerator bsp = new BSPAccelerator(ri);
 			/*
 			SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
 			new RenderWindow(sd.BuildScene()).ShowDialog();*/

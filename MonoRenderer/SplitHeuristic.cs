@@ -23,6 +23,6 @@ using System.Collections.Generic;
 
 namespace Renderer {
 
-	public delegate void SplitHeuristic (IEnumerable<IRenderable> renderables,Point3 facenormal,double t0,double t1,out double ta,out double tb,out double heuristic);
+	public delegate void SplitHeuristic (IEnumerable<ProxyRenderItem> renderables,Point3 facenormal,double t0,double t1,out double ta,out double tb,out double heuristic);
 }
 

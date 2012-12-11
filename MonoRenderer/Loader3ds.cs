@@ -33,7 +33,7 @@ namespace Renderer {
 		private RootJunk root;
 		private Material defaultMaterial = Material.DefaultMaterial;
 
-		public Material DefaultMaterial {
+		public override Material DefaultMaterial {
 			get {
 				return this.defaultMaterial;
 			}
@@ -46,11 +46,11 @@ namespace Renderer {
 			
 		}
 
-		public void Inject (List<RenderItem> items, Matrix4 transform, params string[] args) {
+		public override void Inject (List<RenderItem> items, Matrix4 transform, params string[] args) {
 			items.AddRange(this.root.GetItems(transform));
 		}
 
-		public void Load (string dir, Stream s) {
+		public override void Load (string dir, Stream s) {
 			ParsingContext ctx = new ParsingContext(dir);
 			BinaryReader br = new BinaryReader(s);
 			readHeader(br, s);

@@ -43,7 +43,7 @@ namespace Renderer {
 		private List<int[]> tri = new List<int[]>();
 		private Material defaultMaterial = Material.DefaultMaterial;
 
-		public Material DefaultMaterial {
+		public override Material DefaultMaterial {
 			get {
 				return this.defaultMaterial;
 			}
@@ -104,7 +104,7 @@ namespace Renderer {
 				this.tri.Add(new int[] {i0,n0,t0,i1,n1,t1,i2,n2,t2});
 			}
 		}
-		public void Inject (List<RenderItem> ris, Matrix4 transform, params string[] args) {
+		public override void Inject (List<RenderItem> ris, Matrix4 transform, params string[] args) {
 			Point3[] pos = this.pos.Select(x => new Point3(x, transform)).ToArray();
 			Point3[] nor = this.nor.Select(x => new Point3(x)).ToArray();
 			for(int i = 0; i < nor.Length; i++) {
@@ -141,7 +141,7 @@ namespace Renderer {
 			return -0x01;
 		}
 
-		public void Load (string currentDir, Stream stream) {
+		public override void Load (string currentDir, Stream stream) {
 			TextReader tr = new StreamReader(stream);
 			string line = tr.ReadLine();
 			while(line != null) {

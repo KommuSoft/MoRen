@@ -29,7 +29,7 @@ namespace Renderer {
 
 		public BSPAccelerator (IEnumerable<RenderItem> items) : this(items,ImplementedSplitHeuristics.SurfaceAreaHeuristic,Point3.UnitDummies) {
 		}
-		public BSPAccelerator (IEnumerable<RenderItem> items, SplitHeuristic sh) : this(items,Point3.UnitDummies) {
+		public BSPAccelerator (IEnumerable<RenderItem> items, SplitHeuristic sh) : this(items,sh,Point3.UnitDummies) {
 		}
 		public BSPAccelerator (IEnumerable<RenderItem> items, SplitHeuristic sh, IEnumerable<Point3> facenormals) {
 			double ta, tb;
@@ -44,13 +44,13 @@ namespace Renderer {
 				}
 				fn.Add(new NormalInterval(normal, tta, ttb));
 			}
-			Split(sh, facenormals, items);
+			Split(sh, fn, items);
 		}
 
 		private void Split (SplitHeuristic sh, IEnumerable<NormalInterval> facenormals, IEnumerable<RenderItem> items) {
 			NormalInterval nibest = null;
 			double minHeu = double.PositiveInfinity;
-			double ta, tb, tta, ttb, theu;
+			double ta = double.NaN, tb = ta, tta, ttb, theu;
 			foreach(NormalInterval ni in facenormals) {
 				sh(items, ni.Item1, ni.Item2, ni.Item3, out tta, out ttb, out theu);
 				if(theu < minHeu) {
