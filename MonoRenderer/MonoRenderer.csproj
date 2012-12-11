@@ -100,6 +100,7 @@
     <Compile Include="RenderItemStopComparator.cs" />
     <Compile Include="NormalTweaker.cs" />
     <Compile Include="VersioningDictionary.cs" />
+    <Compile Include="BSPAccelerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

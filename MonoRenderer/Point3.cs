@@ -26,7 +26,7 @@ using System.Xml.Serialization;
 namespace Renderer {
 	
 	[XmlType("Point3")]
-	public sealed class Point3 {
+	public sealed class Point3 : ITransformable {
 		
 		[XmlIgnore]
 		public static readonly Point3
@@ -89,6 +89,11 @@ namespace Renderer {
 				}
 			}
 		}
+		public double this [Point3 facenormal] {
+			get {
+				return this.X*facenormal.X+this.Y*facenormal.Y+this.Z*facenormal.Z;
+			}
+		}
 		
 		[XmlIgnore]
 		public double Length {
@@ -145,15 +150,6 @@ namespace Renderer {
 			this.X = rinv*dx+x;
 			this.Y = rinv*dx+y;
 			this.Z = rinv*dx+z;
-		}
-		
-		public void Transform (Matrix4 M) {
-			double nx = M.M00*X+M.M01*Y+M.M02*Z+M.M03;
-			double ny = M.M10*X+M.M11*Y+M.M12*Z+M.M13;
-			double nz = M.M20*X+M.M21*Y+M.M22*Z+M.M23;
-			this.X = nx;
-			this.Y = ny;
-			this.Z = nz;
 		}
 		public void TransformNonShift (Matrix4 M) {
 			double nx = M.M00*X+M.M01*Y+M.M02*Z;
@@ -355,16 +351,6 @@ namespace Renderer {
 				this.Z = -this.Z;
 			}
 		}
-		public static void AxisRotate (double ux, double uy, double uz, double theta, ref double pointx, ref double pointy, ref double pointz) {
-			double cost = Math.Cos(theta);
-			double costa = 1.0d-cost;
-			double sint = Math.Sin(theta);
-			double nx = (cost+costa*ux*ux)*pointx+(ux*uy*costa-uz*sint)*pointy+(ux*uz*costa+uy*sint)*pointz;
-			double ny = (ux*uy*costa+uz*sint)*pointx+(cost+costa*uy*uy)*pointy+(uy*uz*costa-ux*sint)*pointz;
-			pointz = (ux*uz*costa-uy*sint)*pointx+(uz*uy*costa+ux*sint)*pointy+(cost+costa*uz*uz)*pointz;
-			pointx = nx;
-			pointy = ny;
-		}
 		//assumption: both vectors are normalized
 		public static double CosAngleNorm (Point3 pa, Point3 pb) {
 			return pa.X*pb.X+pa.Y*pb.Y+pa.Z*pb.Z;
@@ -414,19 +400,73 @@ namespace Renderer {
 
 		private class FaceComp : IComparer<Point3> {
 
-			public readonly double A, B, C;
+			public readonly Point3 Facenormal;
 
-			public FaceComp (double a, double b, double c) {
-				this.A = a;
-				this.B = b;
-				this.C = c;
+			public FaceComp (Point3 facenormal) {
+				this.Facenormal = facenormal;
 			}
 
 			public int Compare (Point3 pa, Point3 pb) {
-				return (A*pa.X+B*pa.Y+C*pa.Z).CompareTo(A*pb.X+B*pb.Y+C*pb.Z);
+				return pa[this.Facenormal].CompareTo(pb[Facenormal]);
 			}
 
 		}
+		#region ITransformable implementation
+		public void Rotate (double ux, double uy, double uz, double theta) {
+			double cost = Math.Cos(theta);
+			double costa = 1.0d-cost;
+			double sint = Math.Sin(theta);
+			double nx = (cost+costa*ux*ux)*this.X+(ux*uy*costa-uz*sint)*this.Z+(ux*uz*costa+uy*sint)*this.Z;
+			double ny = (ux*uy*costa+uz*sint)*this.X+(cost+costa*uy*uy)*this.Y+(uy*uz*costa-ux*sint)*this.Z;
+			this.Z = (ux*uz*costa-uy*sint)*this.X+(uz*uy*costa+ux*sint)*this.Y+(cost+costa*uz*uz)*this.Z;
+			this.X = nx;
+			this.Y = ny;
+		}
+		public void RotateX (double theta) {
+			double cost = Math.Cos(theta);
+			double sint = Math.Sin(theta);
+			double newy = cost*this.Y-sint*this.Z;
+			this.Z = sint*this.Y+cost*this.Z;
+			this.Y = newy;
+		}
+
+		public void RotateY (double theta) {
+			double cost = Math.Cos(theta);
+			double sint = Math.Sin(theta);
+			double newx = cost*this.X+sint*this.Z;
+			this.Z = cost*this.Z-sint*this.X;
+			this.X = newx;
+		}
+
+		public void RotateZ (double theta) {
+			double cost = Math.Cos(theta);
+			double sint = Math.Sin(theta);
+			double newx = cost*this.X-sint*this.Y;
+			this.Y = sint*this.X+cost*this.Y;
+			this.X = newx;
+		}
+
+		public void Shift (double dx, double dy, double dz) {
+			this.X += dx;
+			this.Y += dy;
+			this.Z += dz;
+		}
+
+		public void Scale (double sx, double sy, double sz) {
+			this.X *= sx;
+			this.Y *= sy;
+			this.Z *= sz;
+		}
+		public void Transform (Matrix4 M) {
+			double nx = M.M00*X+M.M01*Y+M.M02*Z+M.M03;
+			double ny = M.M10*X+M.M11*Y+M.M12*Z+M.M13;
+			double nz = M.M20*X+M.M21*Y+M.M22*Z+M.M23;
+			this.X = nx;
+			this.Y = ny;
+			this.Z = nz;
+		}
+		#endregion
+
 		
 	}
 		
