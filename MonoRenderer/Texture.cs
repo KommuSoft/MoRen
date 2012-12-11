@@ -79,15 +79,12 @@ namespace Renderer {
 		public void TweakNormal (Point3 tu, Point3 normal, Point3 bumpx, Point3 bumpy) {
 			int y = Maths.Border(0x00, (int)Math.Round(Height*tu.Y), Height-0x01);
 			int x = Maths.Border(0x00, (int)Math.Round(Width*tu.X), Width-0x01);
-			//int x0 = Math.Max(0x00, x-0x01);
-			int x1 = Math.Min(Width-0x01, x+0x01);
-			int y0 = Math.Max(0x00, y-0x01)*Width;
-			//int y1 = Math.Min(Height-0x01, y+0x01)*Width;
+			int x0 = (x+Width-0x01)%Width;
+			int y0 = ((y+Height-0x01)%Height)*Width;
 			y *= Width;
-			double xdiff = ((int)(Pixel[y+x]&Color.ColorChannel)-(int)(Pixel[y+x1]&Color.ColorChannel))/(double)Color.ColorChannel;
-			double ydiff = ((int)(Pixel[y+x]&Color.ColorChannel)-(int)(Pixel[y0+x]&Color.ColorChannel))/(double)Color.ColorChannel;
-			Console.WriteLine("normal {1};{2}", normal, xdiff*255.0d, ydiff*255.0d);
-			normal.TweakNormal(xdiff*10.0d, ydiff*10.0d);
+			double xdiff = ((int)(Pixel[y+x]&0xff)-(int)(Pixel[y+x0]&0xff))/100.0d;
+			double ydiff = ((int)(Pixel[y+x]&0xff)-(int)(Pixel[y0+x]&0xff))/100.0d;
+			normal.RotateLikeZVector(xdiff, ydiff);
 		}
 		private void setSize (int width, int height) {
 			int offset = width*height;

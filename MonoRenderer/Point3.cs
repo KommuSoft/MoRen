@@ -282,16 +282,33 @@ namespace Renderer {
 		public static int Order (double x, double y, double z, double a, double b, double c, double d) {
 			return (3+(int)Math.Sign(x*a+b*y+c*z+d))>>1;
 		}
-		public void TweakNormal (double xdiff, double ydiff) {
+		public void RotateLikeZVector (double xdiff, double ydiff) {
 			double xyinv = xdiff*xdiff+ydiff*ydiff;
 			if(xyinv > Maths.GlobalEpsilon) {
-				xyinv = 1.0d/Math.Sqrt(xyinv+1.0d);
-				double theta = Math.Acos(xyinv);
-				xdiff *= xyinv;
-				ydiff *= xyinv;
+				double theta = Math.Acos(1.0d/Math.Sqrt(xyinv+1.0d));
+				xyinv = 1.0d/Math.Sqrt(xyinv);
 				double ux, uy, uz;
-				Point3.CrossNormalize(0.0d, 0.0d, 1.0d, xdiff, ydiff, xyinv, out ux, out uy, out uz);
-				Point3.AxisRotate(ux, uy, uz, Math.Acos(xyinv), ref this.X, ref this.Y, ref this.Z);
+				Point3.AxisRotate(-ydiff*xyinv, xdiff*xyinv, 0.0d, theta, ref this.X, ref this.Y, ref this.Z);
+			}
+		}
+		//assumption: the given vector is normalized
+		public void NormalizedRotateLikeZVector (double vx, double vy, double vz) {
+			double xyinv = vx*vx+vy*vy;
+			if(xyinv > Maths.GlobalEpsilon) {
+				double cost = vz;
+				double costasint2 = (1.0d-cost)/xyinv;
+				double lina = (vy*this.X+vx*this.Y);
+				double nx = costasint2*lina*vy+cost*this.X+vx*this.Z;
+				double ny = costasint2*lina*vx+cost*this.Y+vy*this.Z;
+				this.Z = vx*this.X+vy*this.Y+cost*this.Z;
+				this.X = nx;
+				this.Y = ny;
+
+			}
+			else if(vz < 0.0d) {
+				this.X = -this.X;
+				this.Y = -this.Y;
+				this.Z = -this.Z;
 			}
 		}
 		public static void AxisRotate (double ux, double uy, double uz, double theta, ref double pointx, ref double pointy, ref double pointz) {
