@@ -77,8 +77,6 @@
     <Compile Include="Texture.cs" />
     <Compile Include="Triangle.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="BinarySpacePartitionAccelerator.cs" />
-    <Compile Include="BoundingBox.cs" />
     <Compile Include="ITransformable.cs" />
     <Compile Include="CameraPostProcessor.cs" />
     <Compile Include="NoisePostProcessor.cs" />
@@ -104,6 +102,8 @@
     <Compile Include="RenderItemNormalStopComparator.cs" />
     <Compile Include="SplitHeuristic.cs" />
     <Compile Include="ImplementedSplitHeuristics.cs" />
+    <Compile Include="ProxyRenderItemBase.cs" />
+    <Compile Include="MeshLoaderBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -1,5 +1,5 @@
 //
-//  IRenderable.cs
+//  ProxyRenderItemBase.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -22,18 +22,18 @@ using System;
 
 namespace Renderer {
 
-	public interface IRenderable {
+	public abstract class ProxyRenderItemBase : ProxyRenderItem {
 
-		RenderItem Root {
-			get;
+		public readonly RenderItem Source;
+		public override RenderItem Root {
+			get {
+				return this.Source;
+			}
 		}
-		double Surface ();
-		double SplitSurface (double sweep, int dimension);
-		Tuple<ProxyRenderItem[],ProxyRenderItem[]> SplitAt (double sweep, Point3 facenormal);
-		void GetBounds (out double x0, out double x1, out double y0, out double y1, out double z0, out double z1);
-		void GetDimensionBounds (int dim, out double x0, out double x1);
-		void GetFaceNormalBounds (Point3 facenormal, out double t0, out double t1);
 
+		public ProxyRenderItemBase (RenderItem source) {
+			this.Source = source;
+		}
 	}
 }
 

@@ -411,7 +411,7 @@ namespace Renderer {
 
 		}
 
-		private class FaceComp : IComparer<Point3> {
+		public class FaceComp : IComparer<Point3> {
 
 			public readonly Point3 Facenormal;
 

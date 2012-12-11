@@ -26,7 +26,7 @@ using System.IO;
 using System.Text;
 
 namespace Renderer {
-	public class Loader3ds : MeshLoader {
+	public class Loader3ds : MeshLoaderBase {
 		
 		private ushort currentJunk;
 		private int nextJunkOffset;

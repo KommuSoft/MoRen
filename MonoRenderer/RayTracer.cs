@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 using Renderer.SceneBuilding;
 
@@ -124,8 +125,14 @@ namespace Renderer {
 		
 		public static int Main (string[] args) {
 			PerlinCache.InitializeNoiseBuffer();
+			LoaderObj teapot = new LoaderObj();
+			teapot.Load(null,);
+			double ta, tb, heu;
+			ImplementedSplitHeuristics.SurfaceAreaHeuristic(ri, new Point3(1.0d, 0.0d, 0.0d), 0.0d, 80.0d, out ta, out tb, out heu);
+			Console.WriteLine("{0}/{1}/{2}", ta, tb, heu);
+			/*
 			SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
-			new RenderWindow(sd.BuildScene()).ShowDialog();
+			new RenderWindow(sd.BuildScene()).ShowDialog();*/
 			return 0x00;
 		}
 		

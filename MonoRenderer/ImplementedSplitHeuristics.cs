@@ -19,6 +19,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Renderer {
@@ -29,9 +30,54 @@ namespace Renderer {
 			tb = ta = 0.5d*(t0+t1);
 			heuristic = 0.0d;
 		}
-		public static void SurfaceAreaHeuristic (IEnumerable<IRenderable> items, Point3 facenormal, double t0, double t1, out double ta, out double tb, out double heuristic) {
+		public static void SurfaceAreaHeuristic<T> (IEnumerable<T> items, Point3 facenormal, double t0, double t1, out double ta, out double tb, out double heuristic) where T : ProxyRenderItem {
+			SortedSet<T> starts = new SortedSet<T>(items, new RenderItemNormalStartComparator(facenormal));
+			SortedSet<T> active = new SortedSet<T>(new RenderItemNormalStopComparator(facenormal));
 			tb = ta = 0.5d*(t0+t1);
-			heuristic = 0.0d;
+			int ln = 0x00, rn = starts.Count;
+			double ls = 0.0d, rs = starts.Sum(a => a.Surface());
+			heuristic = double.PositiveInfinity;
+			T min;
+			bool activeRemove;
+			double x, xa, dummy, lastx = t0;
+			IEnumerator<T> prie = starts.GetEnumerator();
+			bool hasNext = prie.MoveNext();
+			while(hasNext) {
+				min = prie.Current;
+				Console.WriteLine("Considering: {0}", min);
+				ln++;
+				ls += min.Surface();
+				min.GetFaceNormalBounds(facenormal, out x, out dummy);
+				active.Add(min);
+				activeRemove = true;
+				while(activeRemove && active.Count > 0x00) {
+					//Console.WriteLine("Check removing with count {0}", active.Count);
+					min = active.Min;
+					min.GetFaceNormalBounds(facenormal, out dummy, out xa);
+					activeRemove = xa <= x;
+					if(activeRemove) {
+						//Console.WriteLine("Removing: {0}", min);
+						active.Remove(min);
+						rn--;
+						lastx = xa;
+						//Console.WriteLine("Lastxa is now: {0}", lastx);
+						rs -= min.Surface();
+					}
+				}
+				hasNext = prie.MoveNext();
+				if(t0 < x && x < t1) {
+					dummy = ln*ls+rn*rs;
+					//Console.WriteLine("EVAL f({0})={1}", x, dummy);
+					if(dummy < heuristic) {
+						heuristic = dummy;
+						ta = tb = x;
+						if(active.Count <= 0x01) {
+							ta = lastx;
+							//prie.Current.GetFaceNormalBounds(facenormal, out tb, out t1);
+						}
+					}
+				}
+			}
 		}
 
 	}

@@ -110,8 +110,8 @@ namespace Renderer {
 		public override double SplitSurface (double sweep, int dim) {
 			return Maths.PI2*Radius*(sweep-Radius-this.Center[dim]);
 		}
-		public override Tuple<ProxyRenderItem[], ProxyRenderItem[]> SplitAt (double sweep, int dimension) {
-			return null;
+		public override Tuple<ProxyRenderItem[], ProxyRenderItem[]> SplitAt (double sweep, Point3 facenormal) {
+			return new Tuple<ProxyRenderItem[], ProxyRenderItem[]>(new ProxyRenderItem[] {this}, new ProxyRenderItem[] {this});
 		}
 		
 	}

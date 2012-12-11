@@ -24,20 +24,19 @@ namespace Renderer {
 
 	public abstract class ProxyRenderItem : IRenderable {
 
-		public readonly RenderItem Source;
-		public RenderItem Root {
-			get {
-				return this.Source;
-			}
+		public abstract RenderItem Root {
+			get;
 		}
+		public readonly int Id = 0;
+		private static int IdDispatcher = 0x00;
 
-		public ProxyRenderItem (RenderItem source) {
-			this.Source = source;
+		public ProxyRenderItem () {
+			Id = IdDispatcher++;
 		}
 
 		public abstract double Surface ();
 		public abstract double SplitSurface (double sweep, int dimension);
-		public abstract Tuple<ProxyRenderItem[],ProxyRenderItem[]> SplitAt (double sweep, int dimension);
+		public abstract Tuple<ProxyRenderItem[],ProxyRenderItem[]> SplitAt (double sweep, Point3 facenormal);
 		public virtual void GetBounds (out double x0, out double x1, out double y0, out double y1, out double z0, out double z1) {
 			this.GetDimensionBounds(0x00, out x0, out x1);
 			this.GetDimensionBounds(0x00, out y0, out y1);

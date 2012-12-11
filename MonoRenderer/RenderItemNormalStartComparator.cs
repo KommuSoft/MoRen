@@ -23,7 +23,7 @@ using System.Collections.Generic;
 
 namespace Renderer {
 
-	public class RenderItemNormalStartComparator : IComparer<RenderItem> {
+	public class RenderItemNormalStartComparator : IComparer<ProxyRenderItem> {
 
 		private readonly Point3 faceNormal;
 
@@ -31,7 +31,7 @@ namespace Renderer {
 			this.faceNormal = faceNormal;
 		}
 
-		public int Compare (RenderItem ria, RenderItem rib) {
+		public int Compare (ProxyRenderItem ria, ProxyRenderItem rib) {
 			double x0a, x0b, dummy;
 			ria.GetFaceNormalBounds(this.faceNormal, out x0a, out dummy);
 			rib.GetFaceNormalBounds(this.faceNormal, out x0b, out dummy);

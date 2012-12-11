@@ -23,12 +23,44 @@ using System.Collections.Generic;
 
 namespace Renderer {
 
+	using NormalInterval = Tuple<Point3,double,double>;
+
 	public class BSPAccelerator : Accelerator {
 
-		public BSPAccelerator (IEnumerable<RenderItem> items) : this(items,Point3.UnitDummies) {
+		public BSPAccelerator (IEnumerable<RenderItem> items) : this(items,ImplementedSplitHeuristics.SurfaceAreaHeuristic,Point3.UnitDummies) {
 		}
-		public BSPAccelerator (IEnumerable<RenderItem> items, IEnumerable<Point3> facenormals) {
+		public BSPAccelerator (IEnumerable<RenderItem> items, SplitHeuristic sh) : this(items,Point3.UnitDummies) {
+		}
+		public BSPAccelerator (IEnumerable<RenderItem> items, SplitHeuristic sh, IEnumerable<Point3> facenormals) {
+			double ta, tb;
+			List<NormalInterval> fn = new List<NormalInterval>();
+			foreach(Point3 normal in facenormals) {
+				double tta = double.PositiveInfinity;
+				double ttb = double.NegativeInfinity;
+				foreach(RenderItem ri in items) {
+					ri.GetFaceNormalBounds(normal, out ta, out tb);
+					tta = Math.Min(tta, ta);
+					ttb = Math.Max(ttb, tb);
+				}
+				fn.Add(new NormalInterval(normal, tta, ttb));
+			}
+			Split(sh, facenormals, items);
+		}
 
+		private void Split (SplitHeuristic sh, IEnumerable<NormalInterval> facenormals, IEnumerable<RenderItem> items) {
+			NormalInterval nibest = null;
+			double minHeu = double.PositiveInfinity;
+			double ta, tb, tta, ttb, theu;
+			foreach(NormalInterval ni in facenormals) {
+				sh(items, ni.Item1, ni.Item2, ni.Item3, out tta, out ttb, out theu);
+				if(theu < minHeu) {
+					minHeu = theu;
+					nibest = ni;
+					ta = tta;
+					tb = ttb;
+				}
+			}
+			Console.WriteLine("As split criterium, we will use {0}/{1}/{2}", nibest, ta, tb);
 		}
 
 		#region Accelerator implementation

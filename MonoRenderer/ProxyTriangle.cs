@@ -22,7 +22,7 @@ using System;
 
 namespace Renderer {
 
-	public class ProxyTriangle : ProxyRenderItem {
+	public class ProxyTriangle : ProxyRenderItemBase {
 
 		public readonly Point3 pa, pb, pc;
 
@@ -56,8 +56,8 @@ namespace Renderer {
 		public override double SplitSurface (double sweep, int dimension) {
 			return Triangle.TriangleSplitSurface(this.pa, this.pb, this.pc, sweep, dimension);
 		}
-		public override Tuple<ProxyRenderItem[], ProxyRenderItem[]> SplitAt (double sweep, int dimension) {
-			return Triangle.TriangleSplitAt(this.Source, this.pa, this.pb, this.pc, sweep, dimension);
+		public override Tuple<ProxyRenderItem[], ProxyRenderItem[]> SplitAt (double sweep, Point3 facenormal) {
+			return Triangle.TriangleSplitAt(this.Source, this.pa, this.pb, this.pc, sweep, facenormal);
 		}
 		public override string ToString () {
 			return string.Format("[ProxyTriangle {0} {1} {2}]", this.pa, this.pb, this.pc);

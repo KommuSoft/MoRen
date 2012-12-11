@@ -226,27 +226,6 @@ namespace Renderer {
 			}
 		}
 
-		public static void CalculateBoundingBox (IEnumerable<RenderItem> items, BoundingBox box) {
-			double xtm, xtM, ytm, ytM, ztm, ztM;
-			xtm = double.PositiveInfinity;
-			xtM = double.NegativeInfinity;
-			ytm = xtm;
-			ytM = xtM;
-			ztm = xtm;
-			ztM = xtM;
-			double xm, xM, ym, yM, zm, zM;
-			foreach(RenderItem ri in items) {
-				ri.GetBounds(out xm, out xM, out ym, out yM, out zm, out zM);
-				xtm = Math.Min(xtm, xm);
-				xtM = Math.Max(xtM, xM);
-				ytm = Math.Min(ytm, ym);
-				ytM = Math.Max(ytM, yM);
-				ztm = Math.Min(ztm, zm);
-				ztM = Math.Max(ztM, zM);
-			}
-			box.SetValues(xtm, xtM, ytm, ytM, ztm, ztM);
-		}
-
 		public static void CalculateBoundingBox (IEnumerable<Point3> items, out double xtm, out double xtM, out double ytm, out double ytM, out double ztm, out double ztM) {
 			xtm = double.PositiveInfinity;
 			xtM = double.NegativeInfinity;

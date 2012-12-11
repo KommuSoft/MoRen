@@ -27,7 +27,7 @@ using System.Globalization;
 using System.Collections.Generic;
 
 namespace Renderer {
-	public class LoaderObj : MeshLoader {
+	public class LoaderObj : MeshLoaderBase {
 		
 		private delegate void LineAction (Match m);
 

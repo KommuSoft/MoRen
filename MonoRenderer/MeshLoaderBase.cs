@@ -1,5 +1,5 @@
 //
-//  IRenderable.cs
+//  MeshLoaderBase.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -19,20 +19,26 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Renderer {
 
-	public interface IRenderable {
+	public abstract class MeshLoaderBase : MeshLoader {
 
-		RenderItem Root {
+		Material DefaultMaterial {
 			get;
+			set;
 		}
-		double Surface ();
-		double SplitSurface (double sweep, int dimension);
-		Tuple<ProxyRenderItem[],ProxyRenderItem[]> SplitAt (double sweep, Point3 facenormal);
-		void GetBounds (out double x0, out double x1, out double y0, out double y1, out double z0, out double z1);
-		void GetDimensionBounds (int dim, out double x0, out double x1);
-		void GetFaceNormalBounds (Point3 facenormal, out double t0, out double t1);
+
+		public abstract void Load (string currentDir, Stream stream);
+		public abstract void Inject (List<RenderItem> items, Matrix4 transform, params string[] args);
+
+		public void Load (string currentDir, string filename) {
+			FileStream fs = File.Open(filename, FileMode.Open, FileAccess.Read);
+			this.Load(currentDir, fs);
+			fs.Close();
+		}
 
 	}
 }

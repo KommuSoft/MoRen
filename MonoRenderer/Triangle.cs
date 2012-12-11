@@ -299,22 +299,23 @@ namespace Renderer {
 				return (1.0d-fac)*sf;
 			}
 		}
-		public override Tuple<ProxyRenderItem[], ProxyRenderItem[]> SplitAt (double sweep, int dim) {
-			return TriangleSplitAt(this, this.p0, this.p1, this.p2, sweep, dim);
+		public override Tuple<ProxyRenderItem[], ProxyRenderItem[]> SplitAt (double sweep, Point3 facenormal) {
+			return TriangleSplitAt(this, this.p0, this.p1, this.p2, sweep, facenormal);
 		}
-		public static Tuple<ProxyRenderItem[], ProxyRenderItem[]> TriangleSplitAt (RenderItem parent, Point3 pa, Point3 pb, Point3 pc, double sweep, int dim) {
-			IComparer<Point3> co = Point3.Comparers[dim];
+		public static Tuple<ProxyRenderItem[], ProxyRenderItem[]> TriangleSplitAt (RenderItem parent, Point3 pa, Point3 pb, Point3 pc, double sweep, Point3 facenormal) {
+			IComparer<Point3> co = new Point3.FaceComp(facenormal);
 			Maths.Order(co, ref pa, ref pb);
 			Maths.Order(co, ref pa, ref pc);
 			Maths.Order(co, ref pb, ref pc);
 			ProxyRenderItem[] la = new ProxyRenderItem[1], lb;
-			double fac = (sweep-pa[dim])/(pc[dim]-pa[dim]);
+			double paf = pa[facenormal], pbf = pb[facenormal], pcf = pc[facenormal];
+			double fac = (sweep-paf)/(pcf-paf);
 			double fad = 1.0d-fac;
 			Point3 pac = new Point3(fac*pc.X+fad*pa.X, fac*pc.Y+fad*pa.Y, fac*pc.Z+fad*pa.Z), pabc;
-			if(pb[dim] != sweep) {
+			if(pbf != sweep) {
 				lb = new ProxyRenderItem[2];
-				if(pb[dim] > sweep) {
-					fac = (sweep-pa[dim])/(pb[dim]-pa[dim]);
+				if(pbf > sweep) {
+					fac = (sweep-paf)/(pbf-paf);
 					fad = 1.0d-fac;
 					pabc = new Point3(fac*pb.X+fad*pa.X, fac*pb.Y+fad*pa.Y, fac*pb.Z+fad*pa.Z);
 					la[0x00] = new ProxyTriangle(parent, pa, pac, pabc);
@@ -323,7 +324,7 @@ namespace Renderer {
 					return new Tuple<ProxyRenderItem[],ProxyRenderItem[]>(la, lb);
 				}
 				else {
-					fac = (sweep-pb[dim])/(pc[dim]-pb[dim]);
+					fac = (sweep-pbf)/(pcf-pbf);
 					fad = 1.0d-fac;
 					pabc = new Point3(fac*pc.X+fad*pb.X, fac*pc.Y+fad*pb.Y, fac*pc.Z+fad*pb.Z);
 					la[0x00] = new ProxyTriangle(parent, pc, pac, pabc);

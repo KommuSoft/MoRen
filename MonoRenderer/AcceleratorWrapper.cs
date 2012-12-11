@@ -41,7 +41,7 @@ namespace Renderer {
 				case AcceleratorType.Naive:
 					return new NaiveAccelerator(items);
 				case AcceleratorType.BinSpaceTree:
-					return new BinarySpacePartitionAccelerator(items);
+					return new BSPAccelerator(items);
 				default :
 					return new OctTreeAccelerator(items);
 			}
