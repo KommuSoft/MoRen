@@ -46,7 +46,6 @@
     <Compile Include="CastResult.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="CombinedList.cs" />
-    <Compile Include="Face.cs" />
     <Compile Include="FinalList.cs" />
     <Compile Include="GridAccelerator.cs" />
     <Compile Include="IRenderable.cs" />
@@ -96,11 +95,13 @@
     <Compile Include="SystemDiagnostics.cs" />
     <Compile Include="SplitDimensionHeuristic.cs" />
     <Compile Include="SplitDimensionHeuristics.cs" />
-    <Compile Include="RenderItemStartComparator.cs" />
-    <Compile Include="RenderItemStopComparator.cs" />
     <Compile Include="NormalTweaker.cs" />
     <Compile Include="VersioningDictionary.cs" />
     <Compile Include="BSPAccelerator.cs" />
+    <Compile Include="RenderItemDimStartComparator.cs" />
+    <Compile Include="RenderItemDimStopComparator.cs" />
+    <Compile Include="RenderItemNormalStartComparator.cs" />
+    <Compile Include="RenderItemNormalStopComparator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

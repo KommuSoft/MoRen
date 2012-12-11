@@ -31,8 +31,8 @@ namespace Renderer {
 			return 0.5d*x0+0.5d*x1;
 		}
 		public static double HalfTriangleCountHeuristic (IEnumerable<RenderItem> items, int dim, double x0, double x1, out double heuristicValue) {
-			SortedSet<RenderItem> starts = new SortedSet<RenderItem>(items, new RenderItemStartComparator(dim));
-			SortedSet<RenderItem> activeWindow = new SortedSet<RenderItem>(new RenderItemStopComparator(dim));
+			SortedSet<RenderItem> starts = new SortedSet<RenderItem>(items, new RenderItemDimStartComparator(dim));
+			SortedSet<RenderItem> activeWindow = new SortedSet<RenderItem>(new RenderItemDimStopComparator(dim));
 			heuristicValue = double.PositiveInfinity;
 			double px = 0.5d*(x0+x1);
 			double x, dummy;

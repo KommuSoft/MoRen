@@ -33,13 +33,26 @@ namespace Renderer {
 			DummyPoint = new Point3(0.0d, 0.0d, 0.0d);
 		[XmlIgnore]
 		public static readonly Point3
-			DummyXPoint = new Point3(1.0d, 0.0d, 0.0d);
+			DummyZPoint = new Point3(0.0d, 0.0d, 1.0d);
 		[XmlIgnore]
 		public static readonly Point3
 			DummyYPoint = new Point3(0.0d, 1.0d, 0.0d);
 		[XmlIgnore]
 		public static readonly Point3
+			DummyYZPoint = new Point3(0.0d, 1.0d, 1.0d);
+		[XmlIgnore]
+		public static readonly Point3
+			DummyXPoint = new Point3(1.0d, 0.0d, 0.0d);
+		[XmlIgnore]
+		public static readonly Point3
+			DummyXZPoint = new Point3(1.0d, 0.0d, 1.0d);
+		[XmlIgnore]
+		public static readonly Point3
 			DummyXYPoint = new Point3(1.0d, 1.0d, 0.0d);
+		[XmlIgnore]
+		public static readonly Point3
+			DummyXYZPoint = new Point3(1.0d, 1.0d, 1.0d);
+		public static readonly Point3[] UnitDummies = new Point3[] {DummyXPoint,DummyYZPoint,DummyZPoint};
 
 		[XmlIgnore]
 		public static readonly IComparer<Point3>

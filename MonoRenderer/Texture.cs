@@ -178,7 +178,7 @@ namespace Renderer {
 			for(int y = 0x00; y < h; y++) {
 				alpha = (uint)(0xff*y/(top.Height-0x01));
 				for(x = 0x00; x < top.Width; x++) {
-					t.Pixel[pos] = Renderer.Color.Transparency(down.Pixel[pos], top.Pixel[pos], alpha);
+					t.Pixel[pos] = Color.Transparency(down.Pixel[pos], top.Pixel[pos], alpha);
 					pos++;
 				}
 			}
@@ -219,21 +219,21 @@ namespace Renderer {
 		public Texture Invert () {
 			int n = this.Pixel.Length;
 			for(int i = 0x00; i < n; i++)
-				this.Pixel[i] = Renderer.Color.Inverse(this.Pixel[i]);
+				this.Pixel[i] = Color.Inverse(this.Pixel[i]);
 			return this;
 		}
 		public Texture Mix (Texture newData) {
 			uint[] data = newData.Pixel;
 			int n = System.Math.Min(this.Pixel.Length, data.Length);
 			for(int i = 0x00; i < n; i++)
-				this.Pixel[i] = Renderer.Color.Mix(this.Pixel[i], data[i]);
+				this.Pixel[i] = Color.Mix(this.Pixel[i], data[i]);
 			return this;
 		}
 		public Texture Multiply (Texture multiplicative) {
 			uint[] data = multiplicative.Pixel;
 			int n = System.Math.Min(this.Pixel.Length, data.Length);
 			for(int i = 0x00; i < n; i++)
-				this.Pixel[i] = Renderer.Color.Multiply(this.Pixel[i], data[i]);
+				this.Pixel[i] = Color.Multiply(this.Pixel[i], data[i]);
 			return this;
 		}
 		public Texture Put (Texture newData) {
@@ -256,19 +256,19 @@ namespace Renderer {
 			uint[] data = subtractive.Pixel;
 			int n = System.Math.Min(this.Pixel.Length, data.Length);
 			for(int i = 0x00; i < n; i++)
-				this.Pixel[i] = Renderer.Color.Sub(this.Pixel[i], data[i]);
+				this.Pixel[i] = Color.Sub(this.Pixel[i], data[i]);
 			return this;
 		}
 		public Texture ToAverage () {
 			int n = this.Pixel.Length;
 			for(int i = 0x00; i < n; i++)
-				this.Pixel[i] = Renderer.Color.GetAverage(this.Pixel[i]);
+				this.Pixel[i] = Color.GetAverage(this.Pixel[i]);
 			return this;
 		}
 		public Texture ToGray () {
 			int n = this.Pixel.Length;
 			for(int i = 0x00; i < n; i++)
-				this.Pixel[i] = Renderer.Color.GetGray(this.Pixel[i]);
+				this.Pixel[i] = Color.GetGray(this.Pixel[i]);
 			return this;
 		}
 		public Texture ValueToGray () {
@@ -276,7 +276,7 @@ namespace Renderer {
 			int n = this.Pixel.Length;
 			for(int i = 0x00; i < n; i++) {
 				intensity = this.Pixel[i]&0xff;
-				this.Pixel[i] = Renderer.Color.GetColor(intensity, intensity, intensity);
+				this.Pixel[i] = Color.GetColor(intensity, intensity, intensity);
 			}
 			return this;
 		}

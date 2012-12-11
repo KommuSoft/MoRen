@@ -1,5 +1,5 @@
 //
-//  BSPAccelerator.cs
+//  RenderItemNormalStartComparator.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -23,21 +23,26 @@ using System.Collections.Generic;
 
 namespace Renderer {
 
-	public class BSPAccelerator : Accelerator {
+	public class RenderItemNormalStartComparator : IComparer<RenderItem> {
 
-		public BSPAccelerator (IEnumerable<RenderItem> items) : this(items,Point3.UnitDummies) {
+		private readonly Point3 faceNormal;
+
+		public RenderItemNormalStartComparator (Point3 faceNormal) {
+			this.faceNormal = faceNormal;
 		}
-		public BSPAccelerator (IEnumerable<RenderItem> items, IEnumerable<Point3> facenormals) {
 
+		public int Compare (RenderItem ria, RenderItem rib) {
+			double x0a, x0b, dummy;
+			ria.GetFaceNormalBounds(this.faceNormal, out x0a, out dummy);
+			rib.GetFaceNormalBounds(this.faceNormal, out x0b, out dummy);
+			int result = x0a.CompareTo(x0b);
+			if(result != 0x00) {
+				return result;
+			}
+			else {
+				return ria.Id.CompareTo(rib.Id);
+			}
 		}
-
-		#region Accelerator implementation
-		public RenderItem CalculateHit (Ray ray, out double t, double MaxT) {
-			throw new System.NotImplementedException();
-		}
-		#endregion
-
-
 	}
-}
 
+}

@@ -119,6 +119,48 @@ namespace Renderer {
 			x0 = xyz0[dim];
 			x1 = xyz1[dim];
 		}
+		public double FirstT (Ray ray) {
+			double x = ray.X0;
+			double y = ray.X0;
+			double z = ray.X0;
+			double x0 = this.xyz0.X;
+			double y0 = this.xyz0.Y;
+			double z0 = this.xyz0.Z;
+			double x1 = this.xyz1.X;
+			double y1 = this.xyz1.Y;
+			double z1 = this.xyz1.Z;
+			double dxinv = Maths.SoftInv(ray.DX);
+			double dyinv = Maths.SoftInv(ray.DY);
+			double dzinv = Maths.SoftInv(ray.DZ);
+			double t;
+			if(x < x0) {
+				if(double.IsNaN(dxinv) || dxinv < 0.0d) {//moving away from the box or neutral
+					return double.PositiveInfinity;
+				}
+				else {
+					//TODO: finish
+					return double.NaN;
+				}
+			}
+			else if(x > x0) {
+				if(double.IsNaN(dxinv) || dyinv > 0.0d) {//moving away from the box or neutral
+					return double.PositiveInfinity;
+				}
+				else {
+					//TODO: finish
+					return double.NaN;
+				}
+			}
+			else {//x was between x0 and x1 the whole time
+				if(y0 <= y && y <= y1 && z0 <= z && z <= z1) {//we were already in the box
+					return 0.0d;
+				}
+				else {
+					//TODO: finish
+					return double.NaN;
+				}
+			}
+		}
 		public override string ToString () {
 			return string.Format("[BoundingBox: X0={0}, Y0={1}, Z0={2}, X1={3}, Y1={4}, Z1={5}]", X0, Y0, Z0, X1, Y1, Z1);
 		}

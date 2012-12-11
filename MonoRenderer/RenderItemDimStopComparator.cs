@@ -1,5 +1,5 @@
 //
-//  RenderItemStartComparator.cs
+//  RenderItemDimStopComparator.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -23,19 +23,19 @@ using System.Collections.Generic;
 
 namespace Renderer {
 
-	public class RenderItemStartComparator : IComparer<RenderItem> {
+	public class RenderItemDimStopComparator : IComparer<RenderItem> {
 
 		private int dim;
 
-		public RenderItemStartComparator (int dim) {
+		public RenderItemDimStopComparator (int dim) {
 			this.dim = dim;
 		}
 
 		public int Compare (RenderItem ria, RenderItem rib) {
-			double x0a, x0b, dummy;
-			ria.GetDimensionBounds(dim, out x0a, out dummy);
-			rib.GetDimensionBounds(dim, out x0b, out dummy);
-			int diff = x0a.CompareTo(x0b);
+			double x1a, x1b, dummy;
+			ria.GetDimensionBounds(dim, out dummy, out x1a);
+			rib.GetDimensionBounds(dim, out dummy, out x1b);
+			int diff = x1a.CompareTo(x1b);
 			if(diff != 0x00) {
 				return diff;
 			}

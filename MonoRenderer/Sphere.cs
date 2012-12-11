@@ -39,15 +39,19 @@ namespace Renderer {
 		
 		public override void GetBounds (out double xm, out double xM, out double ym, out double yM, out double zm, out double zM) {
 			xm = Center.X-Radius;
-			xM = Center.X+Radius;
+			xM = xm+2.0d*Radius;
 			ym = Center.Y-Radius;
-			yM = Center.Y+Radius;
+			yM = ym+2.0d*Radius;
 			zm = Center.Z-Radius;
-			zM = Center.Z+Radius;
+			zM = zm+2.0d*Radius;
 		}
 		public override void GetDimensionBounds (int dim, out double x0, out double x1) {
 			x0 = Center[dim]-Radius;
-			x1 = Center[dim]+Radius;
+			x1 = x0+2.0d*Radius;
+		}
+		public override void GetFaceNormalBounds (Point3 facenormal, out double t0, out double t1) {
+			t0 = Center[facenormal]-Radius;
+			t1 = t0+2.0d*Radius;
 		}
 		public override bool InBox (double xm, double xM, double ym, double yM, double zm, double zM) {
 			double xmin = Maths.ClosestInterval(this.Center.X, xm, xM)-Center.X;

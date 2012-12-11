@@ -100,8 +100,18 @@ namespace Renderer {
 			zM = Maths.Max(p0.Z, p1.Z, p2.Z);
 		}
 		public override void GetDimensionBounds (int dim, out double x0, out double x1) {
-			x0 = Maths.Min(p0[dim], p1[dim], p2[dim]);
-			x1 = Maths.Max(p0[dim], p1[dim], p2[dim]);
+			double p0t = p0[dim];
+			double p1t = p1[dim];
+			double p2t = p2[dim];
+			x0 = Maths.Min(p0t, p1t, p2t);
+			x1 = Maths.Max(p0t, p1t, p2t);
+		}
+		public override void GetFaceNormalBounds (Point3 facenormal, out double t0, out double t1) {
+			double p0t = p0[facenormal];
+			double p1t = p1[facenormal];
+			double p2t = p2[facenormal];
+			t0 = Maths.Min(p0t, p1t, p2t);
+			t1 = Maths.Max(p0t, p1t, p2t);
 		}
 		public override bool InBox (double xm, double xM, double ym, double yM, double zm, double zM) {
 			if(this.p0.InBox(xm, xM, ym, yM, zm, zM) || this.p1.InBox(xm, xM, ym, yM, zm, zM) || this.p2.InBox(xm, xM, ym, yM, zm, zM)) {

@@ -59,8 +59,13 @@ namespace Renderer {
 		public bool BoxOverlap (BoundingBox bb) {
 			return BoxOverlap(bb.X0, bb.X1, bb.Y0, bb.Y1, bb.Z0, bb.Z1);
 		}
-		public abstract void GetBounds (out double x0, out double x1, out double y0, out double y1, out double z0, out double z1);
+		public virtual void GetBounds (out double x0, out double x1, out double y0, out double y1, out double z0, out double z1) {
+			this.GetDimensionBounds(0x00, out x0, out x1);
+			this.GetDimensionBounds(0x01, out y0, out y1);
+			this.GetDimensionBounds(0x02, out z0, out z1);
+		}
 		public abstract void GetDimensionBounds (int dim, out double x0, out double x1);
+		public abstract void GetFaceNormalBounds (Point3 facenormal, out double t0, out double t1);
 		public abstract bool InBox (double xm, double xM, double ym, double yM, double zm, double zM);
 		public bool InBox (BoundingBox bb) {
 			return InBox(bb.X0, bb.X1, bb.Y0, bb.Y1, bb.Z0, bb.Z1);

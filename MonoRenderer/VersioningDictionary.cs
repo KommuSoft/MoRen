@@ -139,6 +139,24 @@ namespace Renderer {
 			}
 		}
 
+		public bool TryGetClosestValues (TVersion version, TKey key, out TValue value1, out TVersion version1, out TValue value2, out TVersion version2) {
+			if(this.older == null) {
+				bool succeeds = this.dictionary.TryGetValue(key, out value1);
+				value2 = value1;
+				version1 = version2 = this.version;
+				return succeeds;
+			}
+			else if(true) {
+				//TODO: implement
+				value1 = value2 = default(TValue);
+				version1 = version2 = version;
+				return false;
+			}
+			else {
+				return this.older.TryGetClosestValues(version, key, out value1, out version1, out value2, out version2);
+			}
+		}
+
 		public ICollection<TKey> Keys {
 			get {
 				throw new System.NotImplementedException();
