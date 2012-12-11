@@ -29,7 +29,7 @@ namespace TestRenderer {
 		[Test()]
 		public void Test64 () {
 			for(uint i = 0x000000; i < 0x1000000; i++) {
-				Assert.AreEqual(i, Color.MixFrom64((ulong)i, 0x01));
+				Assert.AreEqual(i, Color.MixFrom64(Color.ToColor64(i), 0x01));
 			}
 		}
 	}

@@ -40,7 +40,7 @@ namespace TestRenderer {
 			GridAccelerator ga = new GridAccelerator(ris);
 			OctTreeAccelerator oa = new OctTreeAccelerator(ris);
 			double t;
-			for(int i = 0x00; i < TestParameters.TriceratopsTest; i++) {
+			for(int i = 0x00; i < 0x10000000; i++) {
 				Ray ray = Ray.Random();
 				ray.NormalizeDirection();
 				Assert.AreEqual(ga.CalculateHit(ray, out t, double.PositiveInfinity), oa.CalculateHit(ray, out t, double.PositiveInfinity));
@@ -50,16 +50,16 @@ namespace TestRenderer {
 		[Test()]
 		public void TestHit3 () {
 			List<RenderItem> ris = new List<RenderItem>();
-			ris.Add(new Sphere(new Point3(-3.0d, 0.0d, 20.0d), 2.0d, Material.RedMaterial));
-			ris.Add(new Sphere(new Point3(3.0d, 0.0d, 30.0d), 2.0d, Material.MetalMaterial));
+			ris.Add(new Sphere(new Point3(-3.0d, 0.0d, 20.0d), 2.0d, null));
+			ris.Add(new Sphere(new Point3(3.0d, 0.0d, 30.0d), 2.0d, null));
 			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, -20.0d), new Point3(-20.0d, -10.0d, 100.0d), new Point3(20.0d, -10.0d, 100.0d), Material.DefaultMaterial));
 			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, -20.0d), new Point3(20.0d, -10.0d, 100.0d), new Point3(20.0d, -10.0d, -20.0d), Material.DefaultMaterial));
-			ris.Add(new Triangle(new Point3(20.0d, 10.0d, -20.0d), new Point3(20.0d, 10.0d, 100.0d), new Point3(-20.0d, 10.0d, 100.0d), Material.RedMaterial));
-			ris.Add(new Triangle(new Point3(20.0d, 10.0d, -20.0d), new Point3(-20.0d, 10.0d, 100.0d), new Point3(-20.0d, 10.0d, -20.0d), Material.RedMaterial));
-			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, -20.0d), new Point3(-20.0d, 10.0d, -20.0d), new Point3(-20.0d, 10.0d, 100.0d), Material.GreenMaterial));
-			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, -20.0d), new Point3(-20.0d, 10.0d, 100.0d), new Point3(-20.0d, -10.0d, 100.0d), Material.GreenMaterial));
-			ris.Add(new Triangle(new Point3(100.0d, 10.0d, -20.0d), new Point3(100.0d, -10.0d, -20.0d), new Point3(100.0d, -10.0d, 100.0d), Material.BlueMaterial));
-			ris.Add(new Triangle(new Point3(100.0d, 10.0d, -20.0d), new Point3(100.0d, -10.0d, 100.0d), new Point3(100.0d, 10.0d, 100.0d), Material.BlueMaterial));
+			ris.Add(new Triangle(new Point3(20.0d, 10.0d, -20.0d), new Point3(20.0d, 10.0d, 100.0d), new Point3(-20.0d, 10.0d, 100.0d), null));
+			ris.Add(new Triangle(new Point3(20.0d, 10.0d, -20.0d), new Point3(-20.0d, 10.0d, 100.0d), new Point3(-20.0d, 10.0d, -20.0d), null));
+			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, -20.0d), new Point3(-20.0d, 10.0d, -20.0d), new Point3(-20.0d, 10.0d, 100.0d), null));
+			ris.Add(new Triangle(new Point3(-20.0d, -10.0d, -20.0d), new Point3(-20.0d, 10.0d, 100.0d), new Point3(-20.0d, -10.0d, 100.0d), null));
+			ris.Add(new Triangle(new Point3(100.0d, 10.0d, -20.0d), new Point3(100.0d, -10.0d, -20.0d), new Point3(100.0d, -10.0d, 100.0d), null));
+			ris.Add(new Triangle(new Point3(100.0d, 10.0d, -20.0d), new Point3(100.0d, -10.0d, 100.0d), new Point3(100.0d, 10.0d, 100.0d), null));
 			NaiveAccelerator na = new NaiveAccelerator(ris);
 			OctTreeAccelerator oa = new OctTreeAccelerator(ris);
 			double t;

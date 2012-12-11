@@ -25,9 +25,9 @@ namespace TestRenderer {
 	public static class TestParameters {
 
 
-		public const int TriceratopsTest = 0x00;// int.MaxValue;
-		public const int BuildTest = 0x00;//0x100;
-		public const int RayTest = 0x00;//0x100;
+		public const int TriceratopsTest = 0x1000000;
+		public const int BuildTest = 0x1000000;
+		public const int RayTest = 0x1000000;
 
 	}
 }
