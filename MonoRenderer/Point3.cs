@@ -285,10 +285,54 @@ namespace Renderer {
 		public void RotateLikeZVector (double xdiff, double ydiff) {
 			double xyinv = xdiff*xdiff+ydiff*ydiff;
 			if(xyinv > Maths.GlobalEpsilon) {
-				double theta = Math.Acos(1.0d/Math.Sqrt(xyinv+1.0d));
-				xyinv = 1.0d/Math.Sqrt(xyinv);
-				double ux, uy, uz;
-				Point3.AxisRotate(-ydiff*xyinv, xdiff*xyinv, 0.0d, theta, ref this.X, ref this.Y, ref this.Z);
+				double cost = 1.0d/Math.Sqrt(xyinv+1.0d);
+				xyinv *= cost;
+				double vx = xdiff*cost;
+				double vy = ydiff*cost;
+				double costasint2 = (1.0d-cost)/xyinv;
+				double lina = (vy*this.X+vx*this.Y);
+				double nx = costasint2*lina*vy+cost*this.X+vx*this.Z;
+				double ny = costasint2*lina*vx+cost*this.Y+vy*this.Z;
+				this.Z = vx*this.X+vy*this.Y+cost*this.Z;
+				this.X = nx;
+				this.Y = ny;
+			}
+		}
+		//assumption: start is normalized
+		public static IEnumerable<Point3> NormalizedConeGenerator (Point3 start, double thetamax, int n, double rotationSpeed) {
+			double vx = start.X;
+			double vy = start.Y;
+			double vz = start.Z;
+			double xyinv = vx*vx+vy*vy;
+			double cost = 1.0d;
+			double costasint2 = 0.0d;
+			if(xyinv > Maths.GlobalEpsilon) {
+				cost = vz;
+				costasint2 = (1.0d-cost)/xyinv;
+			}
+			else if(vz < 1.0d) {
+				cost = -1.0d;
+			}
+			double x = 1.0d, y = 1.0d, xt;
+			double R2 = Math.Cos(0.5d*thetamax);
+			R2 *= R2;
+			double dr2 = R2/n;
+			double xxyy = Math.Cos(rotationSpeed);
+			double xyyx = Math.Sin(rotationSpeed);
+			double xr, yr;
+			for(double r2 = 0.0d; r2 < R2; r2 += dr2) {
+				double r = Math.Sqrt(r2);
+				double h = Math.Sqrt(1.0d-r2);
+				xr = x*r;
+				yr = y*r;
+				double lina = (vy*xr+vx*yr);
+				start.X = costasint2*lina*vy+cost*xr+vx*h;
+				start.Y = costasint2*lina*vx+cost*yr+vy*h;
+				start.Z = vx*xr+vy*yr+cost*h;
+				yield return start;
+				xt = xxyy*x-xyyx*y;
+				y = xyyx*x+xxyy*y;
+				x = xt;
 			}
 		}
 		//assumption: the given vector is normalized
