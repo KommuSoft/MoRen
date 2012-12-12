@@ -119,7 +119,7 @@ namespace Renderer {
 		}
 
 		public override string ToString () {
-			return string.Format("( {0} ; {1} ; {2} ; {3} ; {4} ; {5} )", X0.ToString("0.000"), Y0.ToString("0.000"), Z0.ToString("0.000"), DX.ToString("0.000"), DY.ToString("0.000"), DZ.ToString("0.000"));
+			return string.Format("( {0} ; {1} ; {2} ; {3} ; {4} ; {5} )", X0.ToString("0.000000000"), Y0.ToString("0.000000000"), Z0.ToString("0.000000000"), DX.ToString("0.000000000"), DY.ToString("0.000000000"), DZ.ToString("0.000000000"));
 		}
 
 	}

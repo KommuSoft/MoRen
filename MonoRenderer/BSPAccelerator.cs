@@ -135,52 +135,55 @@ namespace Renderer {
 			public void Hit (Ray ray, Point3 inter, ref RenderItem item, ref double tcur, double tmig, ref double tmax) {
 				if(this.splitNormal != null) {//we're not at a leaf
 					double x = inter[this.splitNormal];
+					double x0 = ray.Offset[this.splitNormal];
 					double dxi = Maths.SoftInv(ray.Direction[this.splitNormal]);
 					double tt = tcur;
 					double tmig0;
 					if(x < xa) {
 						if(dxi > 0.0d) {
-							//tmig0 = Math.Min(tmig, tcur+dxi*(xb-x));
-							this.left.Hit(ray, inter, ref item, ref tcur, tmig, ref tmax);
-							//tmig = Math.Min(tmig, tmax);
-							tcur = tt+dxi*(xb-x);
-							//if(tcur <= tmig) {
-							ray.PointAt(tcur, inter);
-							this.right.Hit(ray, inter, ref item, ref tcur, tmig, ref tmax);
-							//}
+							tt = tcur+dxi*(xb-x);
+							tmig0 = Math.Min(tmig, dxi*(xa-x0));//Math.Min(tmig, tt+dxi*(x-xa))
+							this.left.Hit(ray, inter, ref item, ref tcur, tmig0, ref tmax);
+							tmig = Math.Min(tmig, tmax);
+							if(tt <= tmig) {
+								tcur = tt;
+								ray.PointAt(tcur, inter);
+								this.right.Hit(ray, inter, ref item, ref tcur, tmig, ref tmax);
+							}
 						}
 						else {
 							this.left.Hit(ray, inter, ref item, ref tcur, tmig, ref tmax);
 						}
 					}
-					else {
+					else if(x > xb) {
 						if(dxi < 0.0d) {
-							//tmig0 = Math.Min(tmig, tt+dxi*(x-xa));
-							this.right.Hit(ray, inter, ref item, ref tcur, tmig, ref tmax);
-							//tmig = Math.Min(tmig, tmax);
-							tcur = tt+dxi*(x-xa);
-							//if(tcur <= tmig) {
-							ray.PointAt(tcur, inter);
-							this.left.Hit(ray, inter, ref item, ref tcur, tmig, ref tmax);
-							//}
+							tt = tcur+dxi*(xa-x);
+							tmig0 = Math.Min(tmig, dxi*(xb-x0));//Math.Min(tmig, tt+dxi*(x-xa))
+							this.right.Hit(ray, inter, ref item, ref tcur, tmig0, ref tmax);
+							tmig = Math.Min(tmig, tmax);
+							if(tt <= tmig) {
+								tcur = tt;
+								ray.PointAt(tcur, inter);
+								this.left.Hit(ray, inter, ref item, ref tcur, tmig, ref tmax);
+							}
 						}
 						else {
 							this.right.Hit(ray, inter, ref item, ref tcur, tmig, ref tmax);
 						}
 					}
-					/*else {//in the death zone
+					else {//in the death zone
 						if(dxi < 0.0d) {
-							tcur += dxi*(xa-x);
+							tcur = dxi*(xa-x);
 							ray.PointAt(tcur, inter);
 							this.left.Hit(ray, inter, ref item, ref tcur, tmig, ref tmax);
 						}
 						else if(dxi > 0.0d) {
-							tcur += dxi*(xb-x);
+							tcur = dxi*(xb-x0);
 							ray.PointAt(tcur, inter);
 							this.right.Hit(ray, inter, ref item, ref tcur, tmig, ref tmax);
 						}
 						//else we cannot move in the death zone, thus go back one level
-					}*/
+					}
 				}
 				else {
 					double tt;

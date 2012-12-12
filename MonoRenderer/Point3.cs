@@ -389,7 +389,7 @@ namespace Renderer {
 			return a.X*b.X+a.Y*b.Y+a.Z*b.Z;
 		}
 		public override string ToString () {
-			return string.Format("({0};{1};{2})", X.ToString("0.000"), Y.ToString("0.000"), Z.ToString("0.000"));
+			return string.Format("({0};{1};{2})", X.ToString("0.000000000"), Y.ToString("0.000000000"), Z.ToString("0.000000000"));
 		}
 
 		private class XComp : IComparer<Point3> {
