@@ -37,13 +37,16 @@ namespace TestRenderer {
 			fs.Close();
 			List<RenderItem> ris = new List<RenderItem>();
 			lo.Inject(ris, M);
-			GridAccelerator ga = new GridAccelerator(ris);
+			NaiveAccelerator ga = new NaiveAccelerator(ris);
 			OctTreeAccelerator oa = new OctTreeAccelerator(ris);
-			double t;
+			double ta, tb;
+			RenderItem ria, rib;
 			for(int i = 0x00; i < 0x10000000; i++) {
 				Ray ray = Ray.Random();
 				ray.NormalizeDirection();
-				Assert.AreEqual(ga.CalculateHit(ray, out t, double.PositiveInfinity), oa.CalculateHit(ray, out t, double.PositiveInfinity));
+				ria = ga.CalculateHit(ray, out ta, double.PositiveInfinity);
+				rib = oa.CalculateHit(ray, out tb, double.PositiveInfinity);
+				TestParameters.TestRIEqual(ray, ta, tb, ris, ria, rib);
 			}
 		}
 
@@ -62,29 +65,34 @@ namespace TestRenderer {
 			ris.Add(new Triangle(new Point3(100.0d, 10.0d, -20.0d), new Point3(100.0d, -10.0d, 100.0d), new Point3(100.0d, 10.0d, 100.0d), null));
 			NaiveAccelerator na = new NaiveAccelerator(ris);
 			OctTreeAccelerator oa = new OctTreeAccelerator(ris);
-			double t;
+			double ta, tb;
+			RenderItem ria, rib;
 			for(int i = 0x00; i < int.MaxValue; i++) {
 				Ray ray = Ray.Random();
 				ray.NormalizeDirection();
-				Assert.AreEqual(na.CalculateHit(ray, out t, double.PositiveInfinity), oa.CalculateHit(ray, out t, double.PositiveInfinity));
+				ria = na.CalculateHit(ray, out ta, double.PositiveInfinity);
+				rib = oa.CalculateHit(ray, out tb, double.PositiveInfinity);
+				TestParameters.TestRIEqual(ray, ta, tb, ris, ria, rib);
 			}
 		}
 
 		[Test()]
 		public void TestHit2 () {
+			double ta, tb;
+			RenderItem ria, rib;
 			for(int i = 0; i < TestParameters.BuildTest; i++) {
 				int nt = Math.Max(2, Maths.Random(i));
 				List<RenderItem> ris = new List<RenderItem>();
 				for(int j = 0x00; j < nt; j++) {
 					ris.Add(new Triangle(Point3.Random(), Point3.Random(), Point3.Random(), null, null, null, null, null, null, null));
 				}
-				GridAccelerator ga = new GridAccelerator(ris);
+				NaiveAccelerator ga = new NaiveAccelerator(ris);
 				OctTreeAccelerator oa = new OctTreeAccelerator(ris);
-				double t;
 				for(int k = 0; k < TestParameters.RayTest; k++) {
 					Ray ray = Ray.Random();
-					RenderItem ria = ga.CalculateHit(ray, out t, double.PositiveInfinity), rib = oa.CalculateHit(ray, out t, double.PositiveInfinity);
-					Assert.AreEqual(ria, rib);
+					ria = ga.CalculateHit(ray, out ta, double.PositiveInfinity);
+					rib = oa.CalculateHit(ray, out tb, double.PositiveInfinity);
+					TestParameters.TestRIEqual(ray, ta, tb, ris, ria, rib);
 				}
 	
 			}

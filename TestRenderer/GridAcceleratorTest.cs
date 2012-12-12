@@ -39,15 +39,20 @@ namespace TestRenderer {
 			lo.Inject(ris, M);
 			NaiveAccelerator na = new NaiveAccelerator(ris);
 			GridAccelerator ga = new GridAccelerator(ris);
-			double t;
+			double ta, tb;
+			RenderItem ria, rib;
 			for(int i = 0; i < TestParameters.TriceratopsTest; i++) {
 				Ray ray = Ray.Random();
-				Assert.AreEqual(na.CalculateHit(ray, out t, double.PositiveInfinity), ga.CalculateHit(ray, out t, double.PositiveInfinity));
+				ria = ga.CalculateHit(ray, out ta, double.PositiveInfinity);
+				rib = na.CalculateHit(ray, out tb, double.PositiveInfinity);
+				TestParameters.TestRIEqual(ray, ta, tb, ris, ria, rib);
 			}
 		}
 
 		[Test()]
 		public void TestHit2 () {
+			double ta, tb;
+			RenderItem ria, rib;
 			for(int i = 0; i < TestParameters.BuildTest; i++) {
 				int nt = Math.Max(2, Maths.Random(i));
 				List<RenderItem> ris = new List<RenderItem>();
@@ -56,11 +61,11 @@ namespace TestRenderer {
 				}
 				NaiveAccelerator na = new NaiveAccelerator(ris);
 				GridAccelerator ga = new GridAccelerator(ris);
-				double t;
 				for(int k = 0; k < TestParameters.RayTest; k++) {
 					Ray ray = Ray.Random();
-					RenderItem ria = na.CalculateHit(ray, out t, double.PositiveInfinity), rib = ga.CalculateHit(ray, out t, double.PositiveInfinity);
-					Assert.AreEqual(ria, rib);
+					ria = ga.CalculateHit(ray, out ta, double.PositiveInfinity);
+					rib = na.CalculateHit(ray, out tb, double.PositiveInfinity);
+					TestParameters.TestRIEqual(ray, ta, tb, ris, ria, rib);
 				}
 	
 			}

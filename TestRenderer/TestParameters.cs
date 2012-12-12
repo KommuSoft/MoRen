@@ -19,15 +19,28 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Collections.Generic;
+using Renderer;
+using NUnit.Framework;
 
 namespace TestRenderer {
 
 	public static class TestParameters {
 
 
-		public const int TriceratopsTest = 0x1000000;
-		public const int BuildTest = 0x1000000;
-		public const int RayTest = 0x1000000;
+		public const int TriceratopsTest = 0x10*short.MaxValue;
+		public const int BuildTest = 0x10*short.MaxValue;
+		public const int RayTest = 0x10*short.MaxValue;
+		public const int PointTest = 0x10*short.MaxValue;
+
+		public static void TestRIEqual (Ray ray, double ta, double tb, List<RenderItem> ris, RenderItem ria, RenderItem rib) {
+			if(ria != rib) {
+				Assert.AreEqual(ria, rib, string.Format("The hitpoint was {0}/{3} with ray {2} and scenario {1}", ray.PointAt(ta), string.Join(",", ris), ray), ray.PointAt(tb));
+			}
+			else {
+				Assert.AreEqual(ria, rib);
+			}
+		}
 
 	}
 }

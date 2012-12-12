@@ -26,11 +26,12 @@ namespace TestRenderer {
 
 	[TestFixture()]
 	public class APoint3Test {
+
 		[Test()]
 		public void TestRotateLikeZVector () {
 			Point3 norm;
 			Random rand = new Random();
-			for(int i = int.MinValue; i < int.MaxValue; i++) {
+			for(int i = 0x00; i < TestParameters.PointTest; i++) {
 				double x = 200.0*rand.NextDouble()-100.0d;
 				double y = 200.0*rand.NextDouble()-100.0d;
 				norm = new Point3(0.0d, 0.0d, 1.0d);
@@ -46,7 +47,7 @@ namespace TestRenderer {
 		public void TestNormalizedRotateLikeZVector () {
 			Point3 norm, p;
 			Random rand = new Random();
-			for(int i = 0x00; i < short.MaxValue; i++) {
+			for(int i = 0x00; i < TestParameters.PointTest; i++) {
 				double x = 2.0*rand.NextDouble()-1.0d;
 				double y = 2.0d*rand.NextDouble()-1.0d;
 				double z = 2.0d*rand.NextDouble()-1.0d;
