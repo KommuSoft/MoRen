@@ -44,6 +44,9 @@ namespace Renderer {
 		}
 		public abstract void GetFaceNormalBounds (Point3 facenormal, out double t0, out double t1);
 		public abstract void GetDimensionBounds (int dim, out double x0, out double x1);
+		public override int GetHashCode () {
+			return this.Id.GetHashCode();
+		}
 
 	}
 }

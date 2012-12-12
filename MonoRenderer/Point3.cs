@@ -52,7 +52,7 @@ namespace Renderer {
 		[XmlIgnore]
 		public static readonly Point3
 			DummyXYZPoint = new Point3(1.0d, 1.0d, 1.0d);
-		public static readonly Point3[] UnitDummies = new Point3[] {DummyXPoint,DummyYZPoint,DummyZPoint};
+		public static readonly Point3[] UnitDummies = new Point3[] {DummyXPoint,DummyYPoint,DummyZPoint};
 
 		[XmlIgnore]
 		public static readonly IComparer<Point3>
@@ -146,6 +146,11 @@ namespace Renderer {
 			this.Y = p.Y;
 			this.Z = p.Z;
 			this.Transform(trans);
+		}
+		public Point3 (Ray ray, double t) {
+			this.X = ray.Offset.X+ray.Direction.X*t;
+			this.Y = ray.Offset.Y+ray.Direction.Y*t;
+			this.Z = ray.Offset.Z+ray.Direction.Z*t;
 		}
 		public Point3 (double x, double y, double z, Matrix4 trans) {
 			this.X = x;

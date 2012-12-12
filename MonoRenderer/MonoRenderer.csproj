@@ -104,6 +104,7 @@
     <Compile Include="ImplementedSplitHeuristics.cs" />
     <Compile Include="ProxyRenderItemBase.cs" />
     <Compile Include="MeshLoaderBase.cs" />
+    <Compile Include="NormalInterval.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

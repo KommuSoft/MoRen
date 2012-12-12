@@ -275,6 +275,25 @@ namespace Renderer {
 			}
 		}
 
+		public static void CloseInterval (Ray ray, NormalInterval normalInterval, ref double ta, ref double tb) {
+			Point3 normal = normalInterval.Normal;
+			double rayinv = Maths.SoftInv(ray.Direction[normal]);
+			double rayOffset = ray.Offset[normal];
+			if(double.IsNaN(rayinv) && (rayOffset < ta || rayOffset > tb)) {
+				ta = double.PositiveInfinity;
+				tb = double.NegativeInfinity;
+			}
+			else {
+				double t0 = rayinv*(normalInterval.T1-rayOffset);
+				double t1 = rayinv*(normalInterval.T2-rayOffset);
+				double max = t0+t1;
+				double min = Math.Min(t0, t1);
+				max -= min;
+				ta = Math.Max(ta, min);
+				tb = Math.Min(tb, max);
+			}
+		}
+
 	}
 }
 

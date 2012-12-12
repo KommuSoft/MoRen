@@ -47,7 +47,7 @@ namespace Renderer.SceneBuilding {
 
 		public EnvironmentSettings () {
 		}
-		public EnvironmentSettings (uint ambientcolor, uint recursionDepth, uint lightTest, uint antialiasingSqrt, double dispersion = 0.0d, uint dispersionAntialias = 0x01) {
+		public EnvironmentSettings (uint ambientcolor = 0x101010, uint recursionDepth = 0x01, uint lightTest = 0x01, uint antialiasingSqrt = 0x01, double dispersion = 0.0d, uint dispersionAntialias = 0x01) {
 			this.AmbientColor = new ColorWrapper(ambientcolor);
 			this.RecursionDepth = recursionDepth;
 			this.LightTest = lightTest;

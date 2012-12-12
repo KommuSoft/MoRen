@@ -55,9 +55,6 @@ namespace Renderer {
 			return (Math.Max(x0, xm) <= Math.Min(x1, xM) && Math.Max(y0, ym) <= Math.Min(y1, yM) && Math.Max(z0, zm) <= Math.Min(z1, zM));
 		}
 		public abstract bool InBox (double xm, double xM, double ym, double yM, double zm, double zM);
-		public override int GetHashCode () {
-			return this.Id.GetHashCode();
-		}
 		
 	}
 	

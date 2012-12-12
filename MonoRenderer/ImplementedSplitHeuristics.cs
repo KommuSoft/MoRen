@@ -44,7 +44,7 @@ namespace Renderer {
 			bool hasNext = prie.MoveNext();
 			while(hasNext) {
 				min = prie.Current;
-				Console.WriteLine("Considering: {0}", min);
+				//Console.WriteLine("Considering: {0}", min);
 				ln++;
 				ls += min.Surface();
 				min.GetFaceNormalBounds(facenormal, out x, out dummy);
