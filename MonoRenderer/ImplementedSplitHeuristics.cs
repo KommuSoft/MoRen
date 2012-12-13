@@ -44,36 +44,30 @@ namespace Renderer {
 			bool hasNext = prie.MoveNext();
 			while(hasNext) {
 				min = prie.Current;
-				//Console.WriteLine("Considering: {0}", min);
 				ln++;
 				ls += min.Surface();
 				min.GetFaceNormalBounds(facenormal, out x, out dummy);
 				active.Add(min);
 				activeRemove = true;
 				while(activeRemove && active.Count > 0x00) {
-					//Console.WriteLine("Check removing with count {0}", active.Count);
 					min = active.Min;
 					min.GetFaceNormalBounds(facenormal, out dummy, out xa);
 					activeRemove = xa <= x;
 					if(activeRemove) {
-						//Console.WriteLine("Removing: {0}", min);
 						active.Remove(min);
 						rn--;
 						lastx = xa;
-						//Console.WriteLine("Lastxa is now: {0}", lastx);
 						rs -= min.Surface();
 					}
 				}
 				hasNext = prie.MoveNext();
 				if(t0 < x && x < t1) {
 					dummy = ln*ls+rn*rs;
-					//Console.WriteLine("EVAL f({0})={1}", x, dummy);
 					if(dummy < heuristic) {
 						heuristic = dummy;
 						ta = tb = x;
 						if(active.Count <= 0x01) {
 							ta = lastx;
-							//prie.Current.GetFaceNormalBounds(facenormal, out tb, out t1);
 						}
 					}
 				}

@@ -78,10 +78,9 @@ namespace Renderer.SceneBuilding {
 		}
 
 		public Camera BuildScene () {
+			this.SceneGraph.Resolve();
 			Tuple<List<RenderItem>,List<Light>> scene = this.SceneGraph.Inject(0.0d);
 			List<RenderItem> ris = scene.Item1;
-			ris.Clear();
-			ris.Add(new Sphere(new Point3(0.0d, 0.0d, 30.0d), 5.0d, new Material(0xffffff, 0xffffff, 0xffffff, 15.0d, 0.0d, null, null, new Texture("orange_bump_01.jpg"))));
 			Light[] lights = scene.Item2.ToArray();
 			EnvironmentSettings es = this.es;
 			Accelerator acc = this.AcceleratorWrapper.CreateAccelerator(ris);

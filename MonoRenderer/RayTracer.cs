@@ -124,7 +124,7 @@ namespace Renderer {
 		}
 		
 		public static int Main (string[] args) {
-			PerlinCache.InitializeNoiseBuffer();
+			/*PerlinCache.InitializeNoiseBuffer();
 			LoaderObj teapot = new LoaderObj();
 			teapot.Load(null, "venus.obj");
 			List<RenderItem> ri = new List<RenderItem>();
@@ -133,17 +133,16 @@ namespace Renderer {
 			teapot.Inject(ri, m, null);
 			OctTreeAccelerator bsp = new OctTreeAccelerator(ri);
 			//BSPAccelerator bsp = new BSPAccelerator(ri);
-			Console.WriteLine(bsp);
 			Light[] light = new Light[] {
 				new Light(0x808080, new Point3(5.0d, 0.0d, -10.0d), 0.0d),
 				new Light(0x808080, new Point3(-5.0d, 0.0d, -10.0d), 0.0d)
 			};
 			Camera cam = new Camera(640, 640, 1.5d, Maths.PI_4, bsp, light, new EnvironmentSettings());
 			RenderWindow rw = new RenderWindow(cam);
-			rw.ShowDialog();
-			/*
+			rw.ShowDialog();*/
+
 			SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
-			new RenderWindow(sd.BuildScene()).ShowDialog();*/
+			new RenderWindow(sd.BuildScene()).ShowDialog();
 			return 0x00;
 		}
 		

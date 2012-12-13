@@ -40,8 +40,8 @@ namespace Renderer.SceneBuilding {
 				this.time = value;
 			}
 		}
-		[XmlArray("Nodes")]
-		[XmlArrayItem("Node")]
+		[XmlArray("SceneGraphNodes")]
+		[XmlArrayItem("SceneGraphNode")]
 		public List<SceneGraphNode> Nodes {
 			get {
 				return this.nodes;

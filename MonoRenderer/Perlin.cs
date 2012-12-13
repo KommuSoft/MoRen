@@ -77,12 +77,16 @@ namespace Renderer {
 			return Utils.FloatIndex(marbleGradient, g);
 		}
 		public static uint Sky3 (Point3 xyz) {
+			Console.WriteLine(xyz);
 			double sum = 0.0d;
 			for(int i = 0x01; i < 0x20; i++) {
 				sum += Math.Abs(Perlin3d(xyz.X*i, xyz.Y*i, xyz.Z*i))/i;
 			}
 			return Utils.FloatIndex(skyGradient, sum);
 		}
+		/*public static uint Sky3 (Point3 xyz) {
+			return (uint)(Maths.RandomGenerator.Next()&Color.ColorChannel);
+		}//*/
 		public static uint Wood3 (Point3 xyz) {
 			double g = Perlin3d(xyz.X, xyz.Y, xyz.Z)*20;
 			g = g-(int)Math.Floor(g);

@@ -35,8 +35,9 @@ namespace Renderer {
 				index = (~index)-0x01;
 			}
 			TValue val = default(TValue);
-			while(index >= 0x00 && !dictionaryContainer[index].TryGetValue(key,out val))
+			while(index >= 0x00 && !dictionaryContainer[index].TryGetValue(key,out val)) {
 				index--;
+			}
 			return val;
 		}
 		public void Add (TVersion version, Dictionary<TKey,TValue> dict) {

@@ -74,7 +74,7 @@ namespace Renderer {
 				this.parameters = value;
 			}
 		}
-		[XmlElement("Material")]
+		[XmlAttribute("Material")]
 		public string Material {
 			get {
 				return this.material;
@@ -91,8 +91,10 @@ namespace Renderer {
 		}
 
 		public void Resolve (Dictionary<string,Material> materialDictionary) {
-			Material mat;
-			materialDictionary.TryGetValue(this.material, out mat);
+			Material mat = null;
+			if(this.material != null && this.material != string.Empty) {
+				materialDictionary.TryGetValue(this.material, out mat);
+			}
 			if(this.filename == null || this.loader != null) {
 				return;
 			}

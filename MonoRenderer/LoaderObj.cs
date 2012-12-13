@@ -172,6 +172,7 @@ namespace Renderer {
 				this.nor = Utils.GenerateSmoothNormalsFromTriangles(this.pos, this.tri.Select(x => new Tuple<int,int,int>(x[0x00], x[0x03], x[0x06])));
 			}
 			if(this.tex.Count <= 0x00) {
+				Console.WriteLine("+tex");
 				foreach(int[] tri in this.tri) {
 					tri[0x02] = tri[0x00];
 					tri[0x05] = tri[0x03];

@@ -34,7 +34,6 @@ namespace Renderer {
 		public BSPAccelerator (IEnumerable<RenderItem> items, SplitHeuristic sh) : this(items,sh,Point3.UnitDummies) {
 		}
 		public BSPAccelerator (IEnumerable<RenderItem> items, SplitHeuristic sh, IEnumerable<Point3> facenormals, int maxDepth = 10, int maxSize = 5) {
-			//Console.WriteLine("Started with {0}", items.Count());
 			double ta, tb;
 			List<NormalInterval> fn = new List<NormalInterval>();
 			foreach(Point3 normal in facenormals) {
@@ -50,8 +49,6 @@ namespace Renderer {
 			this.intervals = fn.ToArray();
 			LinkedList<RenderItem> caches = new LinkedList<RenderItem>(items);
 			this.root = Split(caches, sh, fn, maxDepth, maxSize, 0x00);
-			/*HashSet<RenderItem> endcheck = new HashSet<RenderItem>(this.root.Items());
-			Console.WriteLine("Ended with {0}", endcheck.Count);*/
 		}
 
 		private BSPNode Split (LinkedList<RenderItem> current, SplitHeuristic sh, IEnumerable<NormalInterval> facenormals, int maxDepth, int maxSize, int depth) {
