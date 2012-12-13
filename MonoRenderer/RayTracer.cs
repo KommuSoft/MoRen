@@ -140,7 +140,7 @@ namespace Renderer {
 			Camera cam = new Camera(640, 640, 1.5d, Maths.PI_4, bsp, light, new EnvironmentSettings());
 			RenderWindow rw = new RenderWindow(cam);
 			rw.ShowDialog();*/
-
+			PerlinCache.InitializeNoiseBuffer();
 			SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
 			new RenderWindow(sd.BuildScene()).ShowDialog();
 			return 0x00;
