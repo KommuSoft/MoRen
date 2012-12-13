@@ -105,6 +105,7 @@
     <Compile Include="ProxyRenderItemBase.cs" />
     <Compile Include="MeshLoaderBase.cs" />
     <Compile Include="NormalInterval.cs" />
+    <Compile Include="Blob.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -116,5 +117,6 @@
     <Reference Include="mscorlib">
       <HintPath>..\..\..\..\..\usr\lib\mono\4.0\mscorlib.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Simd" />
   </ItemGroup>
 </Project>

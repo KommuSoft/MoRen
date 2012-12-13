@@ -279,9 +279,11 @@ namespace Renderer {
 			Point3 normal = normalInterval.Normal;
 			double rayinv = Maths.SoftInv(ray.Direction[normal]);
 			double rayOffset = ray.Offset[normal];
-			if(double.IsNaN(rayinv) && (rayOffset < ta || rayOffset > tb)) {
-				ta = double.PositiveInfinity;
-				tb = double.NegativeInfinity;
+			if(double.IsNaN(rayinv)) {
+				if(rayOffset < normalInterval.T1 || rayOffset > normalInterval.T2) {
+					ta = double.PositiveInfinity;
+					tb = double.NegativeInfinity;
+				}
 			}
 			else {
 				double t0 = rayinv*(normalInterval.T1-rayOffset);

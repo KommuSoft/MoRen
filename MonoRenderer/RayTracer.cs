@@ -131,8 +131,8 @@ namespace Renderer {
 			Matrix4 m = Matrix4.CreateRotateYMatrix(Math.PI);
 			m.Shift(0.0d, 0.0d, 15.0d);
 			teapot.Inject(ri, m, null);
-			//OctTreeAccelerator bsp = new OctTreeAccelerator(ri);
-			BSPAccelerator bsp = new BSPAccelerator(ri);
+			OctTreeAccelerator bsp = new OctTreeAccelerator(ri);
+			//BSPAccelerator bsp = new BSPAccelerator(ri);
 			Console.WriteLine(bsp);
 			Light[] light = new Light[] {
 				new Light(0x808080, new Point3(5.0d, 0.0d, -10.0d), 0.0d),

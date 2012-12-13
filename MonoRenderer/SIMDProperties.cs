@@ -1,5 +1,5 @@
 //
-//  Blob.cs
+//  SIMDProperties.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -19,19 +19,13 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using Mono.Simd;
 
 namespace Renderer {
 
-	public class Blob {
-		public Blob () {
+	public class SIMDProperties {
+		public SIMDProperties () {
 		}
-
-		private sealed class BlobNode {
-
-
-
-		}
-
 	}
 }
 
