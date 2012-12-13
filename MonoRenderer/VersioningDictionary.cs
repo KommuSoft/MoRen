@@ -38,6 +38,16 @@ namespace Renderer {
 				index--;
 			return val;
 		}
+		public void AddRange (TVersion version, Dictionary<TKey,TValue> dict) {
+			this.dictionaryContainer.Add(new DictionaryVersion<TVersion,TKey,TValue>(version, dict));
+		}
+		public void Sort () {
+			this.dictionaryContainer.Sort();
+			this.versions.Clear();
+			foreach(DictionaryVersion<TVersion,TKey,TValue> dv in this.dictionaryContainer) {
+				this.versions.Add(dv.Version);
+			}
+		}
 		public Tuple<TVersion,TValue,TVersion,TValue> GetVersionsBetween (TVersion version, TKey key) {
 			TVersion ver1 = version, ver2 = version;
 			TValue val1 = default(TValue), val2 = val1;
@@ -71,6 +81,10 @@ namespace Renderer {
 				set {
 					this.version = value;
 				}
+			}
+
+			public DictionaryVersion (TTime version, Dictionary<TK,TV> dict) : base(dict) {
+				this.version = version;
 			}
 
 			#region IComparable implementation
