@@ -106,6 +106,8 @@
     <Compile Include="MeshLoaderBase.cs" />
     <Compile Include="NormalInterval.cs" />
     <Compile Include="Blob.cs" />
+    <Compile Include="SuperCamera.cs" />
+    <Compile Include="SceneTimeGraphNodeCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

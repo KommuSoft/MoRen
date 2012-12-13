@@ -32,63 +32,74 @@ namespace Renderer.SceneBuilding {
 		private SceneGraphNode[] nodes;
 
 		[XmlIgnore]
-		private readonly Dictionary<string,SceneGraphNode>
-			cachedNodes = new Dictionary<string, SceneGraphNode>();
+		private readonly VersioningDictionary<double,string,SceneGraphNode>
+			versionDictionary = new VersioningDictionary<double, string, SceneGraphNode>();
+		[XmlIgnore]
+		private readonly Dictionary<string,Material>
+			materialDictionary = new Dictionary<string, Material>();
+		[XmlIgnore]
+		private SceneTimeGraphNodeCollection[]
+			times;
+		[XmlIgnore]
+		private MaterialWrapper[]
+			materials;
 		[XmlIgnore]
 		private string
 			rootName;
 		[XmlAttribute("MaxDepth")]
 		public int
 			MaxDepth = 0x25;
-		[XmlIgnore]
-		public SceneGraphNode
-			Root;
 		[XmlAttribute("Root")]
 		public string RootName {
 			get {
-				if(this.Root != null) {
-					return this.Root.Name;
-				}
-				else {
-					return null;
-				}
+				return this.rootName;
 			}
 			set {
 				this.rootName = value;
 			}
 		}
-		
-		[XmlArray("SceneGraphNodes")]
-		[XmlArrayItem("SceneGraphNode")]
-		public SceneGraphNode[] GraphNodes {
+		[XmlArray("Materials")]
+		[XmlArrayItem("Material")]
+		public MaterialWrapper[] Materials {
 			get {
-				return this.nodes;
+				return this.materials;
 			}
 			set {
-				this.nodes = value;
-				this.Resolve();
+				this.materials = value;
+				this.ResolveMaterials();
+			}
+		}
+		
+		[XmlArray("Times")]
+		[XmlArrayItem("Time")]
+		public SceneTimeGraphNodeCollection[] Times {
+			get {
+				return this.times;
+			}
+			set {
+				this.times = value;
+				this.ResolveTimes();
 			}
 		}
 		public SceneGraph () {
 		}
 
-		public SceneGraph (SceneGraphNode root) {
-			this.Root = root;
+		public void ResolveTimes () {
+			this.versionDictionary.Clear();
+			foreach(SceneTimeGraphNodeCollection stgnc in this.times) {
+				this.versionDictionary.Add(stgnc.Time, stgnc.GenerateDictionary());
+			}
+			this.versionDictionary.Sort();
 		}
 
-		public void Resolve () {
-			foreach(SceneGraphNode sgn in this.nodes) {
-				this.cachedNodes.Add(sgn.Name, sgn);
-			}
-			foreach(SceneGraphNode sgn in this.cachedNodes.Values) {
-				sgn.Resolve(this.cachedNodes);
-			}
-			if(this.Root == null && this.cachedNodes.ContainsKey(this.rootName)) {
-				this.Root = this.cachedNodes[this.rootName];
+		public void ResolveMaterials () {
+			this.materialDictionary.Clear();
+			foreach(MaterialWrapper mw in this.materials) {
+				this.materialDictionary.Add(mw.Name, mw.GenerateMaterial());
 			}
 		}
 
-		public Tuple<List<RenderItem>,List<Light>> Inject () {
+		public Tuple<List<RenderItem>,List<Light>> Inject (double time) {
 			List<RenderItem> ris = new List<RenderItem>();
 			List<Light> lis = new List<Light>();
 			MatrixStack ms = new MatrixStack();

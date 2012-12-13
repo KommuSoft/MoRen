@@ -38,7 +38,7 @@ namespace Renderer {
 				index--;
 			return val;
 		}
-		public void AddRange (TVersion version, Dictionary<TKey,TValue> dict) {
+		public void Add (TVersion version, Dictionary<TKey,TValue> dict) {
 			this.dictionaryContainer.Add(new DictionaryVersion<TVersion,TKey,TValue>(version, dict));
 		}
 		public void Sort () {

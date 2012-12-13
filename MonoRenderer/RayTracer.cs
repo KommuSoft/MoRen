@@ -101,7 +101,7 @@ namespace Renderer {
 						dis.Normalize();
 						uint clrl = Color.Scale(Color.Multiply(li.Color, diffuse), Point3.CosAngleNorm(dis, norm));
 						clrl = Color.Add(clrl, Color.Scale(Color.Multiply(li.Color, specular), Math.Pow(Point3.CosAngleNorm(rl, dis), mat.Shininess)));
-						clr = Color.Add(clr, Color.loseIntensity(Color.Scale(clrl, light), distanceUnit, len));
+						clr = Color.Add(clr, Color.LoseIntensity(Color.Scale(clrl, light), distanceUnit, len));
 					}
 				}
 				if(depth < maxDepth) {
@@ -116,7 +116,7 @@ namespace Renderer {
 						clr = Color.Add(clr, Color.Multiply(res, refrint));
 					}
 				}
-				return Color.loseIntensity(clr, distanceUnit, t);
+				return Color.LoseIntensity(clr, distanceUnit, t);
 			}
 			else {
 				return 0x00000000;

@@ -26,6 +26,9 @@ namespace Renderer.SceneBuilding {
 
 	public class MaterialWrapper {
 
+		[XmlAttribute("Name")]
+		public string
+			Name = string.Empty;
 		[XmlAttribute("Texture")]
 		public string
 			Texture = null;

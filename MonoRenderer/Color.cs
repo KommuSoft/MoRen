@@ -41,7 +41,7 @@ namespace Renderer {
 		public const uint Black = 0xff000000;
 		public static double Gamma = 2.33d;
 		
-		public static uint loseIntensity (uint c, double distanceUnit, double distance) {
+		public static uint LoseIntensity (uint c, double distanceUnit, double distance) {
 			return Scale(c, (uint)Math.Round(Math.Min(distanceUnit/(distance*distance+1.0d), 255.0d)));
 		}
 		public static uint Scale (uint c, double s) {
