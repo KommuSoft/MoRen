@@ -43,7 +43,7 @@ namespace Renderer {
 		private string[]
 			parameters;
 		[XmlIgnore]
-		private MaterialWrapper
+		private string
 			material;
 		
 		[XmlAttribute("Filename")]
@@ -75,7 +75,7 @@ namespace Renderer {
 			}
 		}
 		[XmlElement("Material")]
-		public MaterialWrapper Material {
+		public string Material {
 			get {
 				return this.material;
 			}
@@ -86,12 +86,13 @@ namespace Renderer {
 		
 		public Mesh () {
 		}
-		public Mesh (string Filename) {
-			this.Filename = Filename;
-			this.Resolve();
+		public Mesh (string filename) {
+			this.Filename = filename;
 		}
 
-		public void Resolve () {
+		public void Resolve (Dictionary<string,Material> materialDictionary) {
+			Material mat;
+			materialDictionary.TryGetValue(this.material, out mat);
 			if(this.filename == null || this.loader != null) {
 				return;
 			}
@@ -103,8 +104,8 @@ namespace Renderer {
 			}
 			if(this.loader != null) {
 				FileStream fs = File.Open(this.filename, FileMode.Open, FileAccess.Read);
-				if(this.material != null) {
-					this.loader.DefaultMaterial = this.material.GenerateMaterial();
+				if(mat != null) {
+					this.loader.DefaultMaterial = mat;
 				}
 				this.loader.Load(this.environment, fs);
 				fs.Close();

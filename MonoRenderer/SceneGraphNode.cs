@@ -30,9 +30,11 @@ namespace Renderer.SceneBuilding {
 		[XmlIgnore]
 		private List<string>
 			childNames = new List<string>();
+
 		[XmlIgnore]
-		public readonly List<SceneGraphNode>
-			SubNodes = new List<SceneGraphNode>();
+		private string
+			transformerText;
+
 		[XmlIgnore]
 		private Matrix4
 			Transformer;
@@ -50,15 +52,10 @@ namespace Renderer.SceneBuilding {
 		[XmlAttribute("Transformation")]
 		public string TransformerString {
 			get {
-				if(this.Transformer != null) {
-					return this.Transformer.ToString();
-				}
-				else {
-					return null;
-				}
+				return this.transformerText;
 			}
 			set {
-				this.Transformer = Matrix4.Parse(value);
+				this.transformerText = value;
 			}
 		}
 		[XmlElement("Mesh")]
@@ -78,7 +75,7 @@ namespace Renderer.SceneBuilding {
 		}
 		public SceneGraphNode (IEnumerable<SceneGraphNode> subNodes) {
 			foreach(SceneGraphNode sgn in subNodes) {
-				this.SubNodes.Add(sgn);
+				this.childNames.Add(sgn.Name);
 			}
 		}
 		public SceneGraphNode (Matrix4 transformer, IEnumerable<SceneGraphNode> subNodes) : this(subNodes) {
@@ -96,7 +93,6 @@ namespace Renderer.SceneBuilding {
 		}
 		
 		public void AddChild (SceneGraphNode subNode) {
-			this.SubNodes.Add(subNode);
 			this.childNames.Add(subNode.Name);
 		}
 		
@@ -104,7 +100,7 @@ namespace Renderer.SceneBuilding {
 			return this.Name.GetHashCode();
 		}
 
-		public void Inject (int maxDepth, MatrixStack stack, List<RenderItem> ris, List<Light> lis, int depth) {
+		public void Inject (VersioningDictionary<double,string,SceneGraphNode> versioning, double version, int maxDepth, MatrixStack stack, List<RenderItem> ris, List<Light> lis, int depth) {
 			if(depth < maxDepth) {
 				stack.PushMatrix(this.Transformer);
 				if(this.Mesh != null) {
@@ -113,20 +109,17 @@ namespace Renderer.SceneBuilding {
 				if(this.LightWrapper != null) {
 					this.LightWrapper.Inject(stack.Top, lis);
 				}
-				foreach(SceneGraphNode sgn in SubNodes) {
-					sgn.Inject(maxDepth, stack, ris, lis, depth+1);
+				foreach(string name in this.childNames) {
+					versioning.GetLatestBefore(version, name).Inject(versioning, version, maxDepth, stack, ris, lis, depth+1);
 				}
 				stack.PopMatrix();
 			}
 		}
 
-		public void Resolve (Dictionary<string,SceneGraphNode> dictionary) {
-			if(this.childNames != null) {
-				this.SubNodes.AddRange(this.childNames.Select(x => dictionary[x]));
-			}
-			this.childNames = null;
+		public void Resolve (Dictionary<string,Material> materialDictionary) {
+			this.Transformer = Matrix4.Parse(this.transformerText);
 			if(this.Mesh != null) {
-				this.Mesh.Resolve();
+				this.Mesh.Resolve(materialDictionary);
 			}
 		}
 		

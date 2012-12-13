@@ -19,11 +19,12 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Renderer {
 
-	public class VersioningDictionary<TVersion,TKey,TValue> where TVersion : IComparable<TVersion> {
+	public class VersioningDictionary<TVersion,TKey,TValue> : IDictionary<TVersion,Dictionary<TKey,TValue>> where TVersion : IComparable<TVersion> {
 
 		private readonly List<TVersion> versions = new List<TVersion>();
 		private readonly List<DictionaryVersion<TVersion,TKey,TValue>> dictionaryContainer = new List<DictionaryVersion<TVersion, TKey, TValue>>();
@@ -99,6 +100,143 @@ namespace Renderer {
 
 
 		}
+
+		#region IEnumerable implementation
+		IEnumerator IEnumerable.GetEnumerator () {
+			return this.GetEnumerator();
+		}
+		#endregion
+
+		#region IEnumerable implementation
+		public IEnumerator<KeyValuePair<TVersion, Dictionary<TKey, TValue>>> GetEnumerator () {
+			return this.GetDictionaries().GetEnumerator();
+		}
+		#endregion
+
+		public IEnumerable<KeyValuePair<TVersion, Dictionary<TKey, TValue>>> GetDictionaries () {
+			foreach(DictionaryVersion<TVersion,TKey,TValue> dict in this.dictionaryContainer) {
+				yield return new KeyValuePair<TVersion, Dictionary<TKey, TValue>>(dict.Version, dict);
+			}
+		}
+
+		public IEnumerable<TValue> GetValues () {
+			foreach(DictionaryVersion<TVersion,TKey,TValue> dict in this.dictionaryContainer) {
+				foreach(TValue val in dict.Values) {
+					yield return val;
+				}
+			}
+		}
+
+		#region ICollection implementation
+		public void Add (KeyValuePair<TVersion, Dictionary<TKey, TValue>> item) {
+			this.Add(item.Key, item.Value);
+		}
+
+		public void Clear () {
+			this.dictionaryContainer.Clear();
+			this.versions.Clear();
+		}
+
+		public bool Contains (KeyValuePair<TVersion, Dictionary<TKey, TValue>> item) {
+			int index = this.versions.BinarySearch(item.Key);
+			if(index >= 0x00) {
+				return this.dictionaryContainer[index] == item.Value;
+			}
+			return false;
+		}
+
+		public void CopyTo (KeyValuePair<TVersion, Dictionary<TKey, TValue>>[] array, int arrayIndex) {
+			throw new System.NotImplementedException();
+		}
+
+		public bool Remove (KeyValuePair<TVersion, Dictionary<TKey, TValue>> item) {
+			int index = this.versions.BinarySearch(item.Key);
+			if(index >= 0x00 && this.dictionaryContainer[index] == item.Value) {
+				this.versions.RemoveAt(index);
+				this.dictionaryContainer.RemoveAt(index);
+				return true;
+			}
+			return false;
+		}
+
+		public int Count {
+			get {
+				return this.dictionaryContainer.Count;
+			}
+		}
+
+		public bool IsReadOnly {
+			get {
+				return true;
+			}
+		}
+		#endregion
+
+		#region IDictionary implementation
+		public bool ContainsKey (TVersion key) {
+			return this.versions.BinarySearch(key) >= 0x00;
+		}
+
+		public bool Remove (TVersion key) {
+			int index = this.versions.BinarySearch(key);
+			if(index >= 0x00) {
+				this.versions.RemoveAt(index);
+				this.dictionaryContainer.RemoveAt(index);
+				return true;
+			}
+			return false;
+		}
+
+		public bool TryGetValue (TVersion key, out Dictionary<TKey, TValue> value) {
+			int index = this.versions.BinarySearch(key);
+			if(index >= 0x00) {
+				value = this.dictionaryContainer[index];
+				return true;
+			}
+			else {
+				value = default(Dictionary<TKey, TValue>);
+				return false;
+			}
+		}
+
+		public Dictionary<TKey, TValue> this [TVersion key] {
+			get {
+				int index = this.versions.BinarySearch(key);
+				if(index >= 0x00) {
+					return this.dictionaryContainer[index];
+				}
+				else {
+					throw new KeyNotFoundException();
+				}
+			}
+			set {
+				int index = this.versions.BinarySearch(key);
+				if(index >= 0x00) {
+					this.dictionaryContainer[index] = new DictionaryVersion<TVersion, TKey, TValue>(key, value);
+				}
+				else {
+					throw new KeyNotFoundException();
+				}
+			}
+		}
+
+		public ICollection<TVersion> Keys {
+			get {
+				return this.versions;
+			}
+		}
+
+		public ICollection<Dictionary<TKey, TValue>> Values {
+			get {
+				List<Dictionary<TKey, TValue>> list = new List<Dictionary<TKey, TValue>>();
+				foreach(Dictionary<TKey, TValue> val in this.dictionaryContainer) {
+					list.Add(val);
+				}
+				return list;
+			}
+		}
+		#endregion
+
 
 	}
 }

@@ -99,11 +99,17 @@ namespace Renderer.SceneBuilding {
 			}
 		}
 
+		public void Resolve () {
+			foreach(SceneGraphNode sgn in this.versionDictionary.GetValues()) {
+				sgn.Resolve(materialDictionary);
+			}
+		}
+
 		public Tuple<List<RenderItem>,List<Light>> Inject (double time) {
 			List<RenderItem> ris = new List<RenderItem>();
 			List<Light> lis = new List<Light>();
 			MatrixStack ms = new MatrixStack();
-			this.Root.Inject(this.MaxDepth, ms, ris, lis, 0x00);
+			this.versionDictionary.GetLatestBefore(time, this.rootName).Inject(this.versionDictionary, time, this.MaxDepth, ms, ris, lis, 0x00);
 			return new Tuple<List<RenderItem>, List<Light>>(ris, lis);
 		}
 		
