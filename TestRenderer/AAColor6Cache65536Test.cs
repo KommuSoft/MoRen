@@ -29,27 +29,20 @@ namespace TestRenderer {
 
 		[Test()]
 		public void AddColor6Test () {
-			ushort s0 = 0x00, s1 = 0x00, s2 = 0x00, s3 = 0x00, s4 = 0x00, s5 = 0x00;
-			for(; s0 < 0xffff-0x3e5; s0 += 0x3e5) {
-				for(; s1 < 0xffff-0x3e5; s1 += 0x3e5) {
-					for(; s2 < 0xffff-0x3e5; s2 += 0x3e5) {
-						for(; s3 < 0xffff-0x3e5; s3 += 0x3e5) {
-							for(; s4 < 0xffff-0x3e5; s4 += 0x3e5) {
-								for(; s5 < 0xffff-0x3e5; s5 += 0x3e5) {
-									Color6Cache65536 cache = new Color6Cache65536(0x00);
-									Color6 c = new Color6(s0, s1, s2, s3, s4, s5);
-									cache.AddColor6(c);
-									Assert.AreEqual(c, cache.Mix(0x01));
-								}
-								s5 += 0x3e5;
-							}
-							s4 += 0x3e5;
-						}
-						s3 += 0x3e5;
-					}
-					s2 += 0x3e5;
+			for(int i = 0x00; i < TestParameters.ColorTest; i++) {
+				ushort s0 = (ushort)(Maths.RandomGenerator.Next()&0xffff);
+				ushort s1 = (ushort)(Maths.RandomGenerator.Next()&0xffff);
+				ushort s2 = (ushort)(Maths.RandomGenerator.Next()&0xffff);
+				ushort s3 = (ushort)(Maths.RandomGenerator.Next()&0xffff);
+				ushort s4 = (ushort)(Maths.RandomGenerator.Next()&0xffff);
+				ushort s5 = (ushort)(Maths.RandomGenerator.Next()&0xffff);
+				Color6Cache65536 cc = new Color6Cache65536(0x00);
+				Color6 c = new Color6(s0, s1, s2, s3, s4, s5);
+				uint n = (uint)Maths.RandomGenerator.Next(TestParameters.ColorDepthTest)+0x01;
+				for(int j = 0x00; j < n; j++) {
+					cc.AddColor6(c);
 				}
-				s1 += 0x3e5;
+				Assert.AreEqual(c, cc.Mix(n));
 			}
 		}
 	}

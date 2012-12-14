@@ -29,30 +29,20 @@ namespace TestRenderer {
 
 		[Test()]
 		public void ConstructionTest () {
-			ushort s0 = 0x00, s1 = 0x00, s2 = 0x00, s3 = 0x00, s4 = 0x00, s5 = 0x00;
-			for(; s0 < 0xffff-0x3e5; s0 += 0x3e5) {
-				for(; s1 < 0xffff-0x3e5; s1 += 0x3e5) {
-					for(; s2 < 0xffff-0x3e5; s2 += 0x3e5) {
-						for(; s3 < 0xffff-0x3e5; s3 += 0x3e5) {
-							for(; s4 < 0xffff-0x3e5; s4 += 0x3e5) {
-								for(; s5 < 0xffff-0x3e5; s5 += 0x3e5) {
-									Color6 c = new Color6(s0, s1, s2, s3, s4, s5);
-									Assert.AreEqual(s0, c.Seg0);
-									Assert.AreEqual(s1, c.Seg1);
-									Assert.AreEqual(s2, c.Seg2);
-									Assert.AreEqual(s3, c.Seg3);
-									Assert.AreEqual(s4, c.Seg4);
-									Assert.AreEqual(s5, c.Seg5);
-								}
-								s5 += 0x3e5;
-							}
-							s4 += 0x3e5;
-						}
-						s3 += 0x3e5;
-					}
-					s2 += 0x3e5;
-				}
-				s1 += 0x3e5;
+			for(int i = 0; i < TestParameters.ColorTest; i++) {
+				ushort s0 = (ushort)(Maths.RandomGenerator.Next()&0xffff);
+				ushort s1 = (ushort)(Maths.RandomGenerator.Next()&0xffff);
+				ushort s2 = (ushort)(Maths.RandomGenerator.Next()&0xffff);
+				ushort s3 = (ushort)(Maths.RandomGenerator.Next()&0xffff);
+				ushort s4 = (ushort)(Maths.RandomGenerator.Next()&0xffff);
+				ushort s5 = (ushort)(Maths.RandomGenerator.Next()&0xffff);
+				Color6 c = new Color6(s0, s1, s2, s3, s4, s5);
+				Assert.AreEqual(s0, c.Seg0);
+				Assert.AreEqual(s1, c.Seg1);
+				Assert.AreEqual(s2, c.Seg2);
+				Assert.AreEqual(s3, c.Seg3);
+				Assert.AreEqual(s4, c.Seg4);
+				Assert.AreEqual(s5, c.Seg5);
 			}
 		}
 
