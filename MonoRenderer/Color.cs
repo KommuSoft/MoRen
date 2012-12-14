@@ -52,7 +52,7 @@ namespace Renderer {
 		}
 		public uint RGB8 {
 			get {
-				return (uint)(((Data>>0x0c)&Blue8Mask)|((Data>>0x21)&Green8Mask)|((Data>>0x36)&Red8Mask));
+				return (uint)(((Data>>0x0c)&Blue8Mask)|((Data>>0x19)&Green8Mask)|((Data>>0x26)&Red8Mask));
 			}
 		}
 
@@ -72,10 +72,45 @@ namespace Renderer {
 			this.Data = data;
 		}
 
+		public override bool Equals (object obj) {
+			if(obj is Color) {
+				return (this.Data == ((Color)obj).Data);
+			}
+			else {
+				return false;
+			}
+		}
+		public override string ToString () {
+			return string.Format("[Color: Red={0}, Green={1}, Blue={2}]", RedInt.ToString("X"), GreenInt.ToString("X"), BlueInt.ToString("X"));
+		}
+		public override int GetHashCode () {
+			return this.Data.GetHashCode();
+		}
+
 		public static Color operator + (Color c1, Color c2) {
 			ulong datas = c1.Data+c2.Data;
 			ulong overflow = (datas&OverflowMask);
 			return new Color((datas|(overflow-(overflow>>0x14)))&NonOverflowMask);
+		}
+		public static Color operator * (Color c, double scal) {
+			uint scale = (uint)Math.Round(scal*Color.MaxValue)+0x01;
+			return new Color((((c.Data&BlueMask)*scale)>>0x14)|((((c.Data&GreenMask)*scale)>>0x14)&GreenMask)|((((c.Data&RedMask)>>0x14)*scale)&RedMask));
+		}
+		public static Color operator * (Color c, uint scale) {
+			scale++;
+			return new Color((((c.Data&BlueMask)*scale)>>0x14)|((((c.Data&GreenMask)*scale)>>0x14)&GreenMask)|((((c.Data&RedMask)>>0x14)*scale)&RedMask));
+		}
+		public static Color operator * (Color c1, Color c2) {
+			return new Color((((c1.Data&BlueMask)*((c2.Data&BlueMask)+0x01))>>0x14)|((((c1.Data&GreenMask)*(((c2.Data&GreenMask)>>0x15)+0x01))>>0x14)&GreenMask)|((((c1.Data&RedMask)>>0x14)*((c2.Data>>0x2a)+0x01))&RedMask));
+		}
+		public static bool operator == (Color c1, Color c2) {
+			return c1.Data == c2.Data;
+		}
+		public static bool operator != (Color c1, Color c2) {
+			return c1.Data != c2.Data;
+		}
+		public static Color operator ~ (Color c) {
+			return new Color((~c.Data)&NonOverflowMask);
 		}
 
 	}

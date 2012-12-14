@@ -19,9 +19,10 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
-using System.Xml.Serialization;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Xml.Serialization;
 
 namespace Renderer.SceneBuilding {
 
@@ -108,12 +109,15 @@ namespace Renderer.SceneBuilding {
 			else if(this.Task == SuperCameraTask.MakeMovie) {
 				double dt = (max-min)/this.TimeSamples;
 				int index = 0;
+				foreach(var file in Directory.EnumerateFiles ("/tmp", "output*")) {
+					try {
+						File.Delete(file);
+					}
+					catch(Exception e) {
+						Console.Error.WriteLine(e);
+					}
+				}
 				Process proc = new Process();
-				proc.EnableRaisingEvents = false;
-				proc.StartInfo.FileName = "rm";
-				proc.StartInfo.Arguments = "/tmp/output*";
-				proc.Start();
-				proc.WaitForExit();
 				proc.StartInfo.FileName = "convert";
 				string imagename;
 				string jpegname;
@@ -138,10 +142,14 @@ namespace Renderer.SceneBuilding {
 				proc.StartInfo.Arguments = string.Format("-y -i /tmp/output%05d.jpg -vcodec mpeg4 {0}", this.outputFile);
 				proc.Start();
 				proc.WaitForExit();
-				/*proc.StartInfo.FileName = "rm";
-				proc.StartInfo.Arguments = "/tmp/output*";
-				proc.Start();
-				proc.WaitForExit();*/
+				foreach(var file in Directory.EnumerateFiles ("/tmp", "output*")) {
+					try {
+						File.Delete(file);
+					}
+					catch(Exception e) {
+						Console.Error.WriteLine(e);
+					}
+				}
 			}
 		}
 

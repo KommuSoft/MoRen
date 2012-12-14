@@ -23,9 +23,27 @@ using System;
 namespace Renderer {
 
 	public struct ColorCache {
-		ulong red;
-		ulong green;
-		ulong blue;
+
+		public ulong Red;
+		public ulong Green;
+		public ulong Blue;
+
+		public ColorCache (ulong offset) {
+			this.Red = offset;
+			this.Green = offset;
+			this.Blue = offset;
+		}
+
+		public void AddColor (Color c) {
+			this.Red += c.RedInt;
+			this.Green += c.GreenInt;
+			this.Blue += c.BlueInt;
+		}
+
+		public Color Mix (uint n) {
+			return new Color((uint)(this.Red/n), (uint)(this.Green/n), (uint)(this.Blue/n));
+		}
+
 	}
 }
 
