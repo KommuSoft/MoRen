@@ -32,6 +32,7 @@ namespace Renderer.SceneBuilding {
 		private AcceleratorWrapper acceleratorWrapper;
 		private SceneGraph sg;
 		private EnvironmentSettings es;
+		private SuperCamera sc;
 
 
 		[XmlElement("EnvironmentSettings")]
@@ -70,6 +71,15 @@ namespace Renderer.SceneBuilding {
 				this.acceleratorWrapper = value;
 			}
 		}
+		[XmlElement("SuperCamera")]
+		public SuperCamera SuperCamera {
+			get {
+				return this.sc;
+			}
+			set {
+				this.sc = value;
+			}
+		}
 		
 		public SceneDescription () {
 		}
@@ -77,14 +87,9 @@ namespace Renderer.SceneBuilding {
 			this.sg = sg;
 		}
 
-		public Camera BuildScene () {
+		public void BuildScene () {
 			this.SceneGraph.Resolve();
-			Tuple<List<RenderItem>,List<Light>> scene = this.SceneGraph.Inject(0.0d);
-			List<RenderItem> ris = scene.Item1;
-			Light[] lights = scene.Item2.ToArray();
-			EnvironmentSettings es = this.es;
-			IAccelerator acc = this.AcceleratorWrapper.CreateAccelerator(ris);
-			return this.camera.Camera(acc, lights, es);
+			this.SuperCamera.Execute(this);
 		}
 		public static SceneDescription ParseFromStream (Stream stream) {
 			XmlSerializer ser = new XmlSerializer(typeof(SceneDescription));

@@ -81,6 +81,18 @@ namespace Renderer.SceneBuilding {
 				this.ResolveTimes();
 			}
 		}
+		[XmlIgnore]
+		public double T0 {
+			get {
+				return this.versionDictionary.MinVersion;
+			}
+		}
+		[XmlIgnore]
+		public double T1 {
+			get {
+				return this.versionDictionary.MaxVersion;
+			}
+		}
 		public SceneGraph () {
 		}
 

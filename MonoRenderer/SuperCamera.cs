@@ -20,8 +20,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Xml.Serialization;
+using System.Collections.Generic;
 
-namespace Renderer {
+namespace Renderer.SceneBuilding {
 
 	[XmlType("SuperCamera")]
 	public class SuperCamera {
@@ -89,5 +90,21 @@ namespace Renderer {
 
 		public SuperCamera () {
 		}
+
+		public void Execute (SceneDescription description) {
+			double min = Math.Max(this.T0, description.SceneGraph.T0);
+			double max = Math.Min(this.T1, description.SceneGraph.T1);
+			if(this.Task == SuperCameraTask.MakeImage) {
+				Tuple<List<RenderItem>,List<Light>> scene = description.SceneGraph.Inject(min);
+				List<RenderItem> ris = scene.Item1;
+				Light[] lights = scene.Item2.ToArray();
+				EnvironmentSettings es = description.EnvironmentSettings;
+				IAccelerator acc = description.AcceleratorWrapper.CreateAccelerator(ris);
+				Camera cam = description.CameraWrapper.Camera(acc, lights, es);
+				cam.CalculateImage();
+				cam.Save(this.outputFile);
+			}
+		}
+
 	}
 }
