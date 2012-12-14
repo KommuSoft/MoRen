@@ -1,5 +1,5 @@
 //
-//  ColorTest.cs
+//  AAColorTest.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -19,17 +19,31 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
-using NUnit.Framework;
 using Renderer;
+using NUnit.Framework;
 
 namespace TestRenderer {
 
 	[TestFixture()]
-	public class ColorTest {
+	public class AAColor6Test {
+
 		[Test()]
-		public void Test64 () {
-			for(uint i = 0x000000; i < 0x1000000; i++) {
-				Assert.AreEqual(i, ColorUtils.MixFrom64(ColorUtils.ToColor64(i), 0x01));
+		public void ConstructionTest () {
+			for(int i = 0; i < TestParameters.ColorTest; i++) {
+				uint r = (uint)(Maths.RandomGenerator.Next()&0xfffff);
+				uint g = (uint)(Maths.RandomGenerator.Next()&0xfffff);
+				uint b = (uint)(Maths.RandomGenerator.Next()&0xfffff);
+				Color c = new Color(r, g, b);
+				Assert.AreEqual(r, c.RedInt);
+				Assert.AreEqual(g, c.GreenInt);
+				Assert.AreEqual(b, c.BlueInt);
+			}
+		}
+
+		[Test()]
+		public void ToRGBTest () {
+			for(uint i = 0; i < 0x1000000; i++) {
+				Assert.AreEqual(i, new Color(i).RGB8);
 			}
 		}
 	}
