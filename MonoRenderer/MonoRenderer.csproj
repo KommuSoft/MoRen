@@ -112,6 +112,9 @@
     <Compile Include="SceneGraphAccelerator.cs" />
     <Compile Include="IAccelerator.cs" />
     <Compile Include="SuperCameraTask.cs" />
+    <Compile Include="IMixable.cs" />
+    <Compile Include="VersionMixer.cs" />
+    <Compile Include="VersionMixers.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
