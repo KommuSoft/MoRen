@@ -111,6 +111,7 @@
     <Compile Include="Color6Cache65536.cs" />
     <Compile Include="SceneGraphAccelerator.cs" />
     <Compile Include="IAccelerator.cs" />
+    <Compile Include="SuperCameraTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

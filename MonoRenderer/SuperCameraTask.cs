@@ -1,5 +1,5 @@
 //
-//  SceneGraphAccelerator.cs
+//  SuperCameraTask.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -19,24 +19,13 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
-using Renderer.SceneBuilding;
 
 namespace Renderer {
 
-	public class SceneGraphAccelerator : IAccelerator {
-
-		public SceneGraphAccelerator (SceneGraph sg, double time) {
-
-		}
-
-		#region IAccelerator implementation
-		public RenderItem CalculateHit (Ray ray, out double t, double MaxT) {
-			throw new System.NotImplementedException();
-		}
-		#endregion
-
-
-
+	public enum SuperCameraTask {
+		MakeImage,
+		MakeMovie,
+		ShowRenderWindow
 	}
 }
 

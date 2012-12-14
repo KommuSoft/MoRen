@@ -23,8 +23,7 @@ using System.Collections.Generic;
 
 namespace Renderer {
 
-	public sealed class SubList : IComparable<SubList>
-	{
+	public sealed class SubList : IComparable<SubList> {
 
 		public List<int> Indices = new List<int>();
 		public int Frequency = 1;
@@ -78,7 +77,7 @@ namespace Renderer {
 					return false;
 				}
 				for(int i = 0; i < this.Indices.Count; i++) {
-					if(this.Indices [i] != slo.Indices [i]) {
+					if(this.Indices[i] != slo.Indices[i]) {
 						return false;
 					}
 				}
@@ -91,7 +90,7 @@ namespace Renderer {
 			int res = 0x00;
 			for(int i = 0; i < this.Indices.Count; i++) {
 				res = (res<<0x03)|((int)(res&0xe0000000)>>0x28);
-				res += this.Indices [i].GetHashCode();
+				res += this.Indices[i].GetHashCode();
 			}
 			return res;
 		}
@@ -99,14 +98,15 @@ namespace Renderer {
 		public int CompareTo (SubList other) {
 			if(this.Frequency != other.Frequency) {
 				return other.Frequency.CompareTo(this.Frequency);
-			} else {
+			}
+			else {
 				int n = Math.Min(this.Indices.Count, other.Indices.Count);
 				if(this.Indices.Count != other.Indices.Count) {
 					return this.Indices.Count.CompareTo(other.Indices.Count);
 				}
 				for(int i = 0; i < n; i++) {
-					if(this.Indices [i] != other.Indices [i]) {
-						return this.Indices [i].CompareTo(other.Indices [i]);
+					if(this.Indices[i] != other.Indices[i]) {
+						return this.Indices[i].CompareTo(other.Indices[i]);
 					}
 				}
 				return 0x00;
@@ -120,8 +120,9 @@ namespace Renderer {
 		public long ToLongRepresentation () {
 			if(this.representative != this) {
 				return this.Representative.ToLongRepresentation();
-			} else {
-				return (((long)this.Indices.Count+this.Offset)<<0x20)|this.Offset;
+			}
+			else {
+				return (((long)this.Indices.Count+this.Offset)<<0x20)|((long)this.Offset);
 			}
 		}
 

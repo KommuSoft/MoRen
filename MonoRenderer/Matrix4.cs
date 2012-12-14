@@ -402,7 +402,7 @@ namespace Renderer {
 			else {
 				double a2 = (time-time1)/(time2-time1);
 				double a1 = 1.0d-a2;
-				if(m1.Groups["rotxyz"].Captures > 0x00 && m2.Groups["rotxyz"].Captures > 0x00 && m1.Groups["dim"].Value == m2.Groups["dim"].Value) {//same rotation, different angle
+				if(m1.Groups["rotxyz"].Captures.Count > 0x00 && m2.Groups["rotxyz"].Captures.Count > 0x00 && m1.Groups["dim"].Value == m2.Groups["dim"].Value) {//same rotation, different angle
 					double theta = a1*double.Parse(m1.Groups["theta"].Value)+a2*double.Parse(m2.Groups["theta"].Value);
 					switch(m1.Groups["dim"].Value) {
 						case "x":

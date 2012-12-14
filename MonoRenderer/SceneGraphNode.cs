@@ -33,12 +33,15 @@ namespace Renderer.SceneBuilding {
 
 		[XmlIgnore]
 		private string
-			transformerText;
+			transformerString;
 
 		[XmlIgnore]
 		private Matrix4
-			Transformer;
-		private Mesh mesh = null;
+			transformer;
+		[XmlIgnore]
+		private Mesh
+			mesh = null;
+
 		[XmlArray("SubNodes")]
 		[XmlArrayItem("SubNode")]
 		public List<string> SubNodeNames {
@@ -52,10 +55,10 @@ namespace Renderer.SceneBuilding {
 		[XmlAttribute("Transformation")]
 		public string TransformerString {
 			get {
-				return this.transformerText;
+				return this.transformerString;
 			}
 			set {
-				this.transformerText = value;
+				this.transformerString = value;
 			}
 		}
 		[XmlElement("Mesh")]
@@ -78,8 +81,14 @@ namespace Renderer.SceneBuilding {
 				this.childNames.Add(sgn.Name);
 			}
 		}
+		private SceneGraphNode (Matrix4 matrix, List<string> children, Mesh mesh, LightWrapper lightWrapper) {
+			this.transformer = matrix;
+			this.childNames = children;
+			this.mesh = mesh;
+			this.LightWrapper = lightWrapper;
+		}
 		public SceneGraphNode (Matrix4 transformer, IEnumerable<SceneGraphNode> subNodes) : this(subNodes) {
-			this.Transformer = transformer;
+			this.transformer = transformer;
 		}
 		public SceneGraphNode (Mesh mesh) : this() {
 			this.Mesh = mesh;
@@ -99,10 +108,12 @@ namespace Renderer.SceneBuilding {
 		public override int GetHashCode () {
 			return this.Name.GetHashCode();
 		}
-
+		public static SceneGraphNode Mix (double time1, double time2, SceneGraphNode sgn1, SceneGraphNode sgn2, double time) {
+			return new SceneGraphNode(Matrix4.InterpolateParse(sgn1.transformerString, time1, sgn2.transformerString, time2, time), sgn1.childNames, sgn1.mesh, sgn1.LightWrapper);
+		}
 		public void Inject (VersioningDictionary<double,string,SceneGraphNode> versioning, double version, int maxDepth, MatrixStack stack, List<RenderItem> ris, List<Light> lis, int depth) {
 			if(depth < maxDepth) {
-				stack.PushMatrix(this.Transformer);
+				stack.PushMatrix(this.transformer);
 				if(this.Mesh != null) {
 					this.Mesh.Inject(stack.Top, ris);
 				}
@@ -117,7 +128,7 @@ namespace Renderer.SceneBuilding {
 		}
 
 		public void Resolve (Dictionary<string,Material> materialDictionary) {
-			this.Transformer = Matrix4.Parse(this.transformerText);
+			this.transformer = Matrix4.Parse(this.transformerString);
 			if(this.Mesh != null) {
 				this.Mesh.Resolve(materialDictionary);
 			}

@@ -84,6 +84,9 @@ namespace Renderer {
 				return false;
 			}
 		}
+		public override int GetHashCode () {
+			return this.High.GetHashCode()^this.Low.GetHashCode();
+		}
 
 		public override string ToString () {
 			return string.Format("[Color6: Seg0={0}, Seg1={1}, Seg2={2}, Seg3={3}, Seg4={4}, Seg5={5}]", Seg0.ToString("X"), Seg1.ToString("X"), Seg2.ToString("X"), Seg3.ToString("X"), Seg4.ToString("X"), Seg5.ToString("X"));
