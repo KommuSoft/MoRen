@@ -33,7 +33,7 @@ namespace Renderer.SceneBuilding {
 
 		[XmlIgnore]
 		private readonly VersioningDictionary<double,string,SceneGraphNode>
-			versionDictionary = new VersioningDictionary<double, string, SceneGraphNode>();
+			versionDictionary = new VersioningDictionary<double, string, SceneGraphNode>(VersionMixers.DoubleLinear);
 		[XmlIgnore]
 		private readonly Dictionary<string,Material>
 			materialDictionary = new Dictionary<string, Material>();

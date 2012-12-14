@@ -26,7 +26,7 @@ using System.Xml.Serialization;
 namespace Renderer.SceneBuilding {
 
 	[XmlType("SceneGraphNode")]
-	public sealed class SceneGraphNode : NameBase {
+	public sealed class SceneGraphNode : NameBase, IMixable<SceneGraphNode> {
 		[XmlIgnore]
 		private List<string>
 			childNames = new List<string>();
@@ -108,9 +108,6 @@ namespace Renderer.SceneBuilding {
 		public override int GetHashCode () {
 			return this.Name.GetHashCode();
 		}
-		public static SceneGraphNode Mix (double time1, double time2, SceneGraphNode sgn1, SceneGraphNode sgn2, double time) {
-			return new SceneGraphNode(Matrix4.InterpolateParse(sgn1.transformerString, time1, sgn2.transformerString, time2, time), sgn1.childNames, sgn1.mesh, sgn1.LightWrapper);
-		}
 		public void Inject (VersioningDictionary<double,string,SceneGraphNode> versioning, double version, int maxDepth, MatrixStack stack, List<RenderItem> ris, List<Light> lis, int depth) {
 			if(depth < maxDepth) {
 				stack.PushMatrix(this.transformer);
@@ -121,7 +118,7 @@ namespace Renderer.SceneBuilding {
 					this.LightWrapper.Inject(stack.Top, lis);
 				}
 				foreach(string name in this.childNames) {
-					versioning.GetLatestBefore(version, name).Inject(versioning, version, maxDepth, stack, ris, lis, depth+1);
+					versioning.GetMixedValue(version, name).Inject(versioning, version, maxDepth, stack, ris, lis, depth+1);
 				}
 				stack.PopMatrix();
 			}
@@ -133,6 +130,12 @@ namespace Renderer.SceneBuilding {
 				this.Mesh.Resolve(materialDictionary);
 			}
 		}
+		#region IMixable implementation
+		public SceneGraphNode MixWith (SceneGraphNode other, double factor) {
+			return new SceneGraphNode(Matrix4.InterpolateParse(this.transformerString, other.transformerString, factor), this.childNames, this.mesh, this.LightWrapper);
+		}
+		#endregion
+
 		
 	}
 }

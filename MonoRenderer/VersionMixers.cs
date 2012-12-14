@@ -22,9 +22,12 @@ using System;
 
 namespace Renderer {
 
-	public class VersionMixers {
-		public VersionMixers () {
+	public static class VersionMixers {
+
+		public static double DoubleLinear (double t0, double t1, double t) {
+			return (t-t0)/(t1-t0);
 		}
+
 	}
 }
 

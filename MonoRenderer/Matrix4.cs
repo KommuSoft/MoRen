@@ -383,7 +383,7 @@ namespace Renderer {
 				^this.M10.GetHashCode()^this.M11.GetHashCode()^this.M12.GetHashCode()^this.M13.GetHashCode()
 				^this.M20.GetHashCode()^this.M21.GetHashCode()^this.M22.GetHashCode()^this.M23.GetHashCode();
 		}
-		public static Matrix4 InterpolateParse (string matrix1, double time1, string matrix2, double time2, double time) {
+		public static Matrix4 InterpolateParse (string matrix1, string matrix2, double factor) {
 			Match m1 = null, m2 = null;
 			if(matrix1 != null) {
 				matrix1 = matrix1.Trim().ToLower();
@@ -391,19 +391,18 @@ namespace Renderer {
 			}
 			if(matrix2 != null) {
 				matrix2 = matrix2.Trim().ToLower();
-				m2 = rgx.Match(matrix1);
+				m2 = rgx.Match(matrix2);
 			}
-			if(matrix2 == null || matrix2 == string.Empty || time <= time1 || time2 <= time1 || !m2.Success) {
+			if(matrix2 == null || matrix2 == string.Empty || factor <= 0.0d || !m2.Success) {
 				return Parse(matrix1);
 			}
-			else if(matrix1 == null || matrix1 == string.Empty || time >= time2 || !m1.Success) {
+			else if(matrix1 == null || matrix1 == string.Empty || factor >= 1.0d || !m1.Success) {
 				return Parse(matrix2);
 			}
 			else {
-				double a2 = (time-time1)/(time2-time1);
-				double a1 = 1.0d-a2;
+				double factora = 1.0d-factor;
 				if(m1.Groups["rotxyz"].Captures.Count > 0x00 && m2.Groups["rotxyz"].Captures.Count > 0x00 && m1.Groups["dim"].Value == m2.Groups["dim"].Value) {//same rotation, different angle
-					double theta = a1*double.Parse(m1.Groups["theta"].Value)+a2*double.Parse(m2.Groups["theta"].Value);
+					double theta = factora*double.Parse(m1.Groups["theta"].Value)+factor*double.Parse(m2.Groups["theta"].Value);
 					switch(m1.Groups["dim"].Value) {
 						case "x":
 							return Matrix4.CreateRotateXMatrix(theta);
@@ -414,20 +413,20 @@ namespace Renderer {
 					}
 				}
 				else if(m1.Groups["shift"].Captures.Count > 0x00 && m2.Groups["shift"].Captures.Count > 0x00) {
-					Point3 u = new Point3(a1*double.Parse(m1.Groups["ux"].Value)+a2*double.Parse(m2.Groups["ux"].Value),
-					                      a1*double.Parse(m1.Groups["uy"].Value)+a2*double.Parse(m2.Groups["uy"].Value),
-					                      a1*double.Parse(m1.Groups["uz"].Value)+a2*double.Parse(m2.Groups["uz"].Value));
+					Point3 u = new Point3(factora*double.Parse(m1.Groups["ux"].Value)+factor*double.Parse(m2.Groups["ux"].Value),
+					                      factora*double.Parse(m1.Groups["uy"].Value)+factor*double.Parse(m2.Groups["uy"].Value),
+					                      factora*double.Parse(m1.Groups["uz"].Value)+factor*double.Parse(m2.Groups["uz"].Value));
 					return CreateShiftMatrix(u);
 				}
 				else if(m1.Groups["scale"].Captures.Count > 0x00 && m2.Groups["scale"].Captures.Count > 0x00) {
 					Point3 u;
 					if(m1.Groups["uy"].Captures.Count > 0x00) {
-						u = new Point3(a1*double.Parse(m1.Groups["ux"].Value)+a2*double.Parse(m2.Groups["ux"].Value),
-						               a1*double.Parse(m1.Groups["uy"].Value)+a2*double.Parse(m2.Groups["uy"].Value),
-						               a1*double.Parse(m1.Groups["uz"].Value)+a2*double.Parse(m2.Groups["uz"].Value));
+						u = new Point3(factora*double.Parse(m1.Groups["ux"].Value)+factor*double.Parse(m2.Groups["ux"].Value),
+						               factora*double.Parse(m1.Groups["uy"].Value)+factor*double.Parse(m2.Groups["uy"].Value),
+						               factora*double.Parse(m1.Groups["uz"].Value)+factor*double.Parse(m2.Groups["uz"].Value));
 					}
 					else {
-						double xyz = a1*double.Parse(m1.Groups["ux"].Value)+a2*double.Parse(m2.Groups["ux"].Value);
+						double xyz = factora*double.Parse(m1.Groups["ux"].Value)+factor*double.Parse(m2.Groups["ux"].Value);
 						u = new Point3(xyz, xyz, xyz);
 					}
 					return CreateScaleMatrix(u);

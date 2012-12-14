@@ -24,10 +24,11 @@ using System.Collections.Generic;
 
 namespace Renderer {
 
-	public class VersioningDictionary<TVersion,TKey,TValue> : IDictionary<TVersion,Dictionary<TKey,TValue>> where TVersion : IComparable<TVersion> {
+	public class VersioningDictionary<TVersion,TKey,TValue> : IDictionary<TVersion,Dictionary<TKey,TValue>> where TVersion : IComparable<TVersion> where TValue : IMixable<TValue> {
 
 		private readonly List<TVersion> versions = new List<TVersion>();
 		private readonly List<DictionaryVersion<TVersion,TKey,TValue>> dictionaryContainer = new List<DictionaryVersion<TVersion, TKey, TValue>>();
+		private readonly VersionMixer<TVersion> mixer;
 
 		public TVersion MinVersion {
 			get {
@@ -37,6 +38,38 @@ namespace Renderer {
 		public TVersion MaxVersion {
 			get {
 				return this.versions[this.versions.Count-0x01];
+			}
+		}
+
+		public VersioningDictionary (VersionMixer<TVersion> mixer) {
+			this.mixer = mixer;
+		}
+
+		public TValue GetMixedValue (TVersion version, TKey key) {
+			int index = versions.BinarySearch(version);
+			if(index < 0x00) {
+				index = (~index)-0x01;
+			}
+			TValue val1 = default(TValue);
+			int index0 = index;
+			while(index0 >= 0x00 && !dictionaryContainer[index0].TryGetValue(key,out val1)) {
+				index0--;
+			}
+			if(index0 < 0x00) {
+				return val1;
+			}
+			else {
+				int index1 = index+0x01;
+				TValue val2 = default(TValue);
+				while(index1 < this.dictionaryContainer.Count && !dictionaryContainer[index1].TryGetValue(key,out val2)) {
+					index1++;
+				}
+				if(index1 >= this.dictionaryContainer.Count) {
+					return val1;
+				}
+				else {
+					return val1.MixWith(val2, this.mixer(this.versions[index0], this.versions[index1], version));
+				}
 			}
 		}
 
@@ -60,27 +93,6 @@ namespace Renderer {
 			foreach(DictionaryVersion<TVersion,TKey,TValue> dv in this.dictionaryContainer) {
 				this.versions.Add(dv.Version);
 			}
-		}
-		public Tuple<TVersion,TValue,TVersion,TValue> GetVersionsBetween (TVersion version, TKey key) {
-			TVersion ver1 = version, ver2 = version;
-			TValue val1 = default(TValue), val2 = val1;
-			int index = versions.BinarySearch(version);
-			if(index < 0x00) {
-				index = (~index)-0x01;
-			}
-			int index1 = index;
-			while(index1 >= 0x00 && !dictionaryContainer[index1].TryGetValue(key,out val1))
-				index1--;
-			if(index1 >= 0x00) {
-				ver1 = versions[index1];
-			}
-			index1 = index;
-			while(index1 < dictionaryContainer.Count && !dictionaryContainer[index1].TryGetValue(key,out val2))
-				index1++;
-			if(index1 < 0x00) {
-				ver2 = versions[index1];
-			}
-			return new Tuple<TVersion, TValue, TVersion, TValue>(ver1, val1, ver2, val2);
 		}
 
 		private class DictionaryVersion<TTime,TK,TV> : Dictionary<TK,TV>, IComparable<DictionaryVersion<TTime,TK,TV>> where TTime : IComparable<TTime> {
