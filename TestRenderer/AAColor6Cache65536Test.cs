@@ -1,5 +1,5 @@
 //
-//  TestParameters.cs
+//  AAColor6Cache65536Test.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -19,29 +19,39 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
-using System.Collections.Generic;
-using Renderer;
 using NUnit.Framework;
+using Renderer;
 
 namespace TestRenderer {
 
-	public static class TestParameters {
+	[TestFixture()]
+	public class AAColor6Cache65536Test {
 
-
-		public const int TriceratopsTest = 0x10*short.MaxValue;
-		public const int BuildTest = 0x10*short.MaxValue;
-		public const int RayTest = short.MaxValue>>0x02;
-		public const int PointTest = short.MaxValue;
-
-		public static void TestRIEqual (Ray ray, double ta, double tb, List<RenderItem> ris, RenderItem ria, RenderItem rib) {
-			if(ria != rib) {
-				Assert.AreEqual(ria, rib, string.Format("The hitpoint was {0}/{3} with ray {2} and scenario {1}", ray.PointAt(ta), string.Join(",", ris), ray, ray.PointAt(tb)));
-			}
-			else {
-				Assert.AreEqual(ria, rib);
+		[Test()]
+		public void AddColor6Test () {
+			ushort s0 = 0x00, s1 = 0x00, s2 = 0x00, s3 = 0x00, s4 = 0x00, s5 = 0x00;
+			for(; s0 < 0xffff-0x3e5; s0 += 0x3e5) {
+				for(; s1 < 0xffff-0x3e5; s1 += 0x3e5) {
+					for(; s2 < 0xffff-0x3e5; s2 += 0x3e5) {
+						for(; s3 < 0xffff-0x3e5; s3 += 0x3e5) {
+							for(; s4 < 0xffff-0x3e5; s4 += 0x3e5) {
+								for(; s5 < 0xffff-0x3e5; s5 += 0x3e5) {
+									Color6Cache65536 cache = new Color6Cache65536(0x00);
+									Color6 c = new Color6(s0, s1, s2, s3, s4, s5);
+									cache.AddColor6(c);
+									Assert.AreEqual(c, cache.Mix(0x01));
+								}
+								s5 += 0x3e5;
+							}
+							s4 += 0x3e5;
+						}
+						s3 += 0x3e5;
+					}
+					s2 += 0x3e5;
+				}
+				s1 += 0x3e5;
 			}
 		}
-
 	}
 }
 
