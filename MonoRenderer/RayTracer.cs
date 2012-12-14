@@ -68,7 +68,7 @@ namespace Renderer {
 				Material mat = best.Material;
 				uint ambient, diffuse, specular, reflectance, refraction;
 				mat.ADSAtAndBump(nw, ray.Direction, out ambient, out diffuse, out specular, out reflectance, out refraction);
-				uint clr = Color.Multiply(this.ambientColor, ambient);
+				uint clr = ColorUtils.Multiply(this.ambientColor, ambient);
 				Point3.ReflectRefract(ray.Direction, nw.Normal, mat.NFactor, rl, rf);
 				rayCache[depth].SetWithEpsilon(hp, rf);
 				foreach(Light li in this.lights) {
@@ -99,24 +99,24 @@ namespace Renderer {
 					if(light > 0x00) {
 						dis.SetValues(hp, li.Position);
 						dis.Normalize();
-						uint clrl = Color.Scale(Color.Multiply(li.Color, diffuse), Point3.CosAngleNorm(dis, norm));
-						clrl = Color.Add(clrl, Color.Scale(Color.Multiply(li.Color, specular), Math.Pow(Point3.CosAngleNorm(rl, dis), mat.Shininess)));
-						clr = Color.Add(clr, Color.LoseIntensity(Color.Scale(clrl, light), distanceUnit, len));
+						uint clrl = ColorUtils.Scale(ColorUtils.Multiply(li.Color, diffuse), Point3.CosAngleNorm(dis, norm));
+						clrl = ColorUtils.Add(clrl, ColorUtils.Scale(ColorUtils.Multiply(li.Color, specular), Math.Pow(Point3.CosAngleNorm(rl, dis), mat.Shininess)));
+						clr = ColorUtils.Add(clr, ColorUtils.LoseIntensity(ColorUtils.Scale(clrl, light), distanceUnit, len));
 					}
 				}
 				if(depth < maxDepth) {
-					uint reflint = Color.Multiply(intensityHint, reflectance);
+					uint reflint = ColorUtils.Multiply(intensityHint, reflectance);
 					if((reflint&DepthThresholdMask) != 0x00) {
 						ray.SetWithEpsilon(hp, rl);
-						clr = Color.Add(clr, Color.Multiply(this.CalculateColor(ray, depth+1, reflint), reflectance));
+						clr = ColorUtils.Add(clr, ColorUtils.Multiply(this.CalculateColor(ray, depth+1, reflint), reflectance));
 					}
-					uint refrint = Color.Multiply(intensityHint, refraction);
+					uint refrint = ColorUtils.Multiply(intensityHint, refraction);
 					if(!double.IsNaN(rayCache[depth].Direction.X) && (refrint&DepthThresholdMask) != 0x00) {
 						uint res = this.CalculateColor(rayCache[depth], depth+1, refrint);
-						clr = Color.Add(clr, Color.Multiply(res, refrint));
+						clr = ColorUtils.Add(clr, ColorUtils.Multiply(res, refrint));
 					}
 				}
-				return Color.LoseIntensity(clr, distanceUnit, t);
+				return ColorUtils.LoseIntensity(clr, distanceUnit, t);
 			}
 			else {
 				return 0x00000000;

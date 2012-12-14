@@ -38,9 +38,9 @@ namespace Renderer {
    49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,
    138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180
    };
-		private static readonly uint[] woodGradient = Color.MakeGradient(0x0400, 0x332211, 0x523121, 0x996633);
-		private static readonly uint[] marbleGradient = Color.MakeGradient(0x0400, 0xff111111, 0xff696070, 0xffffffff);
-		private static readonly uint[] skyGradient = Color.MakeGradient(0x0400, 0x003399, 0xffffff);
+		private static readonly uint[] woodGradient = ColorUtils.MakeGradient(0x0400, 0x332211, 0x523121, 0x996633);
+		private static readonly uint[] marbleGradient = ColorUtils.MakeGradient(0x0400, 0xff111111, 0xff696070, 0xffffffff);
+		private static readonly uint[] skyGradient = ColorUtils.MakeGradient(0x0400, 0x003399, 0xffffff);
 
 		public static double Perlin3d (double xf, double yf, double zf) {
 			int xi = (int)Math.Floor(xf)&255;

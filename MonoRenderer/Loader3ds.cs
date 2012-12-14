@@ -503,7 +503,7 @@ namespace Renderer {
 
 			public override void Resolve (ParsingContext ctx, Material material) {
 				this.name = this.FindChild<MaterialNameJunk>().First().name;
-				uint ambient = Color.White, diffuse = Color.Black, specular = Color.Black;
+				uint ambient = ColorUtils.White, diffuse = ColorUtils.Black, specular = ColorUtils.Black;
 				double shininess = 15.0d, transparent = 0.0d;
 				Texture texture = null, bump = null, reflection = null;
 				foreach(MaterialColorJunk mcj in this.FindChild<MaterialColorJunk>()) {

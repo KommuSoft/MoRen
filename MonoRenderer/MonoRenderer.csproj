@@ -43,7 +43,6 @@
     <Compile Include="AddRemoveEvent.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CastResult.cs" />
-    <Compile Include="Color.cs" />
     <Compile Include="CombinedList.cs" />
     <Compile Include="FinalList.cs" />
     <Compile Include="GridAccelerator.cs" />
@@ -116,6 +115,9 @@
     <Compile Include="VersionMixer.cs" />
     <Compile Include="VersionMixers.cs" />
     <Compile Include="CacheTexture.cs" />
+    <Compile Include="ColorCache.cs" />
+    <Compile Include="ColorUtils.cs" />
+    <Compile Include="Color.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

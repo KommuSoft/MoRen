@@ -227,7 +227,7 @@ namespace Renderer {
 									aaBlueCache += SystemDiagnostics.Intersections;
 									SystemDiagnostics.Intersections = 0x00;
 #else
-									Color.AddComponents(rt.CalculateColor(ray, 0, 0xffffff), ref aaRedCache, ref aaGreenCache, ref aaBlueCache);
+									ColorUtils.AddComponents(rt.CalculateColor(ray, 0, 0xffffff), ref aaRedCache, ref aaGreenCache, ref aaBlueCache);
 #endif
 									xd += dwhad;
 								}
@@ -242,7 +242,7 @@ namespace Renderer {
 					#endregion
 					yp -= dwh;
 					xp += dwh;
-					pixel[k++] = Color.AlphaChannel|Color.Mix(aaRedCache, aaGreenCache, aaBlueCache, aaaad);
+					pixel[k++] = ColorUtils.AlphaChannel|ColorUtils.Mix(aaRedCache, aaGreenCache, aaBlueCache, aaaad);
 				}
 				#endregion
 				yp += dwh;

@@ -17,7 +17,7 @@ namespace Renderer {
 		public const int NotBinaryIntMask = ~0x01;
 		public const double UShortToPercentage = 1.0d/ushort.MaxValue;
 		public const double ToPercentage = 0.01d;
-		public const double ColorChannelInv = 1.0d/Color.ColorChannel;
+		public const double ColorChannelInv = 1.0d/ColorUtils.ColorChannel;
 		public const double OneHundredth = 0.01d;
 		public static readonly double ColorChannelInvSqrt_2 = Sqrt_2*ColorChannelInv;
 			

@@ -92,16 +92,16 @@ namespace Renderer {
 			diffuse = this.Diffuse;
 			specular = this.Specular;
 			uint tex = this.Texture(tu);
-			ambient = Color.Multiply(ambient, tex);
-			diffuse = Color.Multiply(diffuse, tex);
-			specular = Color.Multiply(specular, tex);
+			ambient = ColorUtils.Multiply(ambient, tex);
+			diffuse = ColorUtils.Multiply(diffuse, tex);
+			specular = ColorUtils.Multiply(specular, tex);
 			double fres = this.ReflectanceGetter(cos);
 			double ta = Math.Max(0.0d, this.ReflectanceThreshold*fres-this.Transparent);
-			reflectance = Color.FromFrac(ta);
+			reflectance = ColorUtils.FromFrac(ta);
 			tex = this.Reflection(tu);
-			specular = Color.Multiply(specular, tex);
-			reflectance = Color.Multiply(reflectance, tex);
-			refraction = Color.FromFrac(this.Transparent);
+			specular = ColorUtils.Multiply(specular, tex);
+			reflectance = ColorUtils.Multiply(reflectance, tex);
+			refraction = ColorUtils.FromFrac(this.Transparent);
 		}
 
 		public double FresnelLaw (double cos) {

@@ -71,12 +71,12 @@ namespace Renderer {
 					float r = br.ReadSingle();
 					float g = br.ReadSingle();
 					float b = br.ReadSingle();
-					return Color.FromFrac(r, g, b);
+					return ColorUtils.FromFrac(r, g, b);
 				default:
 					byte rb = br.ReadByte();
 					byte gb = br.ReadByte();
 					byte bb = br.ReadByte();
-					return Color.GetColor(rb, gb, bb);
+					return ColorUtils.GetColor(rb, gb, bb);
 			}
 		}
 		public static IEnumerable<Tuple<ushort, ushort, ushort, ushort>> GenerateIndicesRange (int n) {

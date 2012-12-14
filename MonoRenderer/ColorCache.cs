@@ -1,5 +1,5 @@
 //
-//  CacheTexture.cs
+//  ColorCache.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -22,12 +22,10 @@ using System;
 
 namespace Renderer {
 
-	public class CacheTexture {
-
-		private ColorCache[] caches;
-
-		public CacheTexture () {
-		}
+	public struct ColorCache {
+		ulong red;
+		ulong green;
+		ulong blue;
 	}
 }
 
