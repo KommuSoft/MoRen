@@ -21,6 +21,7 @@
 using System;
 using System.Xml.Serialization;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Renderer.SceneBuilding {
 
@@ -103,6 +104,44 @@ namespace Renderer.SceneBuilding {
 				Camera cam = description.CameraWrapper.Camera(acc, lights, es);
 				cam.CalculateImage();
 				cam.Save(this.outputFile);
+			}
+			else if(this.Task == SuperCameraTask.MakeMovie) {
+				double dt = (max-min)/this.TimeSamples;
+				int index = 0;
+				Process proc = new Process();
+				proc.EnableRaisingEvents = false;
+				proc.StartInfo.FileName = "rm";
+				proc.StartInfo.Arguments = "/tmp/output*";
+				proc.Start();
+				proc.WaitForExit();
+				proc.StartInfo.FileName = "convert";
+				string imagename;
+				string jpegname;
+				for(double t = min; t <= max; t += dt) {
+					Tuple<List<RenderItem>,List<Light>> scene = description.SceneGraph.Inject(t);
+					List<RenderItem> ris = scene.Item1;
+					Light[] lights = scene.Item2.ToArray();
+					EnvironmentSettings es = description.EnvironmentSettings;
+					IAccelerator acc = description.AcceleratorWrapper.CreateAccelerator(ris);
+					Camera cam = description.CameraWrapper.Camera(acc, lights, es);
+					cam.CalculateImage();
+					imagename = string.Format("/tmp/output{0}.png", index.ToString("00000"));
+					jpegname = string.Format("{0} /tmp/output{1}.jpg", imagename, index.ToString("00000"));
+					cam.Save(imagename);
+					index++;
+					proc.WaitForExit();
+					proc.StartInfo.Arguments = jpegname;
+					proc.Start();
+				}
+				proc.WaitForExit();
+				proc.StartInfo.FileName = "ffmpeg";
+				proc.StartInfo.Arguments = string.Format("-y -i /tmp/output%05d.jpg -vcodec mpeg4 {0}", this.outputFile);
+				proc.Start();
+				proc.WaitForExit();
+				/*proc.StartInfo.FileName = "rm";
+				proc.StartInfo.Arguments = "/tmp/output*";
+				proc.Start();
+				proc.WaitForExit();*/
 			}
 		}
 

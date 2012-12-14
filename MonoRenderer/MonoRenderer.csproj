@@ -115,6 +115,7 @@
     <Compile Include="IMixable.cs" />
     <Compile Include="VersionMixer.cs" />
     <Compile Include="VersionMixers.cs" />
+    <Compile Include="CacheTexture.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
