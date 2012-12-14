@@ -32,7 +32,7 @@ namespace TestRenderer {
 		public const int BuildTest = 0x10*short.MaxValue;
 		public const int RayTest = short.MaxValue>>0x02;
 		public const int PointTest = short.MaxValue;
-		public const int ColorTest = short.MaxValue;
+		public const int ColorTest = int.MaxValue>>0x0a;
 		public const int ColorDepthTest = short.MaxValue;
 
 		public static void TestRIEqual (Ray ray, double ta, double tb, List<RenderItem> ris, RenderItem ria, RenderItem rib) {

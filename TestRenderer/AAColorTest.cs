@@ -25,7 +25,7 @@ using NUnit.Framework;
 namespace TestRenderer {
 
 	[TestFixture()]
-	public class AAColor6Test {
+	public class AAColorTest {
 
 		[Test()]
 		public void ConstructionTest () {
@@ -37,6 +37,24 @@ namespace TestRenderer {
 				Assert.AreEqual(r, c.RedInt);
 				Assert.AreEqual(g, c.GreenInt);
 				Assert.AreEqual(b, c.BlueInt);
+			}
+		}
+
+		[Test()]
+		public void AddTest () {
+			for(int i = 0; i < TestParameters.ColorTest; i++) {
+				uint r1 = (uint)(Maths.RandomGenerator.Next()&0xfffff);
+				uint g1 = (uint)(Maths.RandomGenerator.Next()&0xfffff);
+				uint b1 = (uint)(Maths.RandomGenerator.Next()&0xfffff);
+				uint r2 = (uint)(Maths.RandomGenerator.Next()&0xfffff);
+				uint g2 = (uint)(Maths.RandomGenerator.Next()&0xfffff);
+				uint b2 = (uint)(Maths.RandomGenerator.Next()&0xfffff);
+				Color c1 = new Color(r1, g1, b1);
+				Color c2 = new Color(r2, g2, b2);
+				Color c3 = c1+c2;
+				Assert.AreEqual(Math.Min(r1+r2, Color.MaxValue), c3.RedInt);
+				Assert.AreEqual(Math.Min(g1+g2, Color.MaxValue), c3.GreenInt);
+				Assert.AreEqual(Math.Min(b1+b2, Color.MaxValue), c3.BlueInt);
 			}
 		}
 
