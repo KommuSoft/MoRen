@@ -24,7 +24,7 @@ using System.Text;
 using System.Collections.Generic;
 
 namespace Renderer {
-	public sealed class GridAccelerator : Accelerator {
+	public sealed class GridAccelerator : IAccelerator {
 
 		private readonly RenderItem[] ris;
 		private readonly long[] grid;

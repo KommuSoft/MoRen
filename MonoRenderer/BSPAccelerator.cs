@@ -24,7 +24,7 @@ using System.Collections.Generic;
 
 namespace Renderer {
 
-	public class BSPAccelerator : Accelerator {
+	public class BSPAccelerator : IAccelerator {
 
 		private readonly BSPNode root;
 		private readonly NormalInterval[] intervals;

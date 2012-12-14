@@ -29,7 +29,7 @@ namespace Renderer {
 	public sealed class RayTracer {
 
 		public const uint DepthThresholdMask = 0xfcfcfc;
-		private readonly Accelerator acc;
+		private readonly IAccelerator acc;
 		private readonly Light[] lights;
 		private readonly uint ambientColor = 0x00101010;
 		private readonly CastResult nw = new CastResult();
@@ -44,7 +44,7 @@ namespace Renderer {
 		private readonly uint maxDepth;
 		private readonly double distanceUnit = 255000000.0d;
 		
-		public RayTracer (Accelerator acc, Light[] lights, EnvironmentSettings settings) {
+		public RayTracer (IAccelerator acc, Light[] lights, EnvironmentSettings settings) {
 			this.acc = acc;
 			this.maxDepth = settings.RecursionDepth;
 			this.rayCache = new Ray[maxDepth+0x01];

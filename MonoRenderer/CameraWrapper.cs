@@ -52,7 +52,7 @@ namespace Renderer.SceneBuilding {
 		public CameraWrapper () {
 		}
 
-		public Camera Camera (Accelerator acc, Light[] lights, EnvironmentSettings es) {
+		public Camera Camera (IAccelerator acc, Light[] lights, EnvironmentSettings es) {
 			Camera cam = new Camera((int)this.width, (int)this.height, this.ScreenDistance, this.FoVH, acc, lights, es);
 			cam.Position = this.Position;
 			cam.LookAt = this.Lookat;

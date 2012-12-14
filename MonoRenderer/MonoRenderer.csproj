@@ -40,7 +40,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="Accelerator.cs" />
     <Compile Include="AddRemoveEvent.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CastResult.cs" />
@@ -110,6 +109,8 @@
     <Compile Include="SceneTimeGraphNodeCollection.cs" />
     <Compile Include="Color6.cs" />
     <Compile Include="Color6Cache65536.cs" />
+    <Compile Include="SceneGraphAccelerator.cs" />
+    <Compile Include="IAccelerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

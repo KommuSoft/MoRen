@@ -34,7 +34,7 @@ namespace Renderer {
 		public AcceleratorWrapper () {
 		}
 
-		public Accelerator CreateAccelerator (List<RenderItem> items) {
+		public IAccelerator CreateAccelerator (List<RenderItem> items) {
 			switch(this.type) {
 				case AcceleratorType.Grid:
 					return new GridAccelerator(items);

@@ -26,8 +26,16 @@ namespace Renderer {
 
 		private double closureTime = 2.0d;
 
+		public double ClosureTime {
+			get {
+				return this.closureTime;
+			}
+			set {
+				this.closureTime = value;
+			}
+		}
+
 		public SuperCamera () {
 		}
 	}
 }
-

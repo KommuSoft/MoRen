@@ -33,7 +33,7 @@ namespace Renderer {
 		private readonly Point3 position = new Point3(0.0d, 0.0d, 0.0d);
 		private readonly Point3 lookAt = new Point3(0.0d, 0.0d, 25.0d);
 		private readonly Matrix4 matrix = new Matrix4();
-		private readonly Accelerator acc;
+		private readonly IAccelerator acc;
 		private readonly Texture raster = new Texture(1, 1);
 		private double screenDistance = 1.5d;
 		private bool dirty = true;
@@ -121,7 +121,7 @@ namespace Renderer {
 		public Camera () {
 		}
 
-		public Camera (int w, int h, double screenDistance, double foVH, Accelerator acc, Light[] lights, EnvironmentSettings settings, List<CameraPostProcessor> postprocessors = null) {
+		public Camera (int w, int h, double screenDistance, double foVH, IAccelerator acc, Light[] lights, EnvironmentSettings settings, List<CameraPostProcessor> postprocessors = null) {
 			this.raster = new Texture(w, h);
 			this.foVH = foVH;
 			this.acc = acc;

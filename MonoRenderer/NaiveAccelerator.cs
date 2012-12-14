@@ -24,7 +24,7 @@ using System.Collections.Generic;
 
 namespace Renderer {
 
-	public sealed class NaiveAccelerator : Accelerator
+	public sealed class NaiveAccelerator : IAccelerator
 	{
 
 		private readonly RenderItem[] items;

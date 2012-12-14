@@ -26,7 +26,7 @@ namespace Renderer {
 
 	using MarkedItem = Tuple<int,RenderItem>;
 
-	public sealed class OctTreeAccelerator : Accelerator {
+	public sealed class OctTreeAccelerator : IAccelerator {
 
 		public const int ValidPositionMask = 0x2a;
 		private readonly double x0, x1, y0, y1, z0, z1;

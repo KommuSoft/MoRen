@@ -83,7 +83,7 @@ namespace Renderer.SceneBuilding {
 			List<RenderItem> ris = scene.Item1;
 			Light[] lights = scene.Item2.ToArray();
 			EnvironmentSettings es = this.es;
-			Accelerator acc = this.AcceleratorWrapper.CreateAccelerator(ris);
+			IAccelerator acc = this.AcceleratorWrapper.CreateAccelerator(ris);
 			return this.camera.Camera(acc, lights, es);
 		}
 		public static SceneDescription ParseFromStream (Stream stream) {

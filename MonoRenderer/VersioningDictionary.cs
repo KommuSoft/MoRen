@@ -29,6 +29,17 @@ namespace Renderer {
 		private readonly List<TVersion> versions = new List<TVersion>();
 		private readonly List<DictionaryVersion<TVersion,TKey,TValue>> dictionaryContainer = new List<DictionaryVersion<TVersion, TKey, TValue>>();
 
+		public TVersion MinVersion {
+			get {
+				return this.versions[0x00];
+			}
+		}
+		public TVersion MaxVersion {
+			get {
+				return this.versions[this.versions.Count-0x01];
+			}
+		}
+
 		public TValue GetLatestBefore (TVersion version, TKey key) {
 			int index = versions.BinarySearch(version);
 			if(index < 0x00) {

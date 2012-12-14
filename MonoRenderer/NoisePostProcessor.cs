@@ -30,7 +30,7 @@ namespace Renderer {
 			this.delta = delta;
 		}
 
-		public override void Process (Camera cam, Texture output, Accelerator acc) {
+		public override void Process (Camera cam, Texture output, IAccelerator acc) {
 			uint[] pix = output.Pixel;
 			for(int i = 0; i < pix.Length; i++) {
 				pix[i] = Color.AlphaChannel|Color.Random(pix[i], delta);

@@ -1,5 +1,5 @@
 //
-//  CameraPostProcessor.cs
+//  SceneGraphAccelerator.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -22,12 +22,7 @@ using System;
 
 namespace Renderer {
 
-	public abstract class CameraPostProcessor {
-
-		public CameraPostProcessor () {
-		}
-
-		public abstract void Process (Camera cam, Texture output, IAccelerator acc);
+	public class SceneGraphAccelerator : Accelerator {
 
 	}
 }

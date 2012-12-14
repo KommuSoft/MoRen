@@ -1,5 +1,5 @@
 //
-//  CameraPostProcessor.cs
+//  IAccelerator.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -22,12 +22,9 @@ using System;
 
 namespace Renderer {
 
-	public abstract class CameraPostProcessor {
+	public interface IAccelerator {
 
-		public CameraPostProcessor () {
-		}
-
-		public abstract void Process (Camera cam, Texture output, IAccelerator acc);
+		RenderItem CalculateHit (Ray ray, out double t, double MaxT = double.PositiveInfinity);
 
 	}
 }
