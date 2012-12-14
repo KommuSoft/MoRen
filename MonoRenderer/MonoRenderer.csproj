@@ -108,6 +108,8 @@
     <Compile Include="Blob.cs" />
     <Compile Include="SuperCamera.cs" />
     <Compile Include="SceneTimeGraphNodeCollection.cs" />
+    <Compile Include="Color6.cs" />
+    <Compile Include="Color6Cache65536.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
