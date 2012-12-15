@@ -73,7 +73,7 @@ namespace Renderer {
 			return new Color((uint)(this.Red/n), (uint)(this.Green/n), (uint)(this.Blue/n));
 		}
 		public uint MixRGB (uint n) {
-			return 0x00;
+			return (uint)((((this.Red/n)<<0x04)&Color.Red8Mask)|(((this.Green/n)>>0x04)&Color.Green8Mask)|(((this.Blue/n)>>0x0c)&Color.Blue8Mask));
 		}
 
 	}

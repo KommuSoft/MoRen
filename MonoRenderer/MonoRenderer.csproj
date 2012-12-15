@@ -119,6 +119,7 @@
     <Compile Include="ColorUtils.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="ITexture.cs" />
+    <Compile Include="Holder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

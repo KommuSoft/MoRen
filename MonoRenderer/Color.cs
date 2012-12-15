@@ -32,6 +32,7 @@ namespace Renderer {
 		public const ulong Blue8Mask = 0xff;
 		public const ulong MaxValue = BlueMask;
 		public const ulong NonOverflowMask = 0x3ffffdffffefffff;
+		public const ulong Color8Mask = 0xffffff;
 		public const ulong OverflowMask = 0x4000020000100000;
 		public ulong Data;
 

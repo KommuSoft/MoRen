@@ -160,7 +160,8 @@ namespace Renderer {
 		}
 		public Point3 (Point3 frm, Point3 to) : this(to.X-frm.X,to.Y-frm.Y,to.Z-frm.Z) {
 		}
-		public Point3 (double x, double y, double z, double r) {//generate a random point on a sphere with radius r
+		//generate a random point on a sphere with radius r
+		public Point3 (double x, double y, double z, double r) {
 			double dx = Maths.Random();
 			double dy = Maths.Random();
 			double dz = Maths.Random();
@@ -249,7 +250,8 @@ namespace Renderer {
 			this.Y = to.Y-frm.Y;
 			this.Z = to.Z-frm.Z;
 		}
-		public void SetValues (Point3 mid, double r) {//set to a random point on a sphere with radius r
+		//set to a random point on a sphere with radius r
+		public void SetValues (Point3 mid, double r) {
 			double dx = Maths.Random();
 			double dy = Maths.Random();
 			double dz = Maths.Random();
@@ -313,7 +315,7 @@ namespace Renderer {
 			}
 		}
 		//assumption: start is normalized
-		public static IEnumerable<Point3> NormalizedConeGenerator (Point3 start, double thetamax, int n, double rotationSpeed) {
+		public static IEnumerable<Point3> NormalizedConeGenerator (Point3 start, double thetamax, int n, double rotationSpeed, double sphereRadius, double sphereDistance, Holder<double> distanceHolder) {
 			double vx = start.X;
 			double vy = start.Y;
 			double vz = start.Z;
@@ -327,22 +329,25 @@ namespace Renderer {
 			else if(vz < 1.0d) {
 				cost = -1.0d;
 			}
-			double x = 1.0d, y = 1.0d, xt;
+			double x = Maths.PI2*Maths.RandomGenerator.NextDouble();
+			double y = Math.Sin(x), xt;
+			x = Math.Cos(x);
 			double R2 = Math.Cos(0.5d*thetamax);
 			R2 *= R2;
 			double dr2 = R2/n;
 			double xxyy = Math.Cos(rotationSpeed);
 			double xyyx = Math.Sin(rotationSpeed);
-			double xr, yr;
+			double xr, yr, lina, rho2 = sphereRadius*sphereRadius, xd2 = sphereDistance*sphereDistance;
 			for(double r2 = 0.0d; r2 < R2; r2 += dr2) {
 				double r = Math.Sqrt(r2);
 				double h = Math.Sqrt(1.0d-r2);
 				xr = x*r;
 				yr = y*r;
-				double lina = (vy*xr+vx*yr);
+				lina = (vy*xr+vx*yr);
 				start.X = costasint2*lina*vy+cost*xr+vx*h;
 				start.Y = costasint2*lina*vx+cost*yr+vy*h;
 				start.Z = vx*xr+vy*yr+cost*h;
+				distanceHolder.Value = sphereDistance*h-Math.Sqrt(rho2-r2*xd2);
 				yield return start;
 				xt = xxyy*x-xyyx*y;
 				y = xyyx*x+xxyy*y;
