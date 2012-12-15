@@ -158,16 +158,18 @@ namespace Renderer {
 		}
 		
 		public void CalculateImage () {
+#if DEBUG
 			DateTime start = DateTime.Now;
+#endif
 			this.RebuildMatrix();
 			int cores = Environment.ProcessorCount;
 			System.Threading.Tasks.Parallel.For(0x00, cores, x => CalculateImage(x*Height/cores, (x+1)*Height/cores));
-			DateTime stop = DateTime.Now;
 			foreach(CameraPostProcessor cpp in this.postProcessors) {
 				cpp.Process(this, this.raster, this.acc);
 			}
 #if DEBUG
-			Console.WriteLine("Rendered in {0}", stop-start);
+			DateTime stop = DateTime.Now;
+			Console.WriteLine("{0}", (stop-start).TotalMilliseconds.ToString("0.000"));
 #endif
 		}
 		private void CalculateImage (int yfrom, int yto) {

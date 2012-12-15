@@ -101,7 +101,14 @@ namespace Renderer.SceneBuilding {
 				List<RenderItem> ris = scene.Item1;
 				Light[] lights = scene.Item2.ToArray();
 				EnvironmentSettings es = description.EnvironmentSettings;
+#if DEBUG
+				DateTime old = DateTime.Now;
+#endif
 				IAccelerator acc = description.AcceleratorWrapper.CreateAccelerator(ris);
+#if DEBUG
+				DateTime now = DateTime.Now;
+				Console.Write("{0}\t", (now-old).TotalMilliseconds.ToString("0.000"));
+#endif
 				Camera cam = description.CameraWrapper.Camera(acc, lights, es);
 				cam.CalculateImage();
 				cam.Save(this.outputFile);

@@ -24,7 +24,7 @@ using System.Collections.Generic;
 
 namespace Renderer {
 
-	public class BSPAccelerator : IAccelerator {
+	public sealed class BSPAccelerator : IAccelerator {
 
 		private readonly BSPNode root;
 		private readonly NormalInterval[] intervals;
@@ -139,7 +139,7 @@ namespace Renderer {
 					if(x < xa) {
 						if(dxi > 0.0d) {
 							tt = tcur+dxi*(xb-x);
-							tmig0 = Math.Min(tmig, dxi*(xa-x0));//Math.Min(tmig, tt+dxi*(x-xa))
+							tmig0 = Math.Min(tmig, dxi*(xa-x0));
 							this.left.Hit(ray, inter, ref item, ref tcur, tmig0, ref tmax);
 							tmig = Math.Min(tmig, tmax);
 							if(tt <= tmig) {
@@ -155,7 +155,7 @@ namespace Renderer {
 					else if(x > xb) {
 						if(dxi < 0.0d) {
 							tt = tcur+dxi*(xa-x);
-							tmig0 = Math.Min(tmig, dxi*(xb-x0));//Math.Min(tmig, tt+dxi*(x-xa))
+							tmig0 = Math.Min(tmig, dxi*(xb-x0));
 							this.right.Hit(ray, inter, ref item, ref tcur, tmig0, ref tmax);
 							tmig = Math.Min(tmig, tmax);
 							if(tt <= tmig) {
@@ -194,24 +194,13 @@ namespace Renderer {
 				}
 			}
 
-			public override string ToString () {
-				return this.ToString(0x00);
-			}
-			public string ToString (int ntab) {
-				string sl = string.Empty, sr = sl;
-				if(this.left != null) {
-					sl = '\n'+this.left.ToString(ntab+0x01);
-					sr = '\n'+this.right.ToString(ntab+0x01);
-				}
-				return string.Format("{0}{1}/{2}/{3}{4}{5}", new string('\t', ntab), this.splitNormal, this.xa, this.xb, sl, sr);
-			}
-
 		}
 
 		#region Accelerator implementation
 		public RenderItem CalculateHit (Ray ray, out double t, double MaxT) {
 			double tmin = 0.0d;
 			t = MaxT;
+			//first setting up the interval
 			foreach(NormalInterval ni in intervals) {
 				Utils.CloseInterval(ray, ni, ref tmin, ref t);
 			}
@@ -219,20 +208,14 @@ namespace Renderer {
 				RenderItem ri = null;
 				Point3 inter = new Point3();
 				ray.PointAt(tmin, inter);
-				//Point3 inter = new Point3(ray, tmin);
 				this.root.Hit(ray, inter, ref ri, ref tmin, t, ref t);
 				return ri;
 			}
 			else {
 				return null;
 			}
-			//first setting up the interval
 		}
 		#endregion
-
-		public override string ToString () {
-			return this.root.ToString(0x00);
-		}
 
 
 	}
