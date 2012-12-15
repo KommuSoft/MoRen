@@ -1,5 +1,5 @@
 //
-//  CacheTexture.cs
+//  ITexture.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -22,33 +22,13 @@ using System;
 
 namespace Renderer {
 
-	public sealed class CacheTexture : ITexture {
+	public interface ITexture {
 
-		public readonly int Width, Height;
-		public readonly ColorCache[] Pixel;
-
-		public int TextureWidth {
-			get {
-				return this.Width;
-			}
+		int TextureWidth {
+			get;
 		}
-		public int TextureHeight {
-			get {
-				return this.Height;
-			}
-		}
-
-		public CacheTexture (int w, int h) {
-			this.Width = w;
-			this.Height = h;
-			this.Pixel = new ColorCache[w*h];
-		}
-
-		public void AddTexture (Texture txt) {
-			uint[] data = txt.Pixel;
-			int n = System.Math.Min(this.Pixel.Length, data.Length);
-			for(int i = 0x00; i < n; i++)
-				this.Pixel[i].AddColor(data[i]);
+		int TextureHeight {
+			get;
 		}
 
 	}

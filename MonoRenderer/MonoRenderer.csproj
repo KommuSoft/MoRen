@@ -118,6 +118,7 @@
     <Compile Include="ColorCache.cs" />
     <Compile Include="ColorUtils.cs" />
     <Compile Include="Color.cs" />
+    <Compile Include="ITexture.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

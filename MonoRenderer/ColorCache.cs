@@ -39,9 +39,41 @@ namespace Renderer {
 			this.Green += c.GreenInt;
 			this.Blue += c.BlueInt;
 		}
+		public void AddColor (uint rgb) {
+			ulong dc = (rgb&Color.Red8Mask)>>0x04;
+			dc |= dc>>0x08;
+			dc |= dc>>0x08;
+			this.Red += dc;
+			dc = (rgb&Color.Green8Mask)<<0x04;
+			dc |= dc>>0x08;
+			dc |= dc>>0x08;
+			this.Green += dc;
+			dc = (rgb&Color.Blue8Mask)<<0x04;
+			dc |= dc<<0x08;
+			dc |= dc>>0x08;
+			this.Blue += dc;
+		}
+		//assumption: the color was once added to the cache (there is no underflow checking)
+		public void RemoveColor (uint rgb) {
+			ulong dc = (rgb&Color.Red8Mask)>>0x04;
+			dc |= dc>>0x08;
+			dc |= dc>>0x08;
+			this.Red -= dc;
+			dc = (rgb&Color.Green8Mask)<<0x04;
+			dc |= dc>>0x08;
+			dc |= dc>>0x08;
+			this.Green -= dc;
+			dc = (rgb&Color.Blue8Mask)<<0x04;
+			dc |= dc<<0x08;
+			dc |= dc>>0x08;
+			this.Blue -= dc;
+		}
 
 		public Color Mix (uint n) {
 			return new Color((uint)(this.Red/n), (uint)(this.Green/n), (uint)(this.Blue/n));
+		}
+		public uint MixRGB (uint n) {
+			return 0x00;
 		}
 
 	}

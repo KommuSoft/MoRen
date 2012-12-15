@@ -184,18 +184,6 @@ namespace Renderer {
 			}
 			return t;
 		}
-		public static Texture CheckerBoard (int width, int height, int cellbits, uint oddColor, uint evenColor) {
-			Texture t = new Texture(width, height);
-			int pos = 0x00;
-			bool offset = false;
-			int x;
-			for(int y = 0x00; y < height; y++) {
-				offset = ((y>>cellbits)&0x01) == 0x00;
-				for(x = 0x00; x < width; x++)
-					t.Pixel[pos++] = (((offset^((x>>cellbits)&0x01) == 0x01)) ? evenColor : oddColor);
-			}
-			return t;
-		}
 		public Texture Clear () {
 			int n = this.Pixel.Length;
 			for(int i = 0x00; i < n; i++)
@@ -213,7 +201,7 @@ namespace Renderer {
 			int range = palette.Length-0x01;
 			int n = this.Pixel.Length;
 			for(int i = 0; i < n; i++)
-				this.Pixel[i] = palette[Maths.Border(0x00, this.Pixel[i], range)];
+				this.Pixel[i] = palette[Math.Min(this.Pixel[i], range)];
 			return this;
 		}
 		public Texture Invert () {
