@@ -93,70 +93,70 @@ namespace Renderer.SceneBuilding {
 		public SuperCamera () {
 		}
 
+		private Camera buildCameraCalculateAt (SceneDescription description, double time) {
+			Tuple<List<RenderItem>,List<Light>> scene = description.SceneGraph.Inject(time);
+			List<RenderItem> ris = scene.Item1;
+			Light[] lights = scene.Item2.ToArray();
+			EnvironmentSettings es = description.EnvironmentSettings;
+#if DEBUG
+			DateTime old = DateTime.Now;
+#endif
+			IAccelerator acc = description.AcceleratorWrapper.CreateAccelerator(ris);
+#if DEBUG
+			DateTime now = DateTime.Now;
+			Console.Write("{0}\t", (now-old).TotalMilliseconds.ToString("0.000"));
+#endif
+			Camera cam = description.CameraWrapper.Camera(acc, lights, es);
+			cam.CalculateImage();
+			return cam;
+		}
+		private void clearTmpFolder () {
+			foreach(var file in Directory.EnumerateFiles ("/tmp", "output*")) {
+				try {
+					File.Delete(file);
+				}
+				catch(Exception e) {
+					Console.Error.WriteLine(e);
+				}
+			}
+		}
+		private void convertToMovie () {
+			Process proc = new Process();
+			proc.StartInfo.FileName = "ffmpeg";
+			proc.StartInfo.Arguments = string.Format("-y -i /tmp/output%05d.jpg -vcodec mpeg4 {0}", this.outputFile);
+			proc.Start();
+			proc.WaitForExit();
+		}
+
 		public void Execute (SceneDescription description) {
 			double min = Math.Max(this.T0, description.SceneGraph.T0);
 			double max = Math.Min(this.T1, description.SceneGraph.T1);
+			double dt = (max-min)/this.TimeSamples;
+			uint nDelta = (uint)Math.Round(this.ClosureTime/dt)+0x01;
+			Texture[] motionblurCache = new Texture[nDelta];
+			CacheTexture blurCache = new CacheTexture((int)description.CameraWrapper.Width, (int)description.CameraWrapper.Height);
 			if(this.Task == SuperCameraTask.MakeImage) {
-				Tuple<List<RenderItem>,List<Light>> scene = description.SceneGraph.Inject(min);
-				List<RenderItem> ris = scene.Item1;
-				Light[] lights = scene.Item2.ToArray();
-				EnvironmentSettings es = description.EnvironmentSettings;
-#if DEBUG
-				DateTime old = DateTime.Now;
-#endif
-				IAccelerator acc = description.AcceleratorWrapper.CreateAccelerator(ris);
-#if DEBUG
-				DateTime now = DateTime.Now;
-				Console.Write("{0}\t", (now-old).TotalMilliseconds.ToString("0.000"));
-#endif
-				Camera cam = description.CameraWrapper.Camera(acc, lights, es);
-				cam.CalculateImage();
-				cam.Save(this.outputFile);
+				this.buildCameraCalculateAt(description, min).Save(this.outputFile);
 			}
 			else if(this.Task == SuperCameraTask.MakeMovie) {
-				double dt = (max-min)/this.TimeSamples;
+				this.clearTmpFolder();
 				int index = 0;
-				foreach(var file in Directory.EnumerateFiles ("/tmp", "output*")) {
-					try {
-						File.Delete(file);
-					}
-					catch(Exception e) {
-						Console.Error.WriteLine(e);
-					}
-				}
 				Process proc = new Process();
 				proc.StartInfo.FileName = "convert";
 				string imagename;
 				string jpegname;
 				for(double t = min; t <= max; t += dt) {
-					Tuple<List<RenderItem>,List<Light>> scene = description.SceneGraph.Inject(t);
-					List<RenderItem> ris = scene.Item1;
-					Light[] lights = scene.Item2.ToArray();
-					EnvironmentSettings es = description.EnvironmentSettings;
-					IAccelerator acc = description.AcceleratorWrapper.CreateAccelerator(ris);
-					Camera cam = description.CameraWrapper.Camera(acc, lights, es);
-					cam.CalculateImage();
 					imagename = string.Format("/tmp/output{0}.png", index.ToString("00000"));
 					jpegname = string.Format("{0} /tmp/output{1}.jpg", imagename, index.ToString("00000"));
-					cam.Save(imagename);
+					this.buildCameraCalculateAt(description, t).Save(imagename);
 					index++;
 					proc.WaitForExit();
 					proc.StartInfo.Arguments = jpegname;
 					proc.Start();
 				}
 				proc.WaitForExit();
-				proc.StartInfo.FileName = "ffmpeg";
-				proc.StartInfo.Arguments = string.Format("-y -i /tmp/output%05d.jpg -vcodec mpeg4 {0}", this.outputFile);
-				proc.Start();
-				proc.WaitForExit();
-				foreach(var file in Directory.EnumerateFiles ("/tmp", "output*")) {
-					try {
-						File.Delete(file);
-					}
-					catch(Exception e) {
-						Console.Error.WriteLine(e);
-					}
-				}
+				this.convertToMovie();
+				this.clearTmpFolder();
 			}
 		}
 

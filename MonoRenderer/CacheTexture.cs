@@ -57,8 +57,13 @@ namespace Renderer {
 			for(int i = 0x00; i < n; i++)
 				this.Pixel[i].RemoveColor(data[i]);
 		}
-		public Texture Mix (int n) {
+		public Texture Mix (uint n) {
 			Texture tex = new Texture(this.Width, this.Height);
+			uint[] pixel = tex.Pixel;
+			ColorCache[] cc = this.Pixel;
+			for(int i = 0; i < cc.Length; i++) {
+				pixel[i] = cc[i].MixRGB(n);
+			}
 			return tex;
 		}
 

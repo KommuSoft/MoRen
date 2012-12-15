@@ -43,17 +43,17 @@ namespace Renderer.SceneBuilding {
 			FoVH = 0.25d*Math.PI;
 		[XmlAttribute("Width")]
 		public uint
-			width;
+			Width;
 		[XmlAttribute("Height")]
 		public uint
-			height;
+			Height;
 
 
 		public CameraWrapper () {
 		}
 
 		public Camera Camera (IAccelerator acc, Light[] lights, EnvironmentSettings es) {
-			Camera cam = new Camera((int)this.width, (int)this.height, this.ScreenDistance, this.FoVH, acc, lights, es);
+			Camera cam = new Camera((int)this.Width, (int)this.Height, this.ScreenDistance, this.FoVH, acc, lights, es);
 			cam.Position = this.Position;
 			cam.LookAt = this.Lookat;
 			cam.Roll = Roll;
