@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace Renderer {
 
@@ -45,6 +46,38 @@ namespace Renderer {
 					return 0x00;
 				}
 			}
+		}
+
+		public static string ParseBracketsComma (string toParse, out List<string> arguments) {
+			int funcsep = toParse.IndexOf('(');
+			if(funcsep < 0x00) {
+				funcsep = toParse.Length;
+			}
+			int b = 0x00;
+			int last = funcsep+0x01;
+			char c;
+			arguments = new List<string>();
+			string result = toParse.Substring(0x00, funcsep);
+			for(int i = funcsep; i < toParse.Length; i++) {
+				c = toParse[i];
+				if(c == '(') {
+					b++;
+				}
+				else if(c == ')') {
+					b--;
+					if(b < 0x00) {
+						arguments.Add(toParse.Substring(last, i-last));
+						return result;
+					}
+				}
+				else if(c == ',') {
+					if(b <= 0x00) {
+						arguments.Add(toParse.Substring(last, i-last));
+						last = i+0x01;
+					}
+				}
+			}
+			return result;
 		}
 	}
 }
