@@ -31,7 +31,7 @@ namespace TestRenderer {
 		public const int TriceratopsTest = 0x10*short.MaxValue;
 		public const int BuildTest = 0x10*short.MaxValue;
 		public const int RayTest = short.MaxValue>>0x02;
-		public const int PointTest = short.MaxValue;
+		public const int PointTest = int.MaxValue;
 		public const int ColorTest = int.MaxValue>>0x0a;
 		public const int ColorDepthTest = short.MaxValue;
 

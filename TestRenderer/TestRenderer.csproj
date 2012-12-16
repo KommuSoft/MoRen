@@ -48,6 +48,7 @@
     <Compile Include="AAColor6Cache65536Test.cs" />
     <Compile Include="AAColorTest.cs" />
     <Compile Include="AAColorCacheTest.cs" />
+    <Compile Include="AAAPointTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
