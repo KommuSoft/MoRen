@@ -41,7 +41,7 @@ namespace Renderer.SceneBuilding {
 		public EnvMapWrapper () {
 		}
 
-		public IEnviromentMap ToEnvironmentMap () {
+		public EnviromentMap ToEnvironmentMap () {
 			TreeNode<string> parsed = this.specification.ParseTreeBracketsComma();
 			switch(parsed.Data.Trim().ToLower()) {
 				case "spherical":

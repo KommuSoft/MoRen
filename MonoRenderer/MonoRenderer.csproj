@@ -120,11 +120,11 @@
     <Compile Include="Color.cs" />
     <Compile Include="ITexture.cs" />
     <Compile Include="Holder.cs" />
-    <Compile Include="IEnviromentMap.cs" />
     <Compile Include="SphericalEnvironmentMap.cs" />
     <Compile Include="TreeNode.cs" />
     <Compile Include="EnvMapWrapper.cs" />
     <Compile Include="CubicalEnvironmentMap.cs" />
+    <Compile Include="EnviromentMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

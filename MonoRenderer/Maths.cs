@@ -147,6 +147,24 @@ namespace Renderer {
 			else
 				return value;
 		}
+		public static int MaxIndex (double x0, double x1, double x2) {
+			if(x0 >= x1) {
+				if(x2 >= x0) {
+					return 0x02;
+				}
+				else {
+					return 0x00;
+				}
+			}
+			else {
+				if(x2 >= x1) {
+					return 0x02;
+				}
+				else {
+					return 0x01;
+				}
+			}
+		}
 		public static double SoftInv (double val) {
 			if(Math.Abs(val) < GlobalEpsilon) {
 				return double.NaN;

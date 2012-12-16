@@ -68,19 +68,16 @@ namespace Renderer {
 				}
 			}
 			if(this.Texture == null) {
-				this.Texture = NullTexture;
+				this.Texture = ColorAtMethods.GetWhite;
 			}
 			if(this.Reflection == null) {
-				this.Reflection = NullTexture;
+				this.Reflection = ColorAtMethods.GetWhite;
 			}
 			if(this.Bump == null) {
 				this.Bump = NullBump;
 			}
 		}
 
-		private static uint NullTexture (Point3 p) {
-			return 0xffffff;
-		}
 		private static void NullBump (Point3 tu, Point3 normal, Point3 bumpx, Point3 bumpy) {
 		}
 

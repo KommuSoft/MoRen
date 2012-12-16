@@ -1,5 +1,5 @@
 //
-//  SphericalEnvironmentMap.cs
+//  EnviromentMap.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -22,29 +22,7 @@ using System;
 
 namespace Renderer {
 
-	public sealed class SphericalEnvironmentMap : IEnviromentMap {
+	public delegate uint EnviromentMap (Ray ray);
 
-		private readonly ColorAtMethod positiveZ;
-		private readonly ColorAtMethod negativeZ;
-
-		public SphericalEnvironmentMap (ColorAtMethod negativeZ, ColorAtMethod positiveZ) {
-			this.negativeZ = ColorAtMethods.GetOrBlack(negativeZ);
-			this.positiveZ = ColorAtMethods.GetOrBlack(positiveZ);
-		}
-
-		#region IEnviromentMap implementation
-		public uint GetColorAt (Ray ray) {
-			Point3 p = new Point3(0.5d*ray.DX+0.5d, 0.5d*ray.DY+0.5d, 0.0d);
-			if(ray.Z0 >= 0.0d) {
-				return this.positiveZ(p);
-			}
-			else {
-				return this.negativeZ(p);
-			}
-		}
-		#endregion
-
-
-	}
 }
 

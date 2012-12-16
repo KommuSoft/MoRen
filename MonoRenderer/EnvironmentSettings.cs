@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Xml.Serialization;
+using Renderer.SceneBuilding;
 
 namespace Renderer.SceneBuilding {
 
@@ -44,6 +45,22 @@ namespace Renderer.SceneBuilding {
 		[XmlAttribute("DispersionAntiAliasSqt")]
 		public uint
 			DispersingAntiAliasingSqrt = 0x01;
+		[XmlElement("EnvironmentMap")]
+		public EnvMapWrapper envmapWrapper;
+		[XmlIgnore]
+		private IEnviromentMap
+			envmapCache;
+		[XmlIgnore]
+		public IEnviromentMap EnvironmentMap {
+			get {
+				if(envmapCache == null) {
+					return null;
+				}
+				else if() {
+
+				}
+			}
+		}
 
 		public EnvironmentSettings () {
 		}
