@@ -21,8 +21,9 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Renderer {
+namespace Renderer.SceneBuilding {
 
+	[MeshLoaderAttribute]
 	public class SphereLoader : MeshLoaderBase {
 
 		public SphereLoader () {
@@ -32,6 +33,13 @@ namespace Renderer {
 		public override void Load (string currentDir, Stream stream) {
 		}
 
+		public override bool CanParse (string filename) {
+			return filename.Trim().ToLower() == "sphere";
+		}
+
+		public override IMeshLoader Clone () {
+			return new SphereLoader();
+		}
 
 		public override void Inject (List<RenderItem> items, Matrix4 transform, params string[] args) {
 			Point3 p = new Point3(0.0d, 0.0d, 0.0d);

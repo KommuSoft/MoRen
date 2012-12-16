@@ -1,5 +1,5 @@
 //
-//  MeshLoaderBase.cs
+//  IMeshLoader.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -18,45 +18,24 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace Renderer {
+	public interface IMeshLoader {
 
-	public abstract class MeshLoaderBase : IMeshLoader {
-
-		private Material defaultMaterial;
-
-		#region IMeshLoader implementation
-		public Material DefaultMaterial {
-			get {
-				return this.defaultMaterial;
-			}
-			set {
-				this.defaultMaterial = value;
-			}
+		Material DefaultMaterial {
+			get;
+			set;
 		}
 
-		public abstract void Load (string currentDir, Stream stream);
-		public abstract void Inject (List<RenderItem> items, Matrix4 transform, params string[] args);
-
-		public virtual void Load (string currentDir, string filename) {
-			if(filename != null) {
-				FileStream fs = File.Open(filename, FileMode.Open, FileAccess.Read);
-				this.Load(currentDir, fs);
-				fs.Close();
-			}
-			else {
-				this.Load(currentDir, (Stream)null);
-			}
-		}
-
-		public abstract bool CanParse (string filename);
-
-		public abstract IMeshLoader Clone ();
-		#endregion
-
+		void Load (string currentDir, Stream stream);
+		void Load (string currentDir, string filename);
+		bool CanParse (string filename);
+		void Inject (List<RenderItem> items, Matrix4 transform, params string[] args);
+		IMeshLoader Clone ();
 
 	}
 }

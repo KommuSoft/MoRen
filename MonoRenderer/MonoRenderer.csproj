@@ -126,6 +126,7 @@
     <Compile Include="EnviromentMap.cs" />
     <Compile Include="SphereLoader.cs" />
     <Compile Include="IMeshLoader.cs" />
+    <Compile Include="MeshLoaderAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

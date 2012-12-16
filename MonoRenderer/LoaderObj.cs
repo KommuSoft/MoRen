@@ -26,7 +26,9 @@ using System.IO;
 using System.Globalization;
 using System.Collections.Generic;
 
-namespace Renderer {
+namespace Renderer.SceneBuilding {
+
+	[MeshLoader]
 	public class LoaderObj : MeshLoaderBase {
 		
 		private delegate void LineAction (Match m);
@@ -44,6 +46,14 @@ namespace Renderer {
 		
 		public LoaderObj () {
 			InvokeActions();
+		}
+
+		public override bool CanParse (string filename) {
+			return filename.Trim().ToLower().EndsWith(".obj");
+		}
+
+		public override IMeshLoader Clone () {
+			return new Loader3ds();
 		}
 
 		private void InvokeActions () {

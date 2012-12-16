@@ -25,7 +25,9 @@ using System.Linq;
 using System.IO;
 using System.Text;
 
-namespace Renderer {
+namespace Renderer.SceneBuilding {
+
+	[MeshLoader]
 	public class Loader3ds : MeshLoaderBase {
 		
 		private ushort currentJunk;
@@ -49,6 +51,14 @@ namespace Renderer {
 			}
 			this.root = new RootJunk();
 			this.readChildren(br, s, this.root, s.Length, ctx);
+		}
+
+		public override bool CanParse (string filename) {
+			return filename.Trim().ToLower().EndsWith(".3ds");
+		}
+
+		public override IMeshLoader Clone () {
+			return new Loader3ds();
 		}
 
 		private void readChildren (BinaryReader br, Stream s, Junk3ds parent, long until, ParsingContext ctx) {
