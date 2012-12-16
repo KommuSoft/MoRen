@@ -140,7 +140,7 @@ namespace Renderer.SceneBuilding {
 
 		public void Execute (SceneDescription description) {
 			double min = Math.Max(this.T0, description.SceneGraph.T0);
-			double max = Math.Min(this.T1, description.SceneGraph.T1);
+			double max = this.T1;
 			double dt = (max-min)/this.TimeSamples;
 			uint nDelta = (uint)Math.Round(this.ClosureTime/dt)+0x01;
 			Texture[] motionblurCache = new Texture[nDelta];

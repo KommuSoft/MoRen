@@ -200,7 +200,24 @@ namespace Renderer {
 		public static Point3 Cross (Point3 a, Point3 b) {
 			return new Point3(a.Y*b.Z-b.Y*a.Z, a.Z*b.X-b.Z*a.X, a.X*b.Y-b.X*a.Y);
 		}
-
+		public static Point3 NullOrTransformedCopy (Point3 p, Matrix4 m) {
+			if(p == null) {
+				return p;
+			}
+			else {
+				return new Point3(p, m);
+			}
+		}
+		public static Point3 NullOrTransformedNonShiftCopy (Point3 p, Matrix4 m) {
+			if(p == null) {
+				return p;
+			}
+			else {
+				Point3 q = new Point3(p, m);
+				q.TransformNonShift(m);
+				return q;
+			}
+		}
 		public void AddDirect (Point3 p) {
 			this.X += p.X;
 			this.Y += p.Y;
@@ -450,6 +467,23 @@ namespace Renderer {
 			}
 
 		}
+
+		public static Point3 Parse (IEnumerable<string> arguments) {
+			Point3 p = new Point3();
+			int i = 0x00;
+			foreach(string v in arguments) {
+				try {
+					p[i++] = double.Parse(v);
+				}
+				catch {
+				}
+				if(i >= 0x03) {
+					break;
+				}
+			}
+			return p;
+		}
+
 		#region ITransformable implementation
 		public void Rotate (double ux, double uy, double uz, double theta) {
 			double cost = Math.Cos(theta);

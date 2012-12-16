@@ -27,7 +27,15 @@ namespace Renderer.SceneBuilding {
 	[MeshLoader]
 	public class TriangleLoader : MeshLoaderBase {
 
-		//private 
+		private Point3 pa;
+		private Point3 pb;
+		private Point3 pc;
+		private Point3 na;
+		private Point3 nb;
+		private Point3 nc;
+		private Point3 ta;
+		private Point3 tb;
+		private Point3 tc;
 
 		public TriangleLoader () {
 		}
@@ -35,9 +43,37 @@ namespace Renderer.SceneBuilding {
 		#region MeshLoaderBase implementation
 		public override void Load (string currentDir, string filename) {
 			TreeNode<string> tree = filename.ParseTreeBracketsComma();
-
+			Console.WriteLine(tree.Count);
+			if(tree.Count < 0x03) {
+				pa = Point3.DummyPoint;
+				pb = Point3.DummyXPoint;
+				pc = Point3.DummyYPoint;
+			}
+			else {
+				pa = Point3.Parse(tree[0x00].ChildDatas);
+				pb = Point3.Parse(tree[0x01].ChildDatas);
+				pc = Point3.Parse(tree[0x02].ChildDatas);
+			}
+			if(tree.Count >= 0x06) {
+				na = Point3.Parse(tree[0x03].ChildDatas);
+				nb = Point3.Parse(tree[0x04].ChildDatas);
+				nc = Point3.Parse(tree[0x05].ChildDatas);
+			}
+			if(tree.Count >= 0x09) {
+				ta = Point3.Parse(tree[0x06].ChildDatas);
+				tb = Point3.Parse(tree[0x07].ChildDatas);
+				tc = Point3.Parse(tree[0x08].ChildDatas);
+			}
+			else {
+				ta = Point3.DummyYPoint;
+				tb = Point3.DummyPoint;
+				tc = Point3.DummyXPoint;
+			}
 		}
 		public override void Load (string currentDir, Stream stream) {
+			pa = Point3.DummyPoint;
+			pb = Point3.DummyXPoint;
+			pc = Point3.DummyYPoint;
 		}
 
 		public override bool CanParse (string filename) {
@@ -46,8 +82,14 @@ namespace Renderer.SceneBuilding {
 		}
 
 		public override void Inject (List<RenderItem> items, Matrix4 transform, params string[] args) {
-			//TODO: implement
-			//items.Add();
+			items.Add(new Triangle(new Point3(pa, transform),
+			                       new Point3(pb, transform),
+			                       new Point3(pc, transform),
+			                       Point3.NullOrTransformedNonShiftCopy(na, transform),
+			                       Point3.NullOrTransformedNonShiftCopy(nb, transform),
+			                       Point3.NullOrTransformedNonShiftCopy(nc, transform),
+			                       ta, tb, tc, this.DefaultMaterial)
+			);
 		}
 
 		public override IMeshLoader Clone () {

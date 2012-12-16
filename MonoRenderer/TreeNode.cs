@@ -35,6 +35,13 @@ namespace Renderer {
 				this.data = value;
 			}
 		}
+		public IEnumerable<T> ChildDatas {
+			get {
+				foreach(TreeNode<T> tnt in this) {
+					yield return tnt.Data;
+				}
+			}
+		}
 
 		public bool IsLeave {
 			get {

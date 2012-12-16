@@ -26,7 +26,7 @@ namespace Renderer {
 
 	public abstract class MeshLoaderBase : IMeshLoader {
 
-		private Material defaultMaterial;
+		private Material defaultMaterial = Material.DefaultMaterial;
 
 		#region IMeshLoader implementation
 		public Material DefaultMaterial {
