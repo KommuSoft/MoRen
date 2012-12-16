@@ -127,6 +127,16 @@ namespace Renderer.SceneBuilding {
 			proc.Start();
 			proc.WaitForExit();
 		}
+		private void fillMotionBlurCache (SceneDescription sd, Texture[] motionblurCache, CacheTexture sum, double t0, double dt) {
+			double t = t0-dt;
+			Texture tex;
+			for(int i = motionblurCache.Length-0x02; i >= 0x00; i--) {
+				tex = buildCameraCalculateAt(sd, t).Raster;
+				motionblurCache[i] = tex;
+				sum.AddTexture(tex);
+				t -= dt;
+			}
+		}
 
 		public void Execute (SceneDescription description) {
 			double min = Math.Max(this.T0, description.SceneGraph.T0);
@@ -135,8 +145,11 @@ namespace Renderer.SceneBuilding {
 			uint nDelta = (uint)Math.Round(this.ClosureTime/dt)+0x01;
 			Texture[] motionblurCache = new Texture[nDelta];
 			CacheTexture blurCache = new CacheTexture((int)description.CameraWrapper.Width, (int)description.CameraWrapper.Height);
+			Texture tex;
+			this.fillMotionBlurCache(description, motionblurCache, blurCache, min, dt);
 			if(this.Task == SuperCameraTask.MakeImage) {
-				this.buildCameraCalculateAt(description, min).Save(this.outputFile);
+				blurCache.AddTexture(this.buildCameraCalculateAt(description, min).Raster);
+				blurCache.MixWithAlpha(nDelta).Save(this.outputFile);
 			}
 			else if(this.Task == SuperCameraTask.MakeMovie) {
 				this.clearTmpFolder();
@@ -145,10 +158,16 @@ namespace Renderer.SceneBuilding {
 				proc.StartInfo.FileName = "convert";
 				string imagename;
 				string jpegname;
+				uint j = nDelta-0x01;
 				for(double t = min; t <= max; t += dt) {
 					imagename = string.Format("/tmp/output{0}.png", index.ToString("00000"));
 					jpegname = string.Format("{0} /tmp/output{1}.jpg", imagename, index.ToString("00000"));
-					this.buildCameraCalculateAt(description, t).Save(imagename);
+					tex = this.buildCameraCalculateAt(description, t).Raster;
+					blurCache.RemoveTexture(motionblurCache[j]);
+					blurCache.AddTexture(tex);
+					blurCache.MixWithAlpha(nDelta).Save(imagename);
+					motionblurCache[j++] = tex;
+					j %= nDelta;
 					index++;
 					proc.WaitForExit();
 					proc.StartInfo.Arguments = jpegname;

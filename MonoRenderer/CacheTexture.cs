@@ -45,17 +45,21 @@ namespace Renderer {
 		}
 
 		public void AddTexture (Texture txt) {
-			uint[] data = txt.Pixel;
-			int n = System.Math.Min(this.Pixel.Length, data.Length);
-			for(int i = 0x00; i < n; i++)
-				this.Pixel[i].AddColor(data[i]);
+			if(txt != null) {
+				uint[] data = txt.Pixel;
+				int n = System.Math.Min(this.Pixel.Length, data.Length);
+				for(int i = 0x00; i < n; i++)
+					this.Pixel[i].AddColor(data[i]);
+			}
 		}
 		//assumption: the texture was once added and not yet removed, otherwise underflow is possible
 		public void RemoveTexture (Texture txt) {
-			uint[] data = txt.Pixel;
-			int n = System.Math.Min(this.Pixel.Length, data.Length);
-			for(int i = 0x00; i < n; i++)
-				this.Pixel[i].RemoveColor(data[i]);
+			if(txt != null) {
+				uint[] data = txt.Pixel;
+				int n = System.Math.Min(this.Pixel.Length, data.Length);
+				for(int i = 0x00; i < n; i++)
+					this.Pixel[i].RemoveColor(data[i]);
+			}
 		}
 		public Texture Mix (uint n) {
 			Texture tex = new Texture(this.Width, this.Height);
@@ -63,6 +67,15 @@ namespace Renderer {
 			ColorCache[] cc = this.Pixel;
 			for(int i = 0; i < cc.Length; i++) {
 				pixel[i] = cc[i].MixRGB(n);
+			}
+			return tex;
+		}
+		public Texture MixWithAlpha (uint n) {
+			Texture tex = new Texture(this.Width, this.Height);
+			uint[] pixel = tex.Pixel;
+			ColorCache[] cc = this.Pixel;
+			for(int i = 0; i < cc.Length; i++) {
+				pixel[i] = (uint)(Color.Alpha8Mask|cc[i].MixRGB(n));
 			}
 			return tex;
 		}

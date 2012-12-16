@@ -84,6 +84,18 @@ namespace Renderer {
 			}
 			return val;
 		}
+		public TValue GetLatestBeforeOrNext (TVersion version, TKey key) {
+			//TODO: return next if nothing before found
+			int index = versions.BinarySearch(version);
+			if(index < 0x00) {
+				index = (~index)-0x01;
+			}
+			TValue val = default(TValue);
+			while(index >= 0x00 && !dictionaryContainer[index].TryGetValue(key,out val)) {
+				index--;
+			}
+			return val;
+		}
 		public void Add (TVersion version, Dictionary<TKey,TValue> dict) {
 			this.dictionaryContainer.Add(new DictionaryVersion<TVersion,TKey,TValue>(version, dict));
 		}

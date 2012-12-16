@@ -27,6 +27,7 @@ namespace Renderer {
 		public const ulong RedMask = 0x3ffffc0000000000;
 		public const ulong GreenMask = 0x1ffffe00000;
 		public const ulong BlueMask = 0xfffff;
+		public const ulong Alpha8Mask = 0xff000000;
 		public const ulong Red8Mask = 0xff0000;
 		public const ulong Green8Mask = 0xff00;
 		public const ulong Blue8Mask = 0xff;
