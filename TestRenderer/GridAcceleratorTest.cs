@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using Renderer;
+using Renderer.SceneBuilding;
 
 namespace TestRenderer {
 	[TestFixture()]

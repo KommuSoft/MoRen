@@ -22,6 +22,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using Renderer;
+using Renderer.SceneBuilding;
 using NUnit.Framework;
 
 namespace TestRenderer {
