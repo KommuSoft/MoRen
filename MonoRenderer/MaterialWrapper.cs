@@ -73,42 +73,10 @@ namespace Renderer.SceneBuilding {
 			uint ambient = this.Ambient.Color;
 			uint diffuse = this.Diffuse.Color;
 			uint specular = this.Specular.Color;
-			ColorAtMethod texture = PerlinNullOrTexture(this.Texture);
-			ColorAtMethod reflection = PerlinNullOrTexture(this.Reflection);
-			Texture bump = NullOrTexture(this.Bump);
+			ColorAtMethod texture = this.Texture.PerlinNullOrTexture();
+			ColorAtMethod reflection = this.Reflection.PerlinNullOrTexture();
+			Texture bump = this.Bump.NullOrTexture();
 			return new Material(ambient, diffuse, specular, Shininess, Transparent, texture, reflection, bump, NI, NT, Reflectance, null, ReflectedThreshold);
-		}
-
-		private ColorAtMethod PerlinNullOrTexture (string name) {
-			if(name != null && name != string.Empty) {
-				string namelow = name.ToLower();
-				if(namelow.StartsWith("perlin")) {
-					switch(namelow) {
-						case "perlinmarble":
-							return PerlinCache.Marble3;
-						case "perlinwood":
-							return PerlinCache.Wood3;
-						case "perlinsky":
-							return PerlinCache.Sky3;
-						default :
-							return NullOrTexture(name);
-					}
-				}
-				else {
-					return NullOrTexture(name);
-				}
-			}
-			else {
-				return null;
-			}
-		}
-		private Texture NullOrTexture (string name) {
-			if(name != null && name != string.Empty && File.Exists(name)) {
-				return new Texture(name);
-			}
-			else {
-				return null;
-			}
 		}
 
 	}

@@ -19,8 +19,9 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Renderer {
 
@@ -47,7 +48,67 @@ namespace Renderer {
 				}
 			}
 		}
-
+		public static ColorAtMethod PerlinNullOrTexture (this string name) {
+			if(name != null && name != string.Empty) {
+				string namelow = name.ToLower();
+				if(namelow.StartsWith("perlin")) {
+					switch(namelow) {
+						case "perlinmarble":
+							return PerlinCache.Marble3;
+						case "perlinwood":
+							return PerlinCache.Wood3;
+						case "perlinsky":
+							return PerlinCache.Sky3;
+						default :
+							return NullOrTexture(name);
+					}
+				}
+				else {
+					return NullOrTexture(name);
+				}
+			}
+			else {
+				return null;
+			}
+		}
+		public static Texture NullOrTexture (this string name) {
+			if(name != null && name != string.Empty && File.Exists(name)) {
+				return new Texture(name);
+			}
+			else {
+				return null;
+			}
+		}
+		public static TreeNode<string> ParseTreeBracketsComma (this string toParse) {
+			int funcsep = toParse.IndexOf('(');
+			if(funcsep < 0x00) {
+				funcsep = toParse.Length;
+			}
+			int b = 0x00;
+			int last = funcsep+0x01;
+			char c;
+			TreeNode<string> result = new TreeNode<string>(toParse.Substring(0x00, funcsep));
+			for(int i = funcsep; i < toParse.Length; i++) {
+				c = toParse[i];
+				if(c == '(') {
+					b++;
+				}
+				else if(c == ')') {
+					b--;
+					if(b < 0x00) {
+						result.Add(ParseTreeBracketsComma(toParse.Substring(last, i-last)));
+						return result;
+					}
+				}
+				else if(c == ',') {
+					if(b <= 0x00) {
+						result.Add(ParseTreeBracketsComma(toParse.Substring(last, i-last)));
+						last = i+0x01;
+					}
+				}
+			}
+			return result;
+		}
 		public static string ParseBracketsComma (string toParse, out List<string> arguments) {
 			int funcsep = toParse.IndexOf('(');
 			if(funcsep < 0x00) {
