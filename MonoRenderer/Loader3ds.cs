@@ -600,38 +600,47 @@ namespace Renderer.SceneBuilding {
 			public override void Resolve (ParsingContext ctx, Material material) {
 				ListJunk<Point3> plj;
 				MatrixJunk mj;
-				this.vertices = this.FindChild<ListJunk<Point3>>(x => x.purpose == ListPurpose.Vertex).First().list;
-				double x0, x1, y0, y1, z0, z1;
-				Utils.CalculateBoundingBox(this.vertices, out x0, out x1, out y0, out y1, out z0, out z1);
-				Console.WriteLine("{0}/{1}/{2}/{3}/{4}/{5}", x0, x1, y0, y1, z0, z1);
-				mj = this.FindChild<MatrixJunk>().FirstOrDefault();
-				Matrix4 M;
-				if(mj != null) {
-					M = mj.mat;
-					foreach(Point3 v in vertices) {
-						v.Transform(M);
-					}
-				}
-				plj = this.FindChild<ListJunk<Point3>>(x => x.purpose == ListPurpose.Texture).FirstOrDefault();
+				plj = this.FindChild<ListJunk<Point3>>(x => x.purpose == ListPurpose.Vertex).FirstOrDefault();
 				if(plj != null) {
-					this.texture = plj.list;
-					Utils.Adapt3dsTextureList(this.texture);
-				}
-				else {
-					this.texture = Utils.GenerateNormalizedCopies(this.vertices).ToList();
-				}
-				IndexJunk ij = this.FindChild<IndexJunk>().FirstOrDefault();
-				if(ij != null && ij.tris != null && ij.tris.Count > 0x00) {
-					this.indices = ij.tris;
-					this.materialstr = ij.materials;
-				}
-				else {
-					this.indices = Utils.GenerateIndicesRange(this.vertices.Count).ToList();
-					this.materialstr = new List<string>();
-				}
+					this.vertices = plj.list;
+					double x0, x1, y0, y1, z0, z1;
+					Utils.CalculateBoundingBox(this.vertices, out x0, out x1, out y0, out y1, out z0, out z1);
+					mj = this.FindChild<MatrixJunk>().FirstOrDefault();
+					Matrix4 M;
+					if(mj != null) {
+						M = mj.mat;
+						foreach(Point3 v in vertices) {
+							v.Transform(M);
+						}
+					}
+					plj = this.FindChild<ListJunk<Point3>>(x => x.purpose == ListPurpose.Texture).FirstOrDefault();
+					if(plj != null) {
+						this.texture = plj.list;
+						Utils.Adapt3dsTextureList(this.texture);
+					}
+					else {
+						this.texture = Utils.GenerateNormalizedCopies(this.vertices).ToList();
+					}
+					IndexJunk ij = this.FindChild<IndexJunk>().FirstOrDefault();
+					if(ij != null && ij.tris != null && ij.tris.Count > 0x00) {
+						this.indices = ij.tris;
+						this.materialstr = ij.materials;
+					}
+					else {
+						this.indices = Utils.GenerateIndicesRange(this.vertices.Count).ToList();
+						this.materialstr = new List<string>();
+					}
 
-				Console.WriteLine("#Vertex {0} #Faces {1}", this.vertices.Count, this.indices.Count);
-				this.normals = Utils.GenerateSmoothNormalsFromTriangles(this.vertices, this.indices.Select(x => new Tuple<int,int,int>(x.Item1, x.Item2, x.Item3)));
+					Console.WriteLine("#Vertex {0} #Faces {1}", this.vertices.Count, this.indices.Count);
+					this.normals = Utils.GenerateSmoothNormalsFromTriangles(this.vertices, this.indices.Select(x => new Tuple<int,int,int>(x.Item1, x.Item2, x.Item3)));
+				}
+				else {
+					this.indices = new List<Tuple<ushort, ushort, ushort, ushort>>();
+					this.vertices = new List<Point3>();
+					this.normals = new List<Point3>();
+					this.materialstr = new List<string>();
+					this.texture = new List<Point3>();
+				}
 				this.Collapse();
 			}
 

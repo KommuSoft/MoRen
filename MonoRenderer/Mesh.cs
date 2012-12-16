@@ -22,6 +22,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using System.Reflection;
 using System.IO;
 using Renderer.SceneBuilding;
 
@@ -83,6 +84,10 @@ namespace Renderer {
 				this.material = value;
 			}
 		}
+
+		[XmlIgnore]
+		private static List<IMeshLoader>
+			loaderPrototypes = null;
 		
 		public Mesh () {
 		}
@@ -90,24 +95,34 @@ namespace Renderer {
 			this.Filename = filename;
 		}
 
-		public void Resolve (Dictionary<string,Material> materialDictionary) {
-			Material mat = null;
-			if(this.material != null && this.material != string.Empty) {
-				materialDictionary.TryGetValue(this.material, out mat);
+		public static void InvokeLoaders () {
+			if(loaderPrototypes == null) {
+				loaderPrototypes = new List<IMeshLoader>();
+				foreach(Type t in Assembly.GetExecutingAssembly().GetTypes()) {
+					if(t.GetCustomAttributes(typeof(MeshLoaderAttribute), false).Length > 0x00 && typeof(IMeshLoader).IsAssignableFrom(t)) {
+						loaderPrototypes.Add((IMeshLoader)t.GetConstructor(new Type[0x00]).Invoke(new object[0x00]));
+					}
+				}
 			}
+		}
+
+		public void Resolve (Dictionary<string,Material> materialDictionary) {
 			if(this.filename == null || this.loader != null) {
 				return;
 			}
-			else if(this.filename.ToLower() == "sphere") {
-				this.loader = new SphereLoader();
-			}
-			else if(this.filename.ToLower().EndsWith(".obj")) {
-				this.loader = new LoaderObj();
-			}
-			else if(this.filename.ToLower().EndsWith(".3ds")) {
-				this.loader = new Loader3ds();
+			else {
+				foreach(IMeshLoader iml in loaderPrototypes) {
+					if(iml.CanParse(filename)) {
+						this.loader = iml.Clone();
+						break;
+					}
+				}
 			}
 			if(this.loader != null) {
+				Material mat = null;
+				if(this.material != null && this.material != string.Empty) {
+					materialDictionary.TryGetValue(this.material, out mat);
+				}
 				if(mat != null) {
 					this.loader.DefaultMaterial = mat;
 				}

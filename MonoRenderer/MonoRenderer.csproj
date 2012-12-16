@@ -127,6 +127,7 @@
     <Compile Include="SphereLoader.cs" />
     <Compile Include="IMeshLoader.cs" />
     <Compile Include="MeshLoaderAttribute.cs" />
+    <Compile Include="TriangleLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

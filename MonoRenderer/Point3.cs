@@ -178,6 +178,22 @@ namespace Renderer {
 			this.Y = ny;
 			this.Z = nz;
 		}
+		public void InvTransform (Matrix4 m) {
+			double frac = 1.0d/(m.M00*(m.M12*m.M21-m.M11*m.M22)+m.M01*(m.M10*m.M22-m.M12*m.M20)+m.M02*(m.M11*m.M20-m.M10*m.M21));
+			double xn = frac*((m.M02*m.M11-m.M01*m.M12)*Z+(m.M01*m.M22-m.M02*m.M21)*Y+(m.M12*m.M21-m.M11*m.M22)*X+(m.M01*m.M12-m.M02*m.M11)*m.M23+(m.M03*m.M11-m.M01*m.M13)*m.M22+(m.M02*m.M13-m.M03*m.M12)*m.M21);
+			double yn = frac*((m.M00*m.M12-m.M02*m.M10)*Z+(m.M02*m.M20-m.M00*m.M22)*Y+(m.M10*m.M22-m.M12*m.M20)*X+(m.M02*m.M10-m.M00*m.M12)*m.M23+(m.M00*m.M13-m.M03*m.M10)*m.M22+(m.M03*m.M12-m.M02*m.M13)*m.M20);
+			this.Z = frac*((m.M01*m.M10-m.M00*m.M11)*Z+(m.M00*m.M21-m.M01*m.M20)*Y+(m.M11*m.M20-m.M10*m.M21)*X+(m.M00*m.M11-m.M01*m.M10)*m.M23+(m.M03*m.M10-m.M00*m.M13)*m.M21+(m.M01*m.M13-m.M03*m.M11)*m.M20);
+			this.X = xn;
+			this.Y = yn;
+		}
+		public void InvTransformNonShift (Matrix4 m) {
+			double frac = 1.0d/(m.M00*(m.M12*m.M21-m.M11*m.M22)+m.M01*(m.M10*m.M22-m.M12*m.M20)+m.M02*(m.M11*m.M20-m.M10*m.M21));
+			double xn = frac*((m.M02*m.M11-m.M01*m.M12)*Z+(m.M01*m.M22-m.M02*m.M21)*Y+(m.M12*m.M21-m.M11*m.M22)*X);
+			double yn = frac*((m.M00*m.M12-m.M02*m.M10)*Z+(m.M02*m.M20-m.M00*m.M22)*Y+(m.M10*m.M22-m.M12*m.M20)*X);
+			this.Z = frac*((m.M01*m.M10-m.M00*m.M11)*Z+(m.M00*m.M21-m.M01*m.M20)*Y+(m.M11*m.M20-m.M10*m.M21)*X);
+			this.X = xn;
+			this.Y = yn;
+		}
 		public static Point3 Random () {
 			return new Point3(Maths.Random(), Maths.Random(), Maths.Random());
 		}
