@@ -87,6 +87,7 @@ namespace Renderer {
 					break;
 				case 0x4100:
 					child = new LoadModeJunk(LoadMode.Triangle);
+					Console.WriteLine("Starting triangle");
 					break;
 				case 0x4110:
 					List<Point3> vertexList = new List<Point3>();
@@ -194,7 +195,15 @@ namespace Renderer {
 				else {
 					string path = Path.GetDirectoryName(activedir)+Path.DirectorySeparatorChar+name;
 					if(File.Exists(path)) {
-						return new Texture(path);
+						try {
+							return new Texture(path);
+						}
+						catch(Exception e) {
+#if DEBUG
+							Console.Error.WriteLine("Cannot open \"{0}\": {1}", path, e);
+#endif
+							return null;
+						}
 					}
 					else {
 #if DEBUG
@@ -542,7 +551,7 @@ namespace Renderer {
 							break;
 					}
 				}
-				this.material = new Material(ambient, specular, diffuse, shininess, transparent, texture, reflection, bump);
+				this.material = new Material(ambient, diffuse, specular, shininess, transparent, texture, reflection, bump);
 				this.Collapse();
 			}
 
@@ -592,6 +601,9 @@ namespace Renderer {
 				ListJunk<Point3> plj;
 				MatrixJunk mj;
 				this.vertices = this.FindChild<ListJunk<Point3>>(x => x.purpose == ListPurpose.Vertex).First().list;
+				double x0, x1, y0, y1, z0, z1;
+				Utils.CalculateBoundingBox(this.vertices, out x0, out x1, out y0, out y1, out z0, out z1);
+				Console.WriteLine("{0}/{1}/{2}/{3}/{4}/{5}", x0, x1, y0, y1, z0, z1);
 				mj = this.FindChild<MatrixJunk>().FirstOrDefault();
 				Matrix4 M;
 				if(mj != null) {
@@ -603,12 +615,13 @@ namespace Renderer {
 				plj = this.FindChild<ListJunk<Point3>>(x => x.purpose == ListPurpose.Texture).FirstOrDefault();
 				if(plj != null) {
 					this.texture = plj.list;
+					Utils.Adapt3dsTextureList(this.texture);
 				}
 				else {
 					this.texture = Utils.GenerateNormalizedCopies(this.vertices).ToList();
 				}
 				IndexJunk ij = this.FindChild<IndexJunk>().FirstOrDefault();
-				if(ij != null) {
+				if(ij != null && ij.tris != null && ij.tris.Count > 0x00) {
 					this.indices = ij.tris;
 					this.materialstr = ij.materials;
 				}
@@ -616,6 +629,8 @@ namespace Renderer {
 					this.indices = Utils.GenerateIndicesRange(this.vertices.Count).ToList();
 					this.materialstr = new List<string>();
 				}
+
+				Console.WriteLine("#Vertex {0} #Faces {1}", this.vertices.Count, this.indices.Count);
 				this.normals = Utils.GenerateSmoothNormalsFromTriangles(this.vertices, this.indices.Select(x => new Tuple<int,int,int>(x.Item1, x.Item2, x.Item3)));
 				this.Collapse();
 			}
@@ -635,6 +650,7 @@ namespace Renderer {
 				}
 				List<Point3> texturc = this.texture.Select(x => new Point3(x)).ToList();
 				foreach(Tuple<ushort,ushort,ushort,ushort> tri in this.indices) {
+					//Console.WriteLine("material is {0} in list of {1}", tri.Item4, this.materials.Count);
 					yield return new Triangle(vertexc[tri.Item1], vertexc[tri.Item2], vertexc[tri.Item3], normalc[tri.Item1], normalc[tri.Item2], normalc[tri.Item3], texturc[tri.Item1], texturc[tri.Item2], texturc[tri.Item3], materials[tri.Item4]);
 				}
 			}

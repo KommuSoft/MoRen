@@ -98,10 +98,10 @@ namespace Renderer {
 			if(this.filename == null || this.loader != null) {
 				return;
 			}
-			else if(this.filename.EndsWith(".obj")) {
+			else if(this.filename.ToLower().EndsWith(".obj")) {
 				this.loader = new LoaderObj();
 			}
-			else if(this.filename.EndsWith(".3ds")) {
+			else if(this.filename.ToLower().EndsWith(".3ds")) {
 				this.loader = new Loader3ds();
 			}
 			if(this.loader != null) {

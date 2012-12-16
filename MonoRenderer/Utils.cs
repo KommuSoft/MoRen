@@ -46,6 +46,13 @@ namespace Renderer {
 				drain.Add(new Point3(x, y, z));
 			}
 		}
+
+		public static void Adapt3dsTextureList (List<Point3> pts) {
+			foreach(Point3 pt in pts) {
+				pt.X = ((pt.X%1.0d)+1.0d)%1.0d;
+				pt.Y = ((-pt.Y%1.0d)+1.0d)%1.0d;
+			}
+		}
 		
 		public static void ReadPoint2DFloatList (BinaryReader br, IList<Point3> drain) {
 			int n = br.ReadInt16();
