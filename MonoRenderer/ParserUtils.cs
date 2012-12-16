@@ -80,6 +80,7 @@ namespace Renderer {
 			}
 		}
 		public static TreeNode<string> ParseTreeBracketsComma (this string toParse) {
+			//Console.WriteLine("parsing {0}");
 			int funcsep = toParse.IndexOf('(');
 			if(funcsep < 0x00) {
 				funcsep = toParse.Length;
@@ -88,7 +89,7 @@ namespace Renderer {
 			int last = funcsep+0x01;
 			char c;
 			TreeNode<string> result = new TreeNode<string>(toParse.Substring(0x00, funcsep));
-			for(int i = funcsep; i < toParse.Length; i++) {
+			for(int i = funcsep+0x01; i < toParse.Length; i++) {
 				c = toParse[i];
 				if(c == '(') {
 					b++;
@@ -119,7 +120,7 @@ namespace Renderer {
 			char c;
 			arguments = new List<string>();
 			string result = toParse.Substring(0x00, funcsep);
-			for(int i = funcsep; i < toParse.Length; i++) {
+			for(int i = funcsep+0x01; i < toParse.Length; i++) {
 				c = toParse[i];
 				if(c == '(') {
 					b++;

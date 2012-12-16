@@ -22,7 +22,7 @@ using System;
 
 namespace Renderer {
 
-	public sealed class SphericalEnvironmentMap : IEnviromentMap {
+	public sealed class SphericalEnvironmentMap {
 
 		private readonly ColorAtMethod positiveZ;
 		private readonly ColorAtMethod negativeZ;
@@ -32,7 +32,6 @@ namespace Renderer {
 			this.positiveZ = ColorAtMethods.GetOrBlack(positiveZ);
 		}
 
-		#region IEnviromentMap implementation
 		public uint GetColorAt (Ray ray) {
 			Point3 p = new Point3(0.5d*ray.DX+0.5d, 0.5d*ray.DY+0.5d, 0.0d);
 			if(ray.Z0 >= 0.0d) {
@@ -42,7 +41,15 @@ namespace Renderer {
 				return this.negativeZ(p);
 			}
 		}
-		#endregion
+
+		public static implicit operator EnviromentMap (SphericalEnvironmentMap sem) {
+			if(sem != null) {
+				return sem.GetColorAt;
+			}
+			else {
+				return null;
+			}
+		}
 
 
 	}

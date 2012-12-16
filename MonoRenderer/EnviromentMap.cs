@@ -24,5 +24,22 @@ namespace Renderer {
 
 	public delegate uint EnviromentMap (Ray ray);
 
+	public static class EnvironmentMaps {
+
+		public static uint Black (Ray ray) {
+			return 0x00;
+		}
+
+		public static EnviromentMap GetOrBlack (EnviromentMap em) {
+			if(em == null) {
+				return Black;
+			}
+			else {
+				return em;
+			}
+		}
+
+	}
+
 }
 

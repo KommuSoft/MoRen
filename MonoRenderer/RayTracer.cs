@@ -43,7 +43,7 @@ namespace Renderer {
 		private readonly Ray[] rayCache;
 		private readonly uint maxDepth;
 		private readonly double distanceUnit = 255000000.0d;
-		private readonly IEnviromentMap EnvironmentMap;
+		private readonly EnviromentMap EnvironmentMap;
 		
 		public RayTracer (IAccelerator acc, Light[] lights, EnvironmentSettings settings) {
 			this.acc = acc;
@@ -54,7 +54,7 @@ namespace Renderer {
 			}
 			this.lights = lights;
 			this.ambientColor = settings.AmbientColor.Color;
-			this.EnvironmentMap = settings.EnvironmentMap;
+			this.EnvironmentMap = EnvironmentMaps.GetOrBlack(settings.EnvironmentMap);
 			this.lightTest = settings.LightTest;
 			this.sr = new Ray(new Point3(0.0d, 0.0d, 0.0d), dis);
 		}
@@ -121,7 +121,7 @@ namespace Renderer {
 				return ColorUtils.LoseIntensity(clr, distanceUnit, t);
 			}
 			else {
-				return 0x00000000;
+				return this.EnvironmentMap(ray);
 			}
 		}
 		

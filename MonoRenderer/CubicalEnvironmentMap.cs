@@ -22,7 +22,7 @@ using System;
 
 namespace Renderer {
 
-	public sealed class CubicalEnvironmentMap : IEnviromentMap {
+	public sealed class CubicalEnvironmentMap {
 
 		private readonly ColorAtMethod front;
 		private readonly ColorAtMethod back;
@@ -40,7 +40,6 @@ namespace Renderer {
 			this.down = ColorAtMethods.GetOrBlack(down);
 		}
 
-		#region IEnviromentMap implementation
 		public uint GetColorAt (Ray ray) {
 			double ux = Math.Abs(ray.DX), uy = Math.Abs(ray.DY), uz = Math.Abs(ray.DZ);
 			Point3 p = new Point3();
@@ -80,7 +79,15 @@ namespace Renderer {
 					}
 			}
 		}
-		#endregion
+
+		public static implicit operator EnviromentMap (CubicalEnvironmentMap cem) {
+			if(cem != null) {
+				return cem.GetColorAt;
+			}
+			else {
+				return null;
+			}
+		}
 
 	}
 }

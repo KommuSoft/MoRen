@@ -19,6 +19,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 using Renderer.SceneBuilding;
 
@@ -46,19 +47,19 @@ namespace Renderer.SceneBuilding {
 		public uint
 			DispersingAntiAliasingSqrt = 0x01;
 		[XmlElement("EnvironmentMap")]
-		public EnvMapWrapper envmapWrapper;
+		public EnvMapWrapper
+			envmapWrapper;
 		[XmlIgnore]
-		private IEnviromentMap
+		private EnviromentMap
 			envmapCache;
 		[XmlIgnore]
-		public IEnviromentMap EnvironmentMap {
+		public EnviromentMap EnvironmentMap {
+			[MethodImpl(MethodImplOptions.Synchronized)]
 			get {
-				if(envmapCache == null) {
-					return null;
+				if(envmapCache == null && envmapWrapper != null) {
+					this.envmapCache = envmapWrapper.ToEnvironmentMap();
 				}
-				else if() {
-
-				}
+				return envmapCache;
 			}
 		}
 
