@@ -135,6 +135,52 @@ namespace Renderer {
 				this.loader.Inject(items, transformation, parameters);
 			}
 		}
+		public override int GetHashCode () {
+			int hash = 0x00;
+			if(this.filename != null) {
+				hash ^= this.filename.GetHashCode();
+			}
+			if(this.environment != null) {
+				hash ^= this.environment.GetHashCode();
+			}
+			if(this.material != null) {
+				hash ^= this.material.GetHashCode();
+			}
+			if(this.parameters != null) {
+				for(int i = 0x00; i < this.parameters.Length; i++) {
+					hash ^= this.parameters[i].GetHashCode();
+				}
+			}
+			return hash;
+		}
+		public override bool Equals (object obj) {
+			if(obj is Mesh) {
+				Mesh m = (Mesh)obj;
+				if(this.Filename == m.Filename && this.Environment == m.Environment && this.Material == m.Material) {
+					if(this.Parameters == null && m.Parameters == null) {
+						return true;
+					}
+					else if(this.Parameters != null && m.Parameters != null) {
+						int n = this.Parameters.Length;
+						if(n != m.Parameters.Length) {
+							return false;
+						}
+						for(int i = 0x00; i < n; i++) {
+							if(this.parameters[i] != m.parameters[i]) {
+								return false;
+							}
+						}
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+			}
+			else {
+				return false;
+			}
+		}
 		
 		
 	}
