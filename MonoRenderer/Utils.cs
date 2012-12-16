@@ -303,6 +303,25 @@ namespace Renderer {
 			}
 		}
 
+		public static void CloseInterval (double x, double dx, double x0, double x1, ref double ta, ref double tb) {
+			double rayinv = Maths.SoftInv(dx);
+			if(double.IsNaN(rayinv)) {
+				if(x < x0 || x > x1) {
+					ta = double.PositiveInfinity;
+					tb = double.NegativeInfinity;
+				}
+			}
+			else {
+				double t0 = rayinv*(x0-x);
+				double t1 = rayinv*(x1-x);
+				double max = t0+t1;
+				double min = Math.Min(t0, t1);
+				max -= min;
+				ta = Math.Max(ta, min);
+				tb = Math.Min(tb, max);
+			}
+		}
+
 	}
 }
 

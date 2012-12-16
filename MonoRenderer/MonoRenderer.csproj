@@ -128,6 +128,7 @@
     <Compile Include="IMeshLoader.cs" />
     <Compile Include="MeshLoaderAttribute.cs" />
     <Compile Include="TriangleLoader.cs" />
+    <Compile Include="AxisAlignedBoundingBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

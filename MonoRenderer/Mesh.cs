@@ -176,6 +176,7 @@ namespace Renderer {
 						return false;
 					}
 				}
+				return false;
 			}
 			else {
 				return false;

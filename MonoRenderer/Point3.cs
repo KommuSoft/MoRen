@@ -484,6 +484,14 @@ namespace Renderer {
 			return p;
 		}
 
+		public static void TransformReferences (Matrix4 m, ref double x, ref double y, ref double z) {
+			double nx = m.M00*x+m.M01*y+m.M02*z+m.M03;
+			double ny = m.M00*x+m.M01*y+m.M02*z+m.M03;
+			z = m.M00*x+m.M01*y+m.M02*z+m.M03;
+			x = nx;
+			y = ny;
+		}
+
 		#region ITransformable implementation
 		public void Rotate (double ux, double uy, double uz, double theta) {
 			double cost = Math.Cos(theta);

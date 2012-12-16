@@ -26,7 +26,8 @@ namespace Renderer {
 		Naive			= 0x00,
 		Grid			= 0x01,
 		OctSpaceTree	= 0x02,
-		BinSpaceTree	= 0x03
+		BinSpaceTree	= 0x03,
+		SceneGraphTree	= 0x04
 	}
 }
 

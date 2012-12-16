@@ -19,11 +19,14 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Collections.Generic;
 using Renderer.SceneBuilding;
 
 namespace Renderer {
 
 	public class SceneGraphAccelerator : IAccelerator {
+
+		private static readonly Dictionary<Mesh,IAccelerator> cachedAccelerators = new Dictionary<Mesh, IAccelerator>();
 
 		public SceneGraphAccelerator (SceneGraph sg, double time) {
 
@@ -35,7 +38,24 @@ namespace Renderer {
 		}
 		#endregion
 
+		private sealed class SceneGraphAcceleratorNode {
 
+			private readonly SceneGraphAcceleratorNode[] children;
+			private readonly AxisAlignedBoundingBox bb;
+			private readonly Matrix4 toMatrix;
+			private readonly Matrix4 backMatrix;
+			private readonly IAccelerator accelerator;
+
+			public SceneGraphAcceleratorNode (SceneGraphAcceleratorNode[] children) {
+				this.children = children;
+
+			}
+
+			public void Hit () {
+
+			}
+
+		}
 
 	}
 }
