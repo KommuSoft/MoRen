@@ -41,16 +41,6 @@ namespace Renderer {
 		private List<Point3> tex = new List<Point3>();
 		private List<Point3> nor = new List<Point3>();
 		private List<int[]> tri = new List<int[]>();
-		private Material defaultMaterial = Material.DefaultMaterial;
-
-		public override Material DefaultMaterial {
-			get {
-				return this.defaultMaterial;
-			}
-			set {
-				this.defaultMaterial = value;
-			}
-		}
 		
 		public LoaderObj () {
 			InvokeActions();
@@ -121,7 +111,7 @@ namespace Renderer {
 				                     ItemOrNull(nor, seq[0x07]),
 				                     ItemOrNull(tex, seq[0x02]),
 				                     ItemOrNull(tex, seq[0x05]),
-				                     ItemOrNull(tex, seq[0x08]), this.defaultMaterial)
+				                     ItemOrNull(tex, seq[0x08]), this.DefaultMaterial)
 				);
 			}
 		}

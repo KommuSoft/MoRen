@@ -83,8 +83,8 @@ namespace Renderer {
 			int x0 = (x+Width-0x01)%Width;
 			int y0 = ((y+Height-0x01)%Height)*Width;
 			y *= Width;
-			double xdiff = ((int)(Pixel[y+x]&0xff)-(int)(Pixel[y+x0]&0xff))/100.0d;
-			double ydiff = ((int)(Pixel[y+x]&0xff)-(int)(Pixel[y0+x]&0xff))/100.0d;
+			double xdiff = ((int)(Pixel[y+x]&0xff)-(int)(Pixel[y+x0]&0xff))/255.0d;
+			double ydiff = ((int)(Pixel[y+x]&0xff)-(int)(Pixel[y0+x]&0xff))/255.0d;
 			normal.RotateLikeZVector(xdiff, ydiff);
 		}
 		private void setSize (int width, int height) {

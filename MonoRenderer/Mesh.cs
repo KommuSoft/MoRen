@@ -37,7 +37,7 @@ namespace Renderer {
 		private string
 			environment;
 		[XmlIgnore]
-		private MeshLoader
+		private IMeshLoader
 			loader;
 		[XmlIgnore]
 		private string[]
@@ -98,6 +98,9 @@ namespace Renderer {
 			if(this.filename == null || this.loader != null) {
 				return;
 			}
+			else if(this.filename.ToLower() == "sphere") {
+				this.loader = new SphereLoader();
+			}
 			else if(this.filename.ToLower().EndsWith(".obj")) {
 				this.loader = new LoaderObj();
 			}
@@ -105,12 +108,10 @@ namespace Renderer {
 				this.loader = new Loader3ds();
 			}
 			if(this.loader != null) {
-				FileStream fs = File.Open(this.filename, FileMode.Open, FileAccess.Read);
 				if(mat != null) {
 					this.loader.DefaultMaterial = mat;
 				}
-				this.loader.Load(this.environment, fs);
-				fs.Close();
+				this.loader.Load(this.environment, this.filename);
 			}
 		}
 

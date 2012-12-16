@@ -12,6 +12,7 @@ namespace Renderer {
 		public const double PI_4 = 0.25d*PI;
 		public const double PI2Inv = 1.0d/PI2;
 		public static readonly double Sqrt_2 = Math.Sqrt(0.5d);
+		public static readonly double Sqrt_3 = Math.Sqrt(1.0d/3.0d);
 		public const double OneThird = 1.0d/3.0d;
 		public const double GlobalEpsilon = 1e-6;
 		public const int NotBinaryIntMask = ~0x01;

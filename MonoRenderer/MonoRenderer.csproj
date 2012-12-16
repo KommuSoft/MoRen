@@ -55,7 +55,6 @@
     <Compile Include="Matrix4.cs" />
     <Compile Include="MatrixStack.cs" />
     <Compile Include="Mesh.cs" />
-    <Compile Include="MeshLoader.cs" />
     <Compile Include="NaiveAccelerator.cs" />
     <Compile Include="NameBase.cs" />
     <Compile Include="OctTreeAccelerator.cs" />
@@ -125,6 +124,8 @@
     <Compile Include="EnvMapWrapper.cs" />
     <Compile Include="CubicalEnvironmentMap.cs" />
     <Compile Include="EnviromentMap.cs" />
+    <Compile Include="SphereLoader.cs" />
+    <Compile Include="IMeshLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -31,16 +31,6 @@ namespace Renderer {
 		private ushort currentJunk;
 		private int nextJunkOffset;
 		private RootJunk root;
-		private Material defaultMaterial = Material.DefaultMaterial;
-
-		public override Material DefaultMaterial {
-			get {
-				return this.defaultMaterial;
-			}
-			set {
-				this.defaultMaterial = value;
-			}
-		}
 
 		public Loader3ds () {
 			
@@ -162,7 +152,7 @@ namespace Renderer {
 			}
 			parent.AddChild(child);
 			this.readChildren(br, st, child, until, ctx);
-			child.Resolve(ctx, this.defaultMaterial);
+			child.Resolve(ctx, this.DefaultMaterial);
 		}
 
 		private class ParsingContext {

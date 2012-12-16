@@ -1,5 +1,5 @@
 //
-//  MeshLoaderBase.cs
+//  SphereLoader.cs
 //
 //  Author:
 //       Willem Van Onsem <vanonsem.willem@gmail.com>
@@ -18,38 +18,34 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace Renderer {
 
-	public abstract class MeshLoaderBase : IMeshLoader {
+	public class SphereLoader : MeshLoaderBase {
 
-		private Material defaultMaterial;
-
-		public Material DefaultMaterial {
-			get {
-				return this.defaultMaterial;
-			}
-			set {
-				this.defaultMaterial = value;
-			}
+		public SphereLoader () {
 		}
 
-		public abstract void Load (string currentDir, Stream stream);
-		public abstract void Inject (List<RenderItem> items, Matrix4 transform, params string[] args);
-
-		public virtual void Load (string currentDir, string filename) {
-			if(filename != null) {
-				FileStream fs = File.Open(filename, FileMode.Open, FileAccess.Read);
-				this.Load(currentDir, fs);
-				fs.Close();
-			}
-			else {
-				this.Load(currentDir, (Stream)null);
-			}
+		#region implemented abstract members of Renderer.MeshLoaderBase
+		public override void Load (string currentDir, Stream stream) {
 		}
+
+
+		public override void Inject (List<RenderItem> items, Matrix4 transform, params string[] args) {
+			Point3 p = new Point3(0.0d, 0.0d, 0.0d);
+			p.Transform(transform);
+			Point3 q = new Point3(Maths.Sqrt_3, Maths.Sqrt_3, Maths.Sqrt_3);
+			q.TransformNonShift(transform);
+			items.Add(new Sphere(p, q.Length, this.DefaultMaterial));
+		}
+		#endregion
+
+		#region implemented virtual members of Renderer.MeshLoaderBase
+		public override void Load (string currentDir, string filename) {
+		}
+		#endregion
 
 	}
 }
