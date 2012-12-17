@@ -111,6 +111,24 @@ namespace Renderer {
 			this.Offset.Transform(m);
 			this.Direction.TransformNonShift(m);
 		}
+		public void TransformNormalize (Matrix4 m) {
+			this.Offset.Transform(m);
+			this.Direction.TransformNonShift(m);
+			this.Direction.Normalize();
+		}
+		public void TransformNormalize (Matrix4 m, out double lengthMul) {
+			this.Offset.Transform(m);
+			this.Direction.TransformNonShift(m);
+			lengthMul = this.Direction.Length;
+			double inv = 1.0d/lengthMul;
+			this.Direction.X *= inv;
+			this.Direction.Y *= inv;
+			this.Direction.Z *= inv;
+		}
+		public void InvTransform (Matrix4 m) {
+			this.Offset.InvTransform(m);
+			this.Direction.InvTransformNonShift(m);
+		}
 
 		public static Ray Random () {
 			Ray ray = new Ray(Maths.Random(), Maths.Random(), Maths.Random(), Maths.Random(), Maths.Random(), Maths.Random());

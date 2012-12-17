@@ -108,6 +108,13 @@ namespace Renderer.SceneBuilding {
 		public override int GetHashCode () {
 			return this.Name.GetHashCode();
 		}
+		public IEnumerable<SceneGraphNode> GetChildren (VersioningDictionary<double,string,SceneGraphNode> versioning, double version, int maxDepth, int depth) {
+			if(depth < maxDepth) {
+				foreach(string name in this.childNames) {
+					yield return versioning.GetMixedValue(version, name);
+				}
+			}
+		}
 		public void Inject (VersioningDictionary<double,string,SceneGraphNode> versioning, double version, int maxDepth, MatrixStack stack, List<RenderItem> ris, List<Light> lis, int depth) {
 			if(depth < maxDepth) {
 				stack.PushMatrix(this.transformer);
@@ -117,8 +124,8 @@ namespace Renderer.SceneBuilding {
 				if(this.LightWrapper != null) {
 					this.LightWrapper.Inject(stack.Top, lis);
 				}
-				foreach(string name in this.childNames) {
-					versioning.GetMixedValue(version, name).Inject(versioning, version, maxDepth, stack, ris, lis, depth+1);
+				foreach(SceneGraphNode sgn in this.GetChildren(versioning,version,maxDepth,depth)) {
+					sgn.Inject(versioning, version, maxDepth, stack, ris, lis, depth+1);
 				}
 				stack.PopMatrix();
 			}
