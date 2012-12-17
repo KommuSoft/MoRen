@@ -46,8 +46,8 @@ namespace TestRenderer {
 			for(int i = 0x00; i < 0x10000000; i++) {
 				Ray ray = Ray.Random();
 				ray.NormalizeDirection();
-				ria = ga.CalculateHit(ray, out ta, out dummy, double.PositiveInfinity);
-				rib = oa.CalculateHit(ray, out tb, out dummy, double.PositiveInfinity);
+				ria = ga.CalculateHit(ray, out ta, double.PositiveInfinity);
+				rib = oa.CalculateHit(ray, out tb, double.PositiveInfinity);
 				TestParameters.TestRIEqual(ray, ta, tb, ris, ria, rib);
 			}
 		}
@@ -73,8 +73,8 @@ namespace TestRenderer {
 			for(int i = 0x00; i < int.MaxValue; i++) {
 				Ray ray = Ray.Random();
 				ray.NormalizeDirection();
-				ria = na.CalculateHit(ray, out ta, out dummy, double.PositiveInfinity);
-				rib = oa.CalculateHit(ray, out tb, out dummy, double.PositiveInfinity);
+				ria = na.CalculateHit(ray, out ta, double.PositiveInfinity);
+				rib = oa.CalculateHit(ray, out tb, double.PositiveInfinity);
 				TestParameters.TestRIEqual(ray, ta, tb, ris, ria, rib);
 			}
 		}
@@ -94,8 +94,8 @@ namespace TestRenderer {
 				Action<Point3> dummy;
 				for(int k = 0; k < TestParameters.RayTest; k++) {
 					Ray ray = Ray.Random();
-					ria = ga.CalculateHit(ray, out ta, out dummy, double.PositiveInfinity);
-					rib = oa.CalculateHit(ray, out tb, out dummy, double.PositiveInfinity);
+					ria = ga.CalculateHit(ray, out ta, double.PositiveInfinity);
+					rib = oa.CalculateHit(ray, out tb, double.PositiveInfinity);
 					TestParameters.TestRIEqual(ray, ta, tb, ris, ria, rib);
 				}
 	
