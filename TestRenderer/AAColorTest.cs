@@ -59,6 +59,34 @@ namespace TestRenderer {
 		}
 
 		[Test()]
+		public void AddTest2 () {
+			for(int i = 0; i < TestParameters.ColorTest; i++) {
+				uint c1 = (uint)Maths.RandomGenerator.Next()&0xffffff;
+				uint c2 = (uint)Maths.RandomGenerator.Next()&0xffffff;
+				uint c3 = ColorUtils.Add(c1, c2);
+				uint c4 = (new Color(c1)+new Color(c2)).RGB8;
+				string message = string.Format("{0} vs {1} from {2} and {3}", c3.ToString("X"), c4.ToString("X"), c1.ToString("X"), c2.ToString("X"));
+				Assert.IsTrue(Math.Abs(((int)(c3&0xff))-((int)(c4&0xff))) <= 0x01, message);
+				Assert.IsTrue(Math.Abs(((int)(c3&0xff00))-((int)(c4&0xff00))) <= 0x0100, message);
+				Assert.IsTrue(Math.Abs(((int)(c3&0xff0000))-((int)(c4&0xff0000))) <= 0x010000, message);
+			}
+		}
+
+		[Test()]
+		public void MulTest () {
+			for(int i = 0; i < TestParameters.ColorTest; i++) {
+				uint c1 = (uint)Maths.RandomGenerator.Next()&0xffffff;
+				uint c2 = (uint)Maths.RandomGenerator.Next()&0xffffff;
+				uint c3 = ColorUtils.Multiply(c1, c2);
+				uint c4 = (new Color(c1)*new Color(c2)).RGB8;
+				string message = string.Format("{0} vs {1} from {2} and {3}", c3.ToString("X"), c4.ToString("X"), c1.ToString("X"), c2.ToString("X"));
+				Assert.IsTrue(Math.Abs(((int)(c3&0xff))-((int)(c4&0xff))) <= 0x01, message);
+				Assert.IsTrue(Math.Abs(((int)(c3&0xff00))-((int)(c4&0xff00))) <= 0x0100, message);
+				Assert.IsTrue(Math.Abs(((int)(c3&0xff0000))-((int)(c4&0xff0000))) <= 0x010000, message);
+			}
+		}
+
+		[Test()]
 		public void ToRGBTest () {
 			for(uint i = 0; i < 0x1000000; i++) {
 				Assert.AreEqual(i, new Color(i).RGB8);
