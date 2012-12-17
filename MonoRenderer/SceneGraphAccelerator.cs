@@ -60,8 +60,9 @@ namespace Renderer {
 		#region IAccelerator implementation
 		public RenderItem CalculateHit (Ray ray, out double t, double MaxT) {
 			Ray clone = new Ray(ray);
+			SceneGraphAcceleratorNodeComparator comp = new SceneGraphAcceleratorNodeComparator(new AxisAlignedBoundingBox.BoundingBoxRayComparator(clone));
 			RenderItem ri = null;
-			this.root.Hit(clone, ref ri, ref MaxT);
+			this.root.Hit(clone, comp, ref ri, 1.0d, ref MaxT);
 			t = MaxT;
 			return ri;
 		}
@@ -74,12 +75,7 @@ namespace Renderer {
 			private readonly Matrix4 toMatrix;
 			private readonly Matrix4 backMatrix;
 			private readonly IAccelerator accelerator;
-
-			public AxisAlignedBoundingBox OuterBoundingBox {
-				get {
-					return new AxisAlignedBoundingBox(this.bb, this.backMatrix);
-				}
-			}
+			public readonly AxisAlignedBoundingBox OuterBoundingBox;
 
 			public SceneGraphAcceleratorNode (IEnumerable<SceneGraphAcceleratorNode> children, AxisAlignedBoundingBox aabb, Matrix4 transformer, IAccelerator accelerator) {
 				this.children = children.ToArray();
@@ -87,20 +83,44 @@ namespace Renderer {
 				this.backMatrix = transformer;
 				this.toMatrix = new Matrix4(backMatrix);
 				this.toMatrix.Invert();
+				this.OuterBoundingBox = new AxisAlignedBoundingBox(this.bb, this.backMatrix);
 				this.accelerator = accelerator;
 			}
 
-			public void Hit (Ray transformedRay, ref RenderItem ri, ref double maxT) {
-				double mul;
-				transformedRay.TransformNormalize(toMatrix, out mul);
+			public void Hit (Ray transformedRay, SceneGraphAcceleratorNodeComparator comp, ref RenderItem ri, double mul0, ref double maxT) {
+				double mul1;
+				transformedRay.TransformNormalize(toMatrix, out mul1);
+				mul0 *= mul1;
 				double tt;
-				RenderItem other = this.accelerator.CalculateHit(transformedRay, out tt, mul*maxT);
+				RenderItem other = this.accelerator.CalculateHit(transformedRay, out tt, mul0*maxT);
 				if(other != null) {
-					maxT = mul*tt;
+					maxT = mul0*tt;
 					ri = other;
+				}
+				SceneGraphAcceleratorNode[] children = (SceneGraphAcceleratorNode[])this.children.Clone();
+				Array.Sort(children, comp);
+				foreach(SceneGraphAcceleratorNode sgan in children) {
+					sgan.Hit(transformedRay, comp, ref ri, mul0, ref maxT);
 				}
 				transformedRay.Transform(backMatrix);
 			}
+
+		}
+
+		private sealed class SceneGraphAcceleratorNodeComparator : IComparer<SceneGraphAcceleratorNode> {
+
+			private readonly AxisAlignedBoundingBox.BoundingBoxRayComparator comparator;
+
+			public SceneGraphAcceleratorNodeComparator (AxisAlignedBoundingBox.BoundingBoxRayComparator comparator) {
+				this.comparator = comparator;
+			}
+
+			#region IComparer implementation
+			public int Compare (SceneGraphAcceleratorNode x, SceneGraphAcceleratorNode y) {
+				return this.comparator.Compare(x.OuterBoundingBox, y.OuterBoundingBox);
+			}
+			#endregion
+
 
 		}
 

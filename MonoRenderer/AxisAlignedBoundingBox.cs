@@ -219,6 +219,29 @@ namespace Renderer {
 		}
 		#endregion
 
+		public class BoundingBoxRayComparator : IComparer<AxisAlignedBoundingBox> {
+
+			private readonly Ray ray;
+
+			public BoundingBoxRayComparator (Ray ray) {
+				this.ray = ray;
+			}
+
+			#region IComparer implementation
+			public int Compare (AxisAlignedBoundingBox x, AxisAlignedBoundingBox y) {
+				double t0, t1, tdummy;
+				if(y.IntersectingBox(this.ray, out t1, out tdummy)) {
+					if(y.IntersectingBox(this.ray, out t0, out tdummy)) {
+						return t0.CompareTo(t1);
+					}
+					return 0x01;
+				}
+				return -0x01;
+			}
+			#endregion
+
+		}
+
 
 	}
 }
