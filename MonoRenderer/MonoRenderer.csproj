@@ -129,6 +129,8 @@
     <Compile Include="MeshLoaderAttribute.cs" />
     <Compile Include="TriangleLoader.cs" />
     <Compile Include="AxisAlignedBoundingBox.cs" />
+    <Compile Include="CameraFollowing.cs" />
+    <Compile Include="CameraReferencePoint.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

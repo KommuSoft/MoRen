@@ -27,9 +27,14 @@ namespace Renderer.SceneBuilding {
 
 	[XmlType("SceneGraphNode")]
 	public sealed class SceneGraphNode : NameBase, IMixable<SceneGraphNode> {
+
 		[XmlIgnore]
 		private List<string>
 			childNames = new List<string>();
+
+		[XmlIgnore]
+		private List<CameraFollowing>
+			cameraFollowings;
 
 		[XmlIgnore]
 		private string
@@ -41,6 +46,17 @@ namespace Renderer.SceneBuilding {
 		[XmlIgnore]
 		private Mesh
 			mesh = null;
+
+		[XmlArray("CameraFollowings")]
+		[XmlArrayItem("CameraFollowing")]
+		public List<CameraFollowing> CameraFollowings {
+			get {
+				return this.cameraFollowings;
+			}
+			set {
+				this.cameraFollowings = value;
+			}
+		}
 
 		[XmlArray("SubNodes")]
 		[XmlArrayItem("SubNode")]
@@ -81,11 +97,12 @@ namespace Renderer.SceneBuilding {
 				this.childNames.Add(sgn.Name);
 			}
 		}
-		private SceneGraphNode (Matrix4 matrix, List<string> children, Mesh mesh, LightWrapper lightWrapper) {
+		private SceneGraphNode (Matrix4 matrix, List<string> children, List<CameraFollowing> followings, Mesh mesh, LightWrapper lightWrapper) {
 			this.Transformer = matrix;
 			this.childNames = children;
 			this.mesh = mesh;
 			this.LightWrapper = lightWrapper;
+			this.cameraFollowings = followings;
 		}
 		public SceneGraphNode (Matrix4 transformer, IEnumerable<SceneGraphNode> subNodes) : this(subNodes) {
 			this.Transformer = transformer;
@@ -115,7 +132,7 @@ namespace Renderer.SceneBuilding {
 				}
 			}
 		}
-		public void Inject (VersioningDictionary<double,string,SceneGraphNode> versioning, double version, int maxDepth, MatrixStack stack, List<RenderItem> ris, List<Light> lis, int depth) {
+		public void Inject (VersioningDictionary<double,string,SceneGraphNode> versioning, double version, int maxDepth, MatrixStack stack, CameraWrapper cw, List<RenderItem> ris, List<Light> lis, int depth) {
 			if(depth < maxDepth) {
 				stack.PushMatrix(this.Transformer);
 				if(this.Mesh != null) {
@@ -125,7 +142,12 @@ namespace Renderer.SceneBuilding {
 					this.LightWrapper.Inject(stack.Top, lis);
 				}
 				foreach(SceneGraphNode sgn in this.GetChildren(versioning,version,maxDepth,depth)) {
-					sgn.Inject(versioning, version, maxDepth, stack, ris, lis, depth+1);
+					sgn.Inject(versioning, version, maxDepth, stack, cw, ris, lis, depth+1);
+				}
+				if(this.cameraFollowings != null) {
+					foreach(CameraFollowing cf in this.cameraFollowings) {
+						cf.Apply(cw, stack.Top);
+					}
 				}
 				stack.PopMatrix();
 			}
@@ -139,7 +161,7 @@ namespace Renderer.SceneBuilding {
 		}
 		#region IMixable implementation
 		public SceneGraphNode MixWith (SceneGraphNode other, double factor) {
-			return new SceneGraphNode(Matrix4.InterpolateParse(this.transformerString, other.transformerString, factor), this.childNames, this.mesh, this.LightWrapper);
+			return new SceneGraphNode(Matrix4.InterpolateParse(this.transformerString, other.transformerString, factor), this.childNames, this.cameraFollowings, this.mesh, this.LightWrapper);
 		}
 		#endregion
 

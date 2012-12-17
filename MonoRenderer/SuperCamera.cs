@@ -94,7 +94,8 @@ namespace Renderer.SceneBuilding {
 		}
 
 		private Camera buildCameraCalculateAt (SceneDescription description, double time) {
-			Tuple<List<RenderItem>,List<Light>> scene = description.SceneGraph.Inject(time);
+			CameraWrapper camw = description.CameraWrapper;
+			Tuple<List<RenderItem>,List<Light>> scene = description.SceneGraph.Inject(time, camw);
 			List<RenderItem> ris = scene.Item1;
 			Light[] lights = scene.Item2.ToArray();
 			EnvironmentSettings es = description.EnvironmentSettings;
@@ -106,7 +107,7 @@ namespace Renderer.SceneBuilding {
 			DateTime now = DateTime.Now;
 			Console.Write("{0}\t", (now-old).TotalMilliseconds.ToString("0.000"));
 #endif
-			Camera cam = description.CameraWrapper.Camera(acc, lights, es);
+			Camera cam = camw.Camera(acc, lights, es);
 			cam.CalculateImage();
 			return cam;
 		}
