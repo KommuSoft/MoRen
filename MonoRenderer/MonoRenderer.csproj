@@ -131,6 +131,7 @@
     <Compile Include="AxisAlignedBoundingBox.cs" />
     <Compile Include="CameraFollowing.cs" />
     <Compile Include="CameraReferencePoint.cs" />
+    <Compile Include="RenderingTechnology.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

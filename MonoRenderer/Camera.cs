@@ -37,6 +37,7 @@ namespace Renderer {
 		private readonly Texture raster = new Texture(1, 1);
 		private double screenDistance = 1.5d;
 		private bool dirty = true;
+		private double displacement = 0.0d;
 		private double roll = 0.0d;
 		private double foVH = 0.5d*Math.PI;
 		public readonly Light[] Lights;
@@ -65,7 +66,14 @@ namespace Renderer {
 				this.dirty = true;
 			}
 		}
-
+		public double Displacement {
+			get {
+				return this.displacement;
+			}
+			set {
+				this.displacement = value;
+			}
+		}
 		public double Roll {
 			get {
 				return this.roll;
@@ -195,11 +203,12 @@ namespace Renderer {
 			double dwhad = dispersion*dwh;
 			double yp = dwh*yfrom-0.5d*sh-0.5d*dwha*aasqrt, xp;
 			double yd, xd;
+			double dis = this.displacement;
 			ColorCache cc;
 			#region PIXEL
 			for(; k < ks;) {
 				kc = k+Width;
-				xp = -0.5d*sw-0.5d*dwha*aasqrt;
+				xp = -0.5d*sw-0.5d*dwha*aasqrt-dis;
 				for(; k < kc;) {
 					l = 0x00;
 					cc = new ColorCache(0x00);

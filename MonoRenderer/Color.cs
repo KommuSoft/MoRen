@@ -125,10 +125,48 @@ namespace Renderer {
 			uint scale = (uint)Math.Round(scal*Color.MaxValue)+0x01;
 			return new Color((((c.Data&BlueMask)*scale)>>0x14)|((((c.Data&GreenMask)*scale)>>0x14)&GreenMask)|((((c.Data&RedMask)>>0x14)*scale)&RedMask));
 		}
-		/*public static Color operator * (Color c, uint scale) {
-			scale++;
-			return new Color((((c.Data&BlueMask)*scale)>>0x14)|((((c.Data&GreenMask)*scale)>>0x14)&GreenMask)|((((c.Data&RedMask)>>0x14)*scale)&RedMask));
-		}*/
+		public static Color[] MakeGradient (int size, params Color[] colors) {
+			int n = colors.Length;
+			if(n == 0x00)
+				return null;
+			Color[] pal = new Color[size];
+			Color c2 = colors[0x00], c1;
+			if(n == 0x01) {
+				for(int i = 0; i < size; i++)
+					pal[i] = c2;
+			}
+			else {
+				uint r, g, b, r1, g1, b1, r2, g2, b2;
+				int dr, dg, db, pos1, pos2, range, i = 0;
+				n--;
+				for(int c = 0; c < n; c++) {
+					c1 = c2;
+					c2 = colors[c+0x01];
+					pos1 = c*size/n;
+					pos2 = (c+0x01)*size/n;
+					range = pos2-pos1;
+					r1 = c1.RedInt<<0x10;
+					g1 = c1.GreenInt<<0x10;
+					b1 = c1.BlueInt<<0x10;
+					r2 = c2.RedInt<<0x10;
+					g2 = c2.GreenInt<<0x10;
+					b2 = c2.BlueInt<<0x10;
+					dr = (int)(r2-r1)/range;
+					dg = (int)(g2-g1)/range;
+					db = (int)(b2-b1)/range;
+					r = r1;
+					g = g1;
+					b = b1;
+					for(; i < pos2; i++) {
+						pal[i] = new Color(r>>0x10, g>>0x10, b>>0x10);
+						r = (uint)(r+dr);
+						g = (uint)(g+dg);
+						b = (uint)(b+db);
+					}
+				}
+			}
+			return pal;
+		}
 		public static Color operator * (Color c1, Color c2) {
 			return new Color((((c1.Data&BlueMask)*((c2.Data&BlueMask)+0x01))>>0x14)|((((c1.Data&GreenMask)*(((c2.Data&GreenMask)>>0x15)+0x01))>>0x14)&GreenMask)|((((c1.Data&RedMask)>>0x14)*((c2.Data>>0x2a)+0x01))&RedMask));
 		}
@@ -141,9 +179,6 @@ namespace Renderer {
 		public static Color operator ~ (Color c) {
 			return new Color((~c.Data)&NonOverflowMask);
 		}
-		/*public static implicit operator Color (uint rgb) {
-			return new Color(rgb);
-		}*/
 
 	}
 }

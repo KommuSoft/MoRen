@@ -136,6 +136,17 @@ namespace Renderer {
 			uint t = (0x03*r+0x06*g+b)/0x0a;
 			return (t<<0x10)|(t<<0x08)|t;
 		}
+		public static uint ToCyanRed (uint ccolor, uint rcolor) {
+			uint cr = (ccolor&RedChannel)>>0x10;
+			uint cg = (ccolor&GreenChannel)>>0x08;
+			uint cb = ccolor&BlueChannel;
+			uint ct = (0x03*cr+0x06*cg+cb)/0x0a;
+			uint rr = (rcolor&RedChannel)>>0x10;
+			uint rg = (rcolor&GreenChannel)>>0x08;
+			uint rb = rcolor&BlueChannel;
+			uint rt = (0x03*rr+0x06*rg+rb)/0x0a;
+			return (rt<<0x10)|(ct<<0x08)|ct;
+		}
 		public static uint GetGreen (uint color) {
 			return (color&GreenChannel)>>0x08;
 		}

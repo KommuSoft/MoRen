@@ -86,6 +86,15 @@ namespace Renderer {
 			double ydiff = ((int)(Pixel[y+x]&0xff)-(int)(Pixel[y0+x]&0xff))/255.0d;
 			normal.RotateLikeZVector(xdiff, ydiff);
 		}
+		public static Texture ToCyanRed (Texture cyanTexture, Texture redTexture) {
+			Texture result = new Texture(cyanTexture.Width, cyanTexture.Height);
+			uint[] pixc = cyanTexture.Pixel;
+			uint[] pixr = cyanTexture.Pixel;
+			uint[] pix = cyanTexture.Pixel;
+			for(int i = 0; i < pix.Length; i++) {
+				pix[i] = ColorUtils.ToCyanRed(pixc[i], pixr[i]);
+			}
+		}
 		private void setSize (int width, int height) {
 			int offset = width*height;
 			int offset2;

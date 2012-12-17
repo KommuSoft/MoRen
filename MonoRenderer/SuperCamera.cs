@@ -34,6 +34,7 @@ namespace Renderer.SceneBuilding {
 		private SuperCameraTask task = SuperCameraTask.MakeImage;
 		private string outputFile;
 		private double t0, t1;
+		private RenderingTechnology rt = RenderingTechnology.Normal;
 
 		[XmlAttribute("ClosureTime")]
 		public double ClosureTime {
@@ -51,6 +52,14 @@ namespace Renderer.SceneBuilding {
 			}
 			set {
 				this.t0 = value;
+			}
+		}
+		public RenderingTechnology RenderingTechnology {
+			get {
+				return this.rt;
+			}
+			set {
+				this.rt = value;
 			}
 		}
 		[XmlAttribute("T1")]
@@ -93,7 +102,7 @@ namespace Renderer.SceneBuilding {
 		public SuperCamera () {
 		}
 
-		private Camera buildCameraCalculateAt (SceneDescription description, double time) {
+		private Texture buildCameraCalculateAt (SceneDescription description, double time) {
 			CameraWrapper camw = description.CameraWrapper;
 			Tuple<List<RenderItem>,List<Light>> scene = description.SceneGraph.Inject(time, camw);
 			List<RenderItem> ris = scene.Item1;
@@ -109,7 +118,7 @@ namespace Renderer.SceneBuilding {
 #endif
 			Camera cam = camw.Camera(acc, lights, es);
 			cam.CalculateImage();
-			return cam;
+			return cam.Raster;
 		}
 		private void clearTmpFolder () {
 			foreach(var file in Directory.EnumerateFiles ("/tmp", "output*")) {
@@ -124,7 +133,7 @@ namespace Renderer.SceneBuilding {
 		private void convertToMovie () {
 			Process proc = new Process();
 			proc.StartInfo.FileName = "ffmpeg";
-			proc.StartInfo.Arguments = string.Format("-y -i /tmp/output%05d.jpg -vcodec mpeg4 {0}", this.outputFile);
+			proc.StartInfo.Arguments = string.Format("-y -i /tmp/output%05d.jpg -qscale 1 -vcodec mpeg4 {0}", this.outputFile);
 			proc.Start();
 			proc.WaitForExit();
 		}
@@ -132,7 +141,7 @@ namespace Renderer.SceneBuilding {
 			double t = t0-dt;
 			Texture tex;
 			for(int i = motionblurCache.Length-0x02; i >= 0x00; i--) {
-				tex = buildCameraCalculateAt(sd, t).Raster;
+				tex = buildCameraCalculateAt(sd, t);
 				motionblurCache[i] = tex;
 				sum.AddTexture(tex);
 				t -= dt;
@@ -149,7 +158,7 @@ namespace Renderer.SceneBuilding {
 			Texture tex;
 			this.fillMotionBlurCache(description, motionblurCache, blurCache, min, dt);
 			if(this.Task == SuperCameraTask.MakeImage) {
-				blurCache.AddTexture(this.buildCameraCalculateAt(description, min).Raster);
+				blurCache.AddTexture(this.buildCameraCalculateAt(description, min));
 				blurCache.MixWithAlpha(nDelta).Save(this.outputFile);
 			}
 			else if(this.Task == SuperCameraTask.MakeMovie) {
@@ -163,7 +172,7 @@ namespace Renderer.SceneBuilding {
 				for(double t = min; t <= max; t += dt) {
 					imagename = string.Format("/tmp/output{0}.png", index.ToString("00000"));
 					jpegname = string.Format("{0} /tmp/output{1}.jpg", imagename, index.ToString("00000"));
-					tex = this.buildCameraCalculateAt(description, t).Raster;
+					tex = this.buildCameraCalculateAt(description, t);
 					blurCache.RemoveTexture(motionblurCache[j]);
 					blurCache.AddTexture(tex);
 					blurCache.MixWithAlpha(nDelta).Save(imagename);
