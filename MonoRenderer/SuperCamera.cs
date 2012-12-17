@@ -101,7 +101,7 @@ namespace Renderer.SceneBuilding {
 #if DEBUG
 			DateTime old = DateTime.Now;
 #endif
-			IAccelerator acc = description.AcceleratorWrapper.CreateAccelerator(ris);
+			IAccelerator acc = description.AcceleratorWrapper.CreateAccelerator(description.SceneGraph, time, ris);
 #if DEBUG
 			DateTime now = DateTime.Now;
 			Console.Write("{0}\t", (now-old).TotalMilliseconds.ToString("0.000"));

@@ -41,8 +41,8 @@ namespace Renderer {
 			if(mesh != null) {
 				if(!cachedAccelerators.TryGetValue(mesh, out acc)) {
 					List<RenderItem> ris = new List<RenderItem>();
-					aabb.Union(ris);
 					mesh.Inject(ris);
+					aabb.Union(ris);
 					acc = new OctTreeAccelerator(ris);
 					cachedAccelerators.Add(mesh, acc);
 				}
@@ -88,21 +88,26 @@ namespace Renderer {
 			}
 
 			public void Hit (Ray transformedRay, SceneGraphAcceleratorNodeComparator comp, ref RenderItem ri, double mul0, ref double maxT) {
-				double mul1;
-				transformedRay.TransformNormalize(toMatrix, out mul1);
+				double mul1, dummy0, dummy1;
+				transformedRay.TransformNormalize(this.toMatrix, out mul1);
 				mul0 *= mul1;
+				//Console.WriteLine("{0} -> {1}: {2}", transformedRay, bb, this.bb.IntersectingBox(transformedRay, out dummy0, out dummy1));
+				//if(this.bb.IntersectingBox(transformedRay, out dummy0, out dummy1) && dummy0 < mul0*maxT) {
 				double tt;
-				RenderItem other = this.accelerator.CalculateHit(transformedRay, out tt, mul0*maxT);
-				if(other != null) {
-					maxT = mul0*tt;
-					ri = other;
+				if(this.accelerator != null) {
+					RenderItem other = this.accelerator.CalculateHit(transformedRay, out tt, mul0*maxT);
+					if(other != null) {
+						maxT = mul0*tt;
+						ri = other;
+					}
 				}
 				SceneGraphAcceleratorNode[] children = (SceneGraphAcceleratorNode[])this.children.Clone();
 				Array.Sort(children, comp);
 				foreach(SceneGraphAcceleratorNode sgan in children) {
 					sgan.Hit(transformedRay, comp, ref ri, mul0, ref maxT);
 				}
-				transformedRay.Transform(backMatrix);
+				//}
+				transformedRay.TransformNormalize(this.backMatrix);
 			}
 
 		}

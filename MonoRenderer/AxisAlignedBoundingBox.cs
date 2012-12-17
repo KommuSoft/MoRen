@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Renderer {
 
@@ -218,6 +219,10 @@ namespace Renderer {
 			this.Adapt(x => x.Transform(N));
 		}
 		#endregion
+
+		public override string ToString () {
+			return string.Format("[AxisAlignedBoundingBox: X:[{0};{1}] Y:[{2};{3}] Z:[{3};{4}]]", X0, X1, Y0, Y1, Z0, Z1);
+		}
 
 		public class BoundingBoxRayComparator : IComparer<AxisAlignedBoundingBox> {
 

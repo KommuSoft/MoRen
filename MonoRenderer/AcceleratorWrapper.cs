@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using Renderer.SceneBuilding;
 
 namespace Renderer {
 
@@ -34,7 +35,10 @@ namespace Renderer {
 		public AcceleratorWrapper () {
 		}
 
-		public IAccelerator CreateAccelerator (List<RenderItem> items) {
+		public IAccelerator CreateAccelerator (SceneGraph sg, double time, List<RenderItem> items) {
+			if(this.type == AcceleratorType.SceneGraphTree) {
+				return new SceneGraphAccelerator(sg, time);
+			}
 			switch(this.type) {
 				case AcceleratorType.Grid:
 					return new GridAccelerator(items);
