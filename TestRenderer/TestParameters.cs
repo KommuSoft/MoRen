@@ -28,12 +28,12 @@ namespace TestRenderer {
 	public static class TestParameters {
 
 
-		public const int TriceratopsTest = 0x10*short.MaxValue;
-		public const int BuildTest = 0x10*short.MaxValue;
+		public const int TriceratopsTest = short.MaxValue;
+		public const int BuildTest = short.MaxValue;
 		public const int RayTest = short.MaxValue>>0x02;
-		public const int PointTest = int.MaxValue;
-		public const int ColorTest = int.MaxValue>>0x0a;
-		public const int ColorDepthTest = short.MaxValue;
+		public const int PointTest = short.MaxValue<<0x04;
+		public const int ColorTest = short.MaxValue<<0x04;
+		public const int ColorDepthTest = short.MaxValue<<0x04;
 
 		public static void TestRIEqual (Ray ray, double ta, double tb, List<RenderItem> ris, RenderItem ria, RenderItem rib) {
 			if(ria != rib) {
