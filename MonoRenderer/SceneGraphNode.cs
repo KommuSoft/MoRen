@@ -36,8 +36,8 @@ namespace Renderer.SceneBuilding {
 			transformerString;
 
 		[XmlIgnore]
-		private Matrix4
-			transformer;
+		public Matrix4
+			Transformer;
 		[XmlIgnore]
 		private Mesh
 			mesh = null;
@@ -82,13 +82,13 @@ namespace Renderer.SceneBuilding {
 			}
 		}
 		private SceneGraphNode (Matrix4 matrix, List<string> children, Mesh mesh, LightWrapper lightWrapper) {
-			this.transformer = matrix;
+			this.Transformer = matrix;
 			this.childNames = children;
 			this.mesh = mesh;
 			this.LightWrapper = lightWrapper;
 		}
 		public SceneGraphNode (Matrix4 transformer, IEnumerable<SceneGraphNode> subNodes) : this(subNodes) {
-			this.transformer = transformer;
+			this.Transformer = transformer;
 		}
 		public SceneGraphNode (Mesh mesh) : this() {
 			this.Mesh = mesh;
@@ -117,7 +117,7 @@ namespace Renderer.SceneBuilding {
 		}
 		public void Inject (VersioningDictionary<double,string,SceneGraphNode> versioning, double version, int maxDepth, MatrixStack stack, List<RenderItem> ris, List<Light> lis, int depth) {
 			if(depth < maxDepth) {
-				stack.PushMatrix(this.transformer);
+				stack.PushMatrix(this.Transformer);
 				if(this.Mesh != null) {
 					this.Mesh.Inject(stack.Top, ris);
 				}
@@ -132,7 +132,7 @@ namespace Renderer.SceneBuilding {
 		}
 
 		public void Resolve (Dictionary<string,Material> materialDictionary) {
-			this.transformer = Matrix4.Parse(this.transformerString);
+			this.Transformer = Matrix4.Parse(this.transformerString);
 			if(this.Mesh != null) {
 				this.Mesh.Resolve(materialDictionary);
 			}

@@ -135,6 +135,11 @@ namespace Renderer {
 				this.loader.Inject(items, transformation, parameters);
 			}
 		}
+		public void Inject (List<RenderItem> items) {
+			if(this.loader != null) {
+				this.loader.Inject(items, parameters);
+			}
+		}
 		public override int GetHashCode () {
 			int hash = 0x00;
 			if(this.filename != null) {

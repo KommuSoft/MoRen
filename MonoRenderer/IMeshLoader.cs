@@ -35,6 +35,7 @@ namespace Renderer {
 		void Load (string currentDir, string filename);
 		bool CanParse (string filename);
 		void Inject (List<RenderItem> items, Matrix4 transform, params string[] args);
+		void Inject (List<RenderItem> items, params string[] args);
 		IMeshLoader Clone ();
 
 	}

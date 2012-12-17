@@ -69,7 +69,8 @@ namespace Renderer {
 			this.Offset = offset;
 			this.Direction = direction;
 		}
-
+		public Ray (Ray ray) : this(ray.X0,ray.Y0,ray.Z0,ray.DX,ray.DY,ray.DZ) {
+		}
 		public Ray (double x, double y, double z, double dx, double dy, double dz) {
 			this.Offset = new Point3(x, y, z);
 			this.Direction = new Point3(dx, dy, dz);
@@ -119,11 +120,10 @@ namespace Renderer {
 		public void TransformNormalize (Matrix4 m, out double lengthMul) {
 			this.Offset.Transform(m);
 			this.Direction.TransformNonShift(m);
-			lengthMul = this.Direction.Length;
-			double inv = 1.0d/lengthMul;
-			this.Direction.X *= inv;
-			this.Direction.Y *= inv;
-			this.Direction.Z *= inv;
+			lengthMul = 1.0d/this.Direction.Length;
+			this.Direction.X *= lengthMul;
+			this.Direction.Y *= lengthMul;
+			this.Direction.Z *= lengthMul;
 		}
 		public void InvTransform (Matrix4 m) {
 			this.Offset.InvTransform(m);

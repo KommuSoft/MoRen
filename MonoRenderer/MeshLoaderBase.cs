@@ -40,6 +40,9 @@ namespace Renderer {
 
 		public abstract void Load (string currentDir, Stream stream);
 		public abstract void Inject (List<RenderItem> items, Matrix4 transform, params string[] args);
+		public void Inject (List<RenderItem> items, params string[] args) {
+			this.Inject(items, Matrix4.DummyMatrix, args);
+		}
 
 		public virtual void Load (string currentDir, string filename) {
 			if(filename != null) {

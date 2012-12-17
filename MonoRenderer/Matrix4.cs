@@ -33,6 +33,10 @@ namespace Renderer {
 		[XmlIgnore]
 		private static readonly Regex
 			rgx = new Regex(string.Format(@"^((?<id>Id(entity)?)|(?<rotxyz>Rotate ?(?<dim>X|Y|Z) {0})|(?<rotv>Rotate {1} {2} {3} {0})|(?<shift>Shift {1} {2} {3})|(?<scale>Scale {1}( {2} {3})?)|(?<matrix>Matrix {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}))$", ParserUtils.FormGroup(ParserUtils.Real, "theta"), ParserUtils.FormGroup(ParserUtils.Real, "ux"), ParserUtils.FormGroup(ParserUtils.Real, "uy"), ParserUtils.FormGroup(ParserUtils.Real, "uz"), ParserUtils.FormGroup(ParserUtils.Real, "m10"), ParserUtils.FormGroup(ParserUtils.Real, "m11"), ParserUtils.FormGroup(ParserUtils.Real, "m12"), ParserUtils.FormGroup(ParserUtils.Real, "m13"), ParserUtils.FormGroup(ParserUtils.Real, "m20"), ParserUtils.FormGroup(ParserUtils.Real, "m21"), ParserUtils.FormGroup(ParserUtils.Real, "m22"), ParserUtils.FormGroup(ParserUtils.Real, "m23")), RegexOptions.Compiled|RegexOptions.CultureInvariant|RegexOptions.IgnoreCase|RegexOptions.Singleline|RegexOptions.ExplicitCapture);
+
+		[XmlIgnore]
+		public static readonly Matrix4
+			DummyMatrix = new Matrix4();
 		
 		[XmlAttribute("M00")]
 		public double

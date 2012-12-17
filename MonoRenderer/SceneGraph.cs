@@ -46,6 +46,12 @@ namespace Renderer.SceneBuilding {
 		[XmlIgnore]
 		private string
 			rootName;
+		[XmlIgnore]
+		public VersioningDictionary<double,string,SceneGraphNode> VersioningDictionary {
+			get {
+				return this.versionDictionary;
+			}
+		}
 		[XmlAttribute("MaxDepth")]
 		public int
 			MaxDepth = 0x25;
@@ -117,11 +123,15 @@ namespace Renderer.SceneBuilding {
 			}
 		}
 
+		public SceneGraphNode Root (double time) {
+			return this.versionDictionary.GetMixedValue(time, this.rootName);
+		}
+
 		public Tuple<List<RenderItem>,List<Light>> Inject (double time) {
 			List<RenderItem> ris = new List<RenderItem>();
 			List<Light> lis = new List<Light>();
 			MatrixStack ms = new MatrixStack();
-			this.versionDictionary.GetLatestBefore(time, this.rootName).Inject(this.versionDictionary, time, this.MaxDepth, ms, ris, lis, 0x00);
+			this.Root(time).Inject(this.versionDictionary, time, this.MaxDepth, ms, ris, lis, 0x00);
 			return new Tuple<List<RenderItem>, List<Light>>(ris, lis);
 		}
 		

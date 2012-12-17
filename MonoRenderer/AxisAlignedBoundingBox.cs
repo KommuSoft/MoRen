@@ -33,6 +33,13 @@ namespace Renderer {
 			}
 		}
 
+		public AxisAlignedBoundingBox (AxisAlignedBoundingBox aabb, Matrix4 transform) : this(aabb) {
+			this.Transform(transform);
+		}
+		public AxisAlignedBoundingBox (AxisAlignedBoundingBox aabb) : this(aabb.X0,aabb.X1,aabb.Y0,aabb.Y1,aabb.Z0,aabb.Z1) {
+		}
+		public AxisAlignedBoundingBox () : this (double.PositiveInfinity,double.NegativeInfinity,double.PositiveInfinity,double.NegativeInfinity,double.PositiveInfinity,double.NegativeInfinity) {
+		}
 		public AxisAlignedBoundingBox (double x0, double x1, double y0, double y1, double z0, double z1) {
 			this.X0 = x0;
 			this.X1 = x1;
@@ -43,11 +50,17 @@ namespace Renderer {
 		}
 
 		public bool IntersectingBox (Ray ray, out double tin, out double tout) {
-			tin = 0.0d;
-			tout = double.PositiveInfinity;
-			Utils.CloseInterval(ray.X0, ray.DX, X0, X1, ref tin, ref tout);
-			Utils.CloseInterval(ray.Y0, ray.DY, Y0, Y1, ref tin, ref tout);
-			Utils.CloseInterval(ray.Z0, ray.DZ, Z0, Z1, ref tin, ref tout);
+			if(IsEmpty) {
+				tin = double.PositiveInfinity;
+				tout = double.NegativeInfinity;
+			}
+			else {
+				tin = 0.0d;
+				tout = double.PositiveInfinity;
+				Utils.CloseInterval(ray.X0, ray.DX, X0, X1, ref tin, ref tout);
+				Utils.CloseInterval(ray.Y0, ray.DY, Y0, Y1, ref tin, ref tout);
+				Utils.CloseInterval(ray.Z0, ray.DZ, Z0, Z1, ref tin, ref tout);
+			}
 			return (tin < tout);
 		}
 
@@ -97,6 +110,26 @@ namespace Renderer {
 			}
 			return new AxisAlignedBoundingBox(x0, x1, y0, y1, z0, z1);
 		}
+		public void Union (IEnumerable<RenderItem> ris) {
+			double x0t, x1t, y0t, y1t, z0t, z1t;
+			foreach(RenderItem ri in ris) {
+				ri.GetBounds(out x0t, out x1t, out y0t, out y1t, out z0t, out z1t);
+				this.X0 = Math.Min(this.X0, x0t);
+				this.X1 = Math.Max(this.X1, x1t);
+				this.Y0 = Math.Min(this.Y0, y0t);
+				this.Y1 = Math.Max(this.Y1, y1t);
+				this.Z0 = Math.Min(this.Z0, z0t);
+				this.Z1 = Math.Max(this.Z1, z1t);
+			}
+		}
+		public void Union (AxisAlignedBoundingBox aabb) {
+			this.X0 = Math.Min(this.X0, aabb.X0);
+			this.X1 = Math.Max(this.X1, aabb.X1);
+			this.Y0 = Math.Min(this.Y0, aabb.Y0);
+			this.Y1 = Math.Max(this.Y1, aabb.Y1);
+			this.Z0 = Math.Min(this.Z0, aabb.Z0);
+			this.Z1 = Math.Max(this.Z1, aabb.Z1);
+		}
 		public static AxisAlignedBoundingBox WedgeAll (IEnumerable<AxisAlignedBoundingBox> aabbs) {
 			double x0 = double.NegativeInfinity, x1 = double.PositiveInfinity, y0 = x0, y1 = x1, z0 = x0, z1 = x1;
 			foreach(AxisAlignedBoundingBox aabb in aabbs) {
@@ -111,6 +144,9 @@ namespace Renderer {
 		}
 
 		public void Adapt (Action<Point3> adaptFunction) {
+			if(this.IsEmpty) {
+				return;
+			}
 			double x0n = double.PositiveInfinity, y0n = x0n, z0n = x0n, x1n = double.NegativeInfinity, y1n = x1n, z1n = x1n;
 			Point3 p = new Point3(X0, Y0, Z0);
 			adaptFunction(p);
