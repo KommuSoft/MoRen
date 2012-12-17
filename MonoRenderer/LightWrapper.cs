@@ -44,7 +44,7 @@ namespace Renderer.SceneBuilding {
 
 		public LightWrapper (Light light) {
 			this.Position = light.Position;
-			this.Color = new ColorWrapper(light.Color);
+			this.Color = new ColorWrapper(light.Color.RGB8);
 			this.Radius = light.Radius;
 		}
 		public LightWrapper (ColorWrapper cw, double radius, Point3 pos) {

@@ -27,12 +27,17 @@ namespace Renderer {
 	public sealed class Light {
 		
 		public readonly Point3 Position;
-		public readonly uint Color;
+		public readonly Color Color;
 		public readonly double Radius;
 		
 		public Light (uint color, Point3 position, double radius = 0.0d) : this(position,color,radius) {
 		}
 		public Light (Point3 position, uint color = 0xffffff, double radius = 0.0d) {
+			this.Position = position;
+			this.Color = new Color(color);
+			this.Radius = radius;
+		}
+		public Light (Point3 position, Color color, double radius = 0.0d) {
 			this.Position = position;
 			this.Color = color;
 			this.Radius = radius;
