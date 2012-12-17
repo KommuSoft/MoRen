@@ -36,9 +36,6 @@ namespace Renderer {
 		}
 
 		public IAccelerator CreateAccelerator (SceneGraph sg, double time, List<RenderItem> items) {
-			if(this.type == AcceleratorType.SceneGraphTree) {
-				return new SceneGraphAccelerator(sg, time);
-			}
 			switch(this.type) {
 				case AcceleratorType.Grid:
 					return new GridAccelerator(items);

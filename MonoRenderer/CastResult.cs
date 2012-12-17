@@ -67,6 +67,12 @@ namespace Renderer {
 			this.BumpX = bumpX;
 			this.BumpY = bumpY;
 		}
+		public void PerformNormalAction (Action<Point3> normalAction) {
+			if(normalAction != null) {
+				normalAction(this.Normal);
+				this.Normal.Normalize();
+			}
+		}
 		public void Copy (CastResult cr) {
 			this.T = cr.T;
 			this.Normal.SetValues(cr.Normal);

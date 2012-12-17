@@ -31,10 +31,11 @@ namespace Renderer {
 		private readonly SceneGraphAcceleratorNode root;
 
 		public SceneGraphAccelerator (SceneGraph sg, double time) {
-			this.root = this.SplitData(sg.Root(time), sg.VersioningDictionary, sg.MaxDepth, time, 0x00);
+			MatrixStack ms = new MatrixStack();
+			this.root = this.SplitData(sg.Root(time), sg.VersioningDictionary, ms, sg.MaxDepth, time, 0x00);
 		}
 
-		private SceneGraphAcceleratorNode SplitData (SceneGraphNode sgn, VersioningDictionary<double,string,SceneGraphNode> versioning, int maxDepth, double version, int depth) {
+		private SceneGraphAcceleratorNode SplitData (SceneGraphNode sgn, VersioningDictionary<double,string,SceneGraphNode> versioning, MatrixStack ms, int maxDepth, double version, int depth) {
 			Mesh mesh = sgn.Mesh;
 			AxisAlignedBoundingBox aabb = new AxisAlignedBoundingBox();
 			IAccelerator acc = null;
@@ -47,14 +48,17 @@ namespace Renderer {
 					cachedAccelerators.Add(mesh, acc);
 				}
 			}
+			ms.PushMatrix(sgn.Transformer);
 			List<SceneGraphAcceleratorNode> sgans = new List<SceneGraphAcceleratorNode>();
 			SceneGraphAcceleratorNode sub;
 			foreach(SceneGraphNode child in sgn.GetChildren(versioning,version,maxDepth,depth+0x01)) {
-				sub = SplitData(child, versioning, maxDepth, version, depth+0x01);
+				sub = SplitData(child, versioning, ms, maxDepth, version, depth+0x01);
 				aabb.Union(sub.OuterBoundingBox);
 				sgans.Add(sub);
 			}
-			return new SceneGraphAcceleratorNode(sgans, aabb, sgn.Transformer, acc);
+			Matrix4 total = ms.Top;
+			ms.PopMatrix();
+			return new SceneGraphAcceleratorNode(sgans, aabb, sgn.Transformer, total, acc);
 		}
 
 		#region IAccelerator implementation
@@ -74,13 +78,16 @@ namespace Renderer {
 			private readonly AxisAlignedBoundingBox bb;
 			private readonly Matrix4 toMatrix;
 			private readonly Matrix4 backMatrix;
+			private readonly Matrix4 totalMatrix;
 			private readonly IAccelerator accelerator;
 			public readonly AxisAlignedBoundingBox OuterBoundingBox;
 
-			public SceneGraphAcceleratorNode (IEnumerable<SceneGraphAcceleratorNode> children, AxisAlignedBoundingBox aabb, Matrix4 transformer, IAccelerator accelerator) {
+			public SceneGraphAcceleratorNode (IEnumerable<SceneGraphAcceleratorNode> children, AxisAlignedBoundingBox aabb, Matrix4 transformer, Matrix4 totalMatrix, IAccelerator accelerator) {
 				this.children = children.ToArray();
 				this.bb = aabb;
 				this.backMatrix = transformer;
+				this.totalMatrix = new Matrix4(totalMatrix);
+				totalMatrix.Invert();
 				this.toMatrix = new Matrix4(backMatrix);
 				this.toMatrix.Invert();
 				this.OuterBoundingBox = new AxisAlignedBoundingBox(this.bb, this.backMatrix);
@@ -92,9 +99,10 @@ namespace Renderer {
 				transformedRay.TransformNormalize(this.toMatrix, out mul1);
 				mul0 *= mul1;
 				//Console.WriteLine("{0} -> {1}: {2}", transformedRay, bb, this.bb.IntersectingBox(transformedRay, out dummy0, out dummy1));
-				//if(this.bb.IntersectingBox(transformedRay, out dummy0, out dummy1) && dummy0 < mul0*maxT) {
+				//if(this.bb.IntersectingBox(transformedRay, out dummy0, out dummy1) && dummy0 <= mul0*maxT) {
 				double tt;
 				if(this.accelerator != null) {
+					Action<Point3> crmdummy;
 					RenderItem other = this.accelerator.CalculateHit(transformedRay, out tt, mul0*maxT);
 					if(other != null) {
 						maxT = mul0*tt;
