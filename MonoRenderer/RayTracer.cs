@@ -28,10 +28,9 @@ namespace Renderer {
 	[XmlType("RayTracer")]
 	public sealed class RayTracer {
 
-		public const uint DepthThresholdMask = 0xfcfcfc;
 		private readonly IAccelerator acc;
 		private readonly Light[] lights;
-		private readonly uint ambientColor = 0x00101010;
+		private readonly Color ambientColor = new Color(0x00101010);
 		private readonly CastResult nw = new CastResult();
 		private readonly Point3 dis = new Point3();
 		private readonly Point3 rl = new Point3();
@@ -60,7 +59,7 @@ namespace Renderer {
 			this.distanceUnit = settings.DistanceUnit;
 		}
 		
-		public uint CalculateColor (Ray ray, int depth, uint intensityHint) {
+		public Color CalculateColor (Ray ray, int depth, Color intensityHint) {
 			RenderItem best = null;
 			double t, tdummy;
 			best = acc.CalculateHit(ray, out t);
@@ -69,9 +68,9 @@ namespace Renderer {
 				Point3 norm = nw.Normal;
 				ray.PointAt(t, hp);
 				Material mat = best.Material;
-				uint ambient, diffuse, specular, reflectance, refraction;
+				Color ambient, diffuse, specular, reflectance, refraction;
 				mat.ADSAtAndBump(nw, ray.Direction, out ambient, out diffuse, out specular, out reflectance, out refraction);
-				uint clr = ColorUtils.Multiply(this.ambientColor, ambient);
+				Color clr = this.ambientColor*ambient;
 				Point3.ReflectRefract(ray.Direction, nw.Normal, mat.NFactor, rl, rf);
 				rayCache[depth].SetWithEpsilon(hp, rf);
 				foreach(Light li in this.lights) {
@@ -102,24 +101,23 @@ namespace Renderer {
 					if(light > 0x00) {
 						dis.SetValues(hp, li.Position);
 						dis.Normalize();
-						uint clrl = ColorUtils.Scale(ColorUtils.Multiply(li.Color, diffuse), Point3.CosAngleNorm(dis, norm));
-						clrl = ColorUtils.Add(clrl, ColorUtils.Scale(ColorUtils.Multiply(li.Color, specular), Math.Pow(Point3.CosAngleNorm(rl, dis), mat.Shininess)));
-						clr = ColorUtils.Add(clr, ColorUtils.LoseIntensity(ColorUtils.Scale(clrl, light), distanceUnit, len));
+						Color clrl = (li.Color*diffuse)*Point3.CosAngleNorm(dis, norm);
+						clrl += (li.Color*specular)*Math.Pow(Point3.CosAngleNorm(rl, dis), mat.Shininess);
+						clr += Color.LoseIntensity((clrl*light), distanceUnit, len);
 					}
 				}
 				if(depth < maxDepth) {
-					uint reflint = ColorUtils.Multiply(intensityHint, reflectance);
-					if((reflint&DepthThresholdMask) != 0x00) {
+					Color reflint = intensityHint*reflectance;
+					if(reflint.IntensityTreshold) {
 						ray.SetWithEpsilon(hp, rl);
-						clr = ColorUtils.Add(clr, ColorUtils.Multiply(this.CalculateColor(ray, depth+1, reflint), reflectance));
+						clr += this.CalculateColor(ray, depth+1, reflint)*reflectance;
 					}
-					uint refrint = ColorUtils.Multiply(intensityHint, refraction);
-					if(!double.IsNaN(rayCache[depth].Direction.X) && (refrint&DepthThresholdMask) != 0x00) {
-						uint res = this.CalculateColor(rayCache[depth], depth+1, refrint);
-						clr = ColorUtils.Add(clr, ColorUtils.Multiply(res, refrint));
+					Color refrint = intensityHint*refraction;
+					if(!double.IsNaN(rayCache[depth].Direction.X) && refrint.IntensityTreshold) {
+						clr += this.CalculateColor(rayCache[depth], depth+1, refrint)*refrint;
 					}
 				}
-				return ColorUtils.LoseIntensity(clr, distanceUnit, t);
+				return Color.LoseIntensity(clr, distanceUnit, t);
 			}
 			else {
 				return this.EnvironmentMap(ray);

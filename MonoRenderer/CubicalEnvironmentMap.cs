@@ -40,7 +40,7 @@ namespace Renderer {
 			this.down = ColorAtMethods.GetOrBlack(down);
 		}
 
-		public uint GetColorAt (Ray ray) {
+		public Color GetColorAt (Ray ray) {
 			double ux = Math.Abs(ray.DX), uy = Math.Abs(ray.DY), uz = Math.Abs(ray.DZ);
 			Point3 p = new Point3();
 			switch(Maths.MaxIndex(ux, uy, uz)) {

@@ -70,9 +70,9 @@ namespace Renderer.SceneBuilding {
 		}
 
 		public Material GenerateMaterial () {
-			uint ambient = this.Ambient.Color;
-			uint diffuse = this.Diffuse.Color;
-			uint specular = this.Specular.Color;
+			Color ambient = this.Ambient.Color;
+			Color diffuse = this.Diffuse.Color;
+			Color specular = this.Specular.Color;
 			ColorAtMethod texture = this.Texture.PerlinNullOrTexture();
 			ColorAtMethod reflection = this.Reflection.PerlinNullOrTexture();
 			Texture bump = this.Bump.NullOrTexture();

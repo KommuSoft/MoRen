@@ -31,12 +31,18 @@ namespace Renderer.SceneBuilding {
 			color;
 
 		[XmlIgnore]
-		public uint Color {
+		public uint ColorUInt {
 			get {
 				return this.color;
 			}
 			set {
 				this.color = value;
+			}
+		}
+		[XmlIgnore]
+		public Color Color {
+			get {
+				return new Color(this.color);
 			}
 		}
 

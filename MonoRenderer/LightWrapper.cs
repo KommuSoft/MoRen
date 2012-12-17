@@ -54,7 +54,7 @@ namespace Renderer.SceneBuilding {
 		}
 
 		public void Inject (Matrix4 matrix, List<Light> lis) {
-			lis.Add(new Light(this.Color.Color, this.Position, this.Radius));
+			lis.Add(new Light(this.Color.ColorUInt, this.Position, this.Radius));
 		}
 
 	}

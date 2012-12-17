@@ -22,12 +22,12 @@ using System;
 
 namespace Renderer {
 
-	public delegate uint EnviromentMap (Ray ray);
+	public delegate Color EnviromentMap (Ray ray);
 
 	public static class EnvironmentMaps {
 
-		public static uint Black (Ray ray) {
-			return 0x00;
+		public static Color Black (Ray ray) {
+			return Color.Black;
 		}
 
 		public static EnviromentMap GetOrBlack (EnviromentMap em) {

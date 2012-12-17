@@ -185,7 +185,6 @@ namespace Renderer {
 			uint l, m;
 			uint aasqrt = this.antialiasSqrt;
 			uint aadsqrt = this.dispersionAntialiasSqrt;
-			uint aaRedCache, aaGreenCache, aaBlueCache;
 			RayTracer rt = new RayTracer(this.acc, this.Lights, settings);
 			uint aa = aasqrt*aasqrt, aac, aad = aadsqrt*aadsqrt, aadc;
 			Point3 tmp = new Point3(0.0d, 0.0d, 0.0d);
@@ -196,15 +195,14 @@ namespace Renderer {
 			double dwhad = dispersion*dwh;
 			double yp = dwh*yfrom-0.5d*sh-0.5d*dwha*aasqrt, xp;
 			double yd, xd;
+			ColorCache cc;
 			#region PIXEL
 			for(; k < ks;) {
 				kc = k+Width;
 				xp = -0.5d*sw-0.5d*dwha*aasqrt;
 				for(; k < kc;) {
 					l = 0x00;
-					aaRedCache = 0x00;
-					aaGreenCache = 0x00;
-					aaBlueCache = 0x00;
+					cc = new ColorCache(0x00);
 					#region ANTIALIASING
 					for(; l < aa;) {
 						aac = l+aasqrt;
@@ -229,7 +227,7 @@ namespace Renderer {
 									aaBlueCache += SystemDiagnostics.Intersections;
 									SystemDiagnostics.Intersections = 0x00;
 #else
-									ColorUtils.AddComponents(rt.CalculateColor(ray, 0, 0xffffff), ref aaRedCache, ref aaGreenCache, ref aaBlueCache);
+									cc.AddColor(rt.CalculateColor(ray, 0, Color.White));
 #endif
 									xd += dwhad;
 								}
@@ -244,7 +242,7 @@ namespace Renderer {
 					#endregion
 					yp -= dwh;
 					xp += dwh;
-					pixel[k++] = ColorUtils.AlphaChannel|ColorUtils.Mix(aaRedCache, aaGreenCache, aaBlueCache, aaaad);
+					pixel[k++] = ColorUtils.AlphaChannel|cc.Mix(aaaad).RGB8;
 				}
 				#endregion
 				yp += dwh;

@@ -68,25 +68,25 @@ namespace Renderer {
 			return ((h&1) == 0 ? u : -u)+((h&2) == 0 ? v : -v);
 		}
 
-		public static uint Marble3 (Point3 xyz) {
+		public static Color Marble3 (Point3 xyz) {
 			double sum = 0.0d;
 			for(int i = 0x01; i < 0x20; i++) {
 				sum += Math.Abs(Perlin3d(xyz.X*i, xyz.Y*i, xyz.Z*i))/i;
 			}
 			double g = Math.Sin(sum);
-			return Utils.FloatIndex(marbleGradient, g);
+			return new Color(Utils.FloatIndex(marbleGradient, g));
 		}
-		public static uint Sky3 (Point3 xyz) {
+		public static Color Sky3 (Point3 xyz) {
 			double sum = 0.0d;
 			for(int i = 0x01; i < 0x20; i++) {
 				sum += Math.Abs(Perlin3d(xyz.X*i, xyz.Y*i, xyz.Z*i))/i;
 			}
-			return Utils.FloatIndex(skyGradient, sum);
+			return new Color(Utils.FloatIndex(skyGradient, sum));
 		}
-		public static uint Wood3 (Point3 xyz) {
+		public static Color Wood3 (Point3 xyz) {
 			double g = Perlin3d(xyz.X, xyz.Y, xyz.Z)*20;
 			g = g-(int)Math.Floor(g);
-			return Utils.FloatIndex(woodGradient, g);
+			return new Color(Utils.FloatIndex(woodGradient, g));
 		}
 		public static void InitializeNoiseBuffer () {
 			for(int i=0; i < 256; i++)

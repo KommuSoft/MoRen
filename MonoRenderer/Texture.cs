@@ -73,9 +73,8 @@ namespace Renderer {
 			double y = tuy;
 			return (int)(Math.Floor(x*Width)+Math.Floor(y*Height)*Width);
 		}
-		public uint ColorAt (Point3 tu) {
-			//Console.WriteLine("{0} -> {1} < {2}", tu, Coordinate(tu.X, tu.Y), this.Pixel.Length);
-			return Pixel[Coordinate(tu.X, tu.Y)];
+		public Color ColorAt (Point3 tu) {
+			return new Color(Pixel[Coordinate(tu.X, tu.Y)]);
 		}
 		public void TweakNormal (Point3 tu, Point3 normal, Point3 bumpx, Point3 bumpy) {
 			int y = Maths.Border(0x00, (int)Math.Round(Height*tu.Y), Height-0x01);

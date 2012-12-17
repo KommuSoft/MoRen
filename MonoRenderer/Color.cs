@@ -35,6 +35,9 @@ namespace Renderer {
 		public const ulong NonOverflowMask = 0x3ffffdffffefffff;
 		public const ulong Color8Mask = 0xffffff;
 		public const ulong OverflowMask = 0x4000020000100000;
+		public const ulong IntensityMask = 0x3f0001f8000fc000;
+		public static readonly Color Black = new Color(0x00);
+		public static readonly Color White = new Color(NonOverflowMask);
 		public ulong Data;
 
 		public uint RedInt {
@@ -57,6 +60,11 @@ namespace Renderer {
 				return (uint)(((Data>>0x0c)&Blue8Mask)|((Data>>0x19)&Green8Mask)|((Data>>0x26)&Red8Mask));
 			}
 		}
+		public bool IntensityTreshold {
+			get {
+				return (Data&IntensityMask) > 0x00;
+			}
+		}
 
 		public Color (uint rgb) {
 			ulong rgbl = (ulong)rgb;
@@ -72,6 +80,19 @@ namespace Renderer {
 		}
 		public Color (ulong data) {
 			this.Data = data;
+		}
+
+		public static Color FromFrac (double frac) {
+			ulong data = (ulong)frac*MaxValue;
+			ulong overflow = (data&OverflowMask);
+			data |= overflow-(overflow>>0x14);
+			data &= NonOverflowMask;
+			data |= data<<0x15;
+			data |= data<<0x15;
+			return new Color(data);
+		}
+		public static Color LoseIntensity (Color c, double distanceUnit, double distance) {
+			return c*Math.Min(distanceUnit/(distance*distance+1.0d), 1.0d);
 		}
 
 		public override bool Equals (object obj) {
@@ -95,13 +116,19 @@ namespace Renderer {
 			return new Color((datas|(overflow-(overflow>>0x14)))&NonOverflowMask);
 		}
 		public static Color operator * (Color c, double scal) {
+			scal = Maths.Border(0.0d, scal, 1.0d);
 			uint scale = (uint)Math.Round(scal*Color.MaxValue)+0x01;
 			return new Color((((c.Data&BlueMask)*scale)>>0x14)|((((c.Data&GreenMask)*scale)>>0x14)&GreenMask)|((((c.Data&RedMask)>>0x14)*scale)&RedMask));
 		}
-		public static Color operator * (Color c, uint scale) {
-			scale++;
+		public static Color operator * (double scal, Color c) {
+			scal = Maths.Border(0.0d, scal, 1.0d);
+			uint scale = (uint)Math.Round(scal*Color.MaxValue)+0x01;
 			return new Color((((c.Data&BlueMask)*scale)>>0x14)|((((c.Data&GreenMask)*scale)>>0x14)&GreenMask)|((((c.Data&RedMask)>>0x14)*scale)&RedMask));
 		}
+		/*public static Color operator * (Color c, uint scale) {
+			scale++;
+			return new Color((((c.Data&BlueMask)*scale)>>0x14)|((((c.Data&GreenMask)*scale)>>0x14)&GreenMask)|((((c.Data&RedMask)>>0x14)*scale)&RedMask));
+		}*/
 		public static Color operator * (Color c1, Color c2) {
 			return new Color((((c1.Data&BlueMask)*((c2.Data&BlueMask)+0x01))>>0x14)|((((c1.Data&GreenMask)*(((c2.Data&GreenMask)>>0x15)+0x01))>>0x14)&GreenMask)|((((c1.Data&RedMask)>>0x14)*((c2.Data>>0x2a)+0x01))&RedMask));
 		}
@@ -114,6 +141,9 @@ namespace Renderer {
 		public static Color operator ~ (Color c) {
 			return new Color((~c.Data)&NonOverflowMask);
 		}
+		/*public static implicit operator Color (uint rgb) {
+			return new Color(rgb);
+		}*/
 
 	}
 }

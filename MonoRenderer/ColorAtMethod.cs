@@ -21,19 +21,27 @@
 
 namespace Renderer {
 
-	public delegate uint ColorAtMethod (Point3 parameter);
+	public delegate Color ColorAtMethod (Point3 parameter);
 
 	public static class ColorAtMethods {
 
-		public static uint GetWhite (Point3 p) {
-			return 0xffffff;
+		public static Color GetWhite (Point3 p) {
+			return Color.White;
 		}
-		public static uint GetBlack (Point3 p) {
-			return 0x000000;
+		public static Color GetBlack (Point3 p) {
+			return Color.Black;
 		}
 		public static ColorAtMethod GetOrBlack (ColorAtMethod cam) {
 			if(cam == null) {
 				return GetBlack;
+			}
+			else {
+				return cam;
+			}
+		}
+		public static ColorAtMethod GetOrWhite (ColorAtMethod cam) {
+			if(cam == null) {
+				return GetWhite;
 			}
 			else {
 				return cam;

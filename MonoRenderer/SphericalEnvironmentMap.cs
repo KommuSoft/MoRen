@@ -32,7 +32,7 @@ namespace Renderer {
 			this.positiveZ = ColorAtMethods.GetOrBlack(positiveZ);
 		}
 
-		public uint GetColorAt (Ray ray) {
+		public Color GetColorAt (Ray ray) {
 			Point3 p = new Point3(0.5d*ray.DX+0.5d, 0.5d*ray.DY+0.5d, 0.0d);
 			if(ray.Z0 >= 0.0d) {
 				return this.positiveZ(p);

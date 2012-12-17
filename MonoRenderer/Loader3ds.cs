@@ -551,7 +551,7 @@ namespace Renderer.SceneBuilding {
 							break;
 					}
 				}
-				this.material = new Material(ambient, diffuse, specular, shininess, transparent, texture, reflection, bump);
+				this.material = new Material(new Color(ambient), new Color(diffuse), new Color(specular), shininess, transparent, texture, reflection, bump);
 				this.Collapse();
 			}
 
