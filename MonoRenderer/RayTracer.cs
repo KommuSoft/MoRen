@@ -57,6 +57,7 @@ namespace Renderer {
 			this.EnvironmentMap = EnvironmentMaps.GetOrBlack(settings.EnvironmentMap);
 			this.lightTest = settings.LightTest;
 			this.sr = new Ray(new Point3(0.0d, 0.0d, 0.0d), dis);
+			this.distanceUnit = settings.DistanceUnit;
 		}
 		
 		public uint CalculateColor (Ray ray, int depth, uint intensityHint) {

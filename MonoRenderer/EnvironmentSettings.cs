@@ -52,6 +52,9 @@ namespace Renderer.SceneBuilding {
 		[XmlIgnore]
 		private EnviromentMap
 			envmapCache;
+		[XmlAttribute("DistanceUnit")]
+		public double
+			DistanceUnit = 255000000.0d;
 		[XmlIgnore]
 		public EnviromentMap EnvironmentMap {
 			[MethodImpl(MethodImplOptions.Synchronized)]
