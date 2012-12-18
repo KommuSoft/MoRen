@@ -89,11 +89,12 @@ namespace Renderer {
 		public static Texture ToCyanRed (Texture cyanTexture, Texture redTexture) {
 			Texture result = new Texture(cyanTexture.Width, cyanTexture.Height);
 			uint[] pixc = cyanTexture.Pixel;
-			uint[] pixr = cyanTexture.Pixel;
-			uint[] pix = cyanTexture.Pixel;
+			uint[] pixr = redTexture.Pixel;
+			uint[] pix = result.Pixel;
 			for(int i = 0; i < pix.Length; i++) {
 				pix[i] = ColorUtils.ToCyanRed(pixc[i], pixr[i]);
 			}
+			return result;
 		}
 		private void setSize (int width, int height) {
 			int offset = width*height;

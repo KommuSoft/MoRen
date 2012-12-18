@@ -54,6 +54,7 @@ namespace Renderer.SceneBuilding {
 				this.t0 = value;
 			}
 		}
+		[XmlAttribute("Technology")]
 		public RenderingTechnology RenderingTechnology {
 			get {
 				return this.rt;
@@ -116,9 +117,22 @@ namespace Renderer.SceneBuilding {
 			DateTime now = DateTime.Now;
 			Console.Write("{0}\t", (now-old).TotalMilliseconds.ToString("0.000"));
 #endif
-			Camera cam = camw.Camera(acc, lights, es);
-			cam.CalculateImage();
-			return cam.Raster;
+			switch(this.RenderingTechnology) {
+				case RenderingTechnology.Normal:
+					Camera cam = camw.Camera(acc, lights, es);
+					cam.CalculateImage();
+					return cam.Raster;
+				case RenderingTechnology.Anaglyph:
+					Camera camL = camw.Camera(acc, lights, es);
+					camL.Displacement = -0.01*camL.ScreenDistance;
+					camL.CalculateImage();
+					Camera camR = camw.Camera(acc, lights, es);
+					camR.Displacement = 0.01*camR.ScreenDistance;
+					camR.CalculateImage();
+					return Texture.ToCyanRed(camL.Raster, camR.Raster);
+				default :
+					return null;
+			}
 		}
 		private void clearTmpFolder () {
 			foreach(var file in Directory.EnumerateFiles ("/tmp", "output*")) {
