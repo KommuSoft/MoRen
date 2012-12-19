@@ -18,6 +18,9 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#undef FAST_COLOR_MIGRATION
+
 using System;
 using System.Linq;
 using System.Text;
@@ -71,6 +74,9 @@ namespace Renderer {
 			addMigrations(migrations, t, 0x02, inter.Z, ixyz[0x02], z0, dz, ray.DZ);
 			int tile = nextSlice*ixyz[0x00]+nextLine*ixyz[0x01]+ixyz[0x02];
 			while(t < tHit) {
+#if FAST_COLOR_MIGRATION
+				SystemDiagnostics.Migrations++;
+#endif
 				long g = grid[tile];
 				if(g != 0x00) {
 					checkTile(ray, ref current, ref tHit, g);

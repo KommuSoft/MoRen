@@ -285,13 +285,13 @@ namespace Renderer {
 		}
 		//set to a random point on a sphere with radius r
 		public void SetValues (Point3 mid, double r) {
-			double dx = Maths.Random();
-			double dy = Maths.Random();
-			double dz = Maths.Random();
+			double dx = 2.0d*Maths.RandomGenerator.NextDouble()-1.0d;
+			double dy = 2.0d*Maths.RandomGenerator.NextDouble()-1.0d;
+			double dz = 2.0d*Maths.RandomGenerator.NextDouble()-1.0d;
 			double rinv = r/Math.Sqrt(dx*dx+dy*dy+dz*dz);
 			this.X = rinv*dx+mid.X;
-			this.Y = rinv*dx+mid.Y;
-			this.Z = rinv*dx+mid.Z;
+			this.Y = rinv*dy+mid.Y;
+			this.Z = rinv*dz+mid.Z;
 		}
 		public static void Reflect (Point3 init, Point3 normal, Point3 result) {
 			double factor = -2.0d*(init.X*normal.X+init.Y*normal.Y+init.Z*normal.Z);
@@ -348,7 +348,7 @@ namespace Renderer {
 			}
 		}
 		//assumption: start is normalized
-		public static IEnumerable<Point3> NormalizedConeGenerator (Point3 start, double thetamax, int n, double rotationSpeed, double sphereRadius, double sphereDistance, Holder<double> distanceHolder) {
+		public static IEnumerable<Point3> NormalizedConeGenerator (Point3 start, uint n, double rotationSpeed, double sphereRadius, double sphereDistance, Holder<double> distanceHolder) {
 			double vx = start.X;
 			double vy = start.Y;
 			double vz = start.Z;
@@ -362,16 +362,18 @@ namespace Renderer {
 			else if(vz < 1.0d) {
 				cost = -1.0d;
 			}
+			double thetamax = Math.Asin(sphereRadius/sphereDistance);
 			double x = Maths.PI2*Maths.RandomGenerator.NextDouble();
 			double y = Math.Sin(x), xt;
 			x = Math.Cos(x);
 			double R2 = Math.Cos(0.5d*thetamax);
 			R2 *= R2;
-			double dr2 = R2/n;
+			double dr2 = R2/Math.Max(0x01, n);
 			double xxyy = Math.Cos(rotationSpeed);
 			double xyyx = Math.Sin(rotationSpeed);
 			double xr, yr, lina, rho2 = sphereRadius*sphereRadius, xd2 = sphereDistance*sphereDistance;
-			for(double r2 = 0.0d; r2 < R2; r2 += dr2) {
+			double r2 = 0.0d;
+			for(int i = 0x00; i < n; i++) {
 				double r = Math.Sqrt(r2);
 				double h = Math.Sqrt(1.0d-r2);
 				xr = x*r;
@@ -385,6 +387,7 @@ namespace Renderer {
 				xt = xxyy*x-xyyx*y;
 				y = xyyx*x+xxyy*y;
 				x = xt;
+				r2 += dr2;
 			}
 		}
 		//assumption: the given vector is normalized

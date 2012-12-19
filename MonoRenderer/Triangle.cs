@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#undef FALSE_COLOR
+#define FAST_COLOR_INTERSECTION
 
 using System;
 using System.Collections.Generic;
@@ -210,7 +210,7 @@ namespace Renderer {
 			return (min > bh || max < -bh);
 		}
 		public override double HitAt (Ray ray) {
-#if FALSE_COLOR
+#if FAST_COLOR_INTERSECTION
 			SystemDiagnostics.Intersections++;
 #endif
 			double j = ray.X0-p0.X;

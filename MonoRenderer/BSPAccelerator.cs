@@ -18,6 +18,9 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#undef FAST_COLOR_MIGRATION
+
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -33,7 +36,9 @@ namespace Renderer {
 		}
 		public BSPAccelerator (IEnumerable<RenderItem> items, SplitHeuristic sh) : this(items,sh,Point3.UnitDummies) {
 		}
-		public BSPAccelerator (IEnumerable<RenderItem> items, SplitHeuristic sh, IEnumerable<Point3> facenormals, int maxDepth = 10, int maxSize = 5) {
+		public BSPAccelerator (IEnumerable<RenderItem> items, SplitHeuristic sh, IEnumerable<Point3> facenormals) : this(items,sh,facenormals,Math.Max((int) Math.Round(Math.Log(items.Count(),2.0)),1)) {
+		}
+		public BSPAccelerator (IEnumerable<RenderItem> items, SplitHeuristic sh, IEnumerable<Point3> facenormals, int maxDepth, int maxSize = 2) {
 			double ta, tb;
 			List<NormalInterval> fn = new List<NormalInterval>();
 			foreach(Point3 normal in facenormals) {
@@ -143,6 +148,9 @@ namespace Renderer {
 							this.left.Hit(ray, inter, ref item, ref tcur, tmig0, ref tmax);
 							tmig = Math.Min(tmig, tmax);
 							if(tt <= tmig) {
+#if FAST_COLOR_MIGRATION
+								SystemDiagnostics.Migrations++;
+#endif
 								tcur = tt;
 								ray.PointAt(tcur, inter);
 								this.right.Hit(ray, inter, ref item, ref tcur, tmig, ref tmax);
@@ -159,6 +167,9 @@ namespace Renderer {
 							this.right.Hit(ray, inter, ref item, ref tcur, tmig0, ref tmax);
 							tmig = Math.Min(tmig, tmax);
 							if(tt <= tmig) {
+#if FAST_COLOR_MIGRATION
+								SystemDiagnostics.Migrations++;
+#endif
 								tcur = tt;
 								ray.PointAt(tcur, inter);
 								this.left.Hit(ray, inter, ref item, ref tcur, tmig, ref tmax);
@@ -170,11 +181,17 @@ namespace Renderer {
 					}
 					else {//in the death zone
 						if(dxi < 0.0d) {
+#if FAST_COLOR_MIGRATION
+							SystemDiagnostics.Migrations++;
+#endif
 							tcur = dxi*(xa-x);
 							ray.PointAt(tcur, inter);
 							this.left.Hit(ray, inter, ref item, ref tcur, tmig, ref tmax);
 						}
 						else if(dxi > 0.0d) {
+#if FAST_COLOR_MIGRATION
+							SystemDiagnostics.Migrations++;
+#endif
 							tcur = dxi*(xb-x0);
 							ray.PointAt(tcur, inter);
 							this.right.Hit(ray, inter, ref item, ref tcur, tmig, ref tmax);

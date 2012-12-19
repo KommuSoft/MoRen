@@ -39,7 +39,7 @@ namespace Renderer {
 			environment;
 		[XmlIgnore]
 		private IMeshLoader
-			loader;
+			loader = null;
 		[XmlIgnore]
 		private string[]
 			parameters;
@@ -101,6 +101,9 @@ namespace Renderer {
 				foreach(Type t in Assembly.GetExecutingAssembly().GetTypes()) {
 					if(t.GetCustomAttributes(typeof(MeshLoaderAttribute), false).Length > 0x00 && typeof(IMeshLoader).IsAssignableFrom(t)) {
 						loaderPrototypes.Add((IMeshLoader)t.GetConstructor(new Type[0x00]).Invoke(new object[0x00]));
+#if DEBUG
+						Console.WriteLine("Loaded MeshLoader \"{0}\"", t);
+#endif
 					}
 				}
 			}

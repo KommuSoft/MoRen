@@ -33,44 +33,46 @@ namespace Renderer {
 		public static void SurfaceAreaHeuristic (IEnumerable<ProxyRenderItem> items, Point3 facenormal, double t0, double t1, out double ta, out double tb, out double heuristic) {
 			SortedSet<ProxyRenderItem> starts = new SortedSet<ProxyRenderItem>(items, new RenderItemNormalStartComparator(facenormal));
 			SortedSet<ProxyRenderItem> active = new SortedSet<ProxyRenderItem>(new RenderItemNormalStopComparator(facenormal));
-			tb = ta = 0.5d*(t0+t1);
-			int ln = 0x00, rn = starts.Count;
-			double ls = 0.0d, rs = starts.Sum(a => a.Surface());
-			heuristic = double.PositiveInfinity;
-			ProxyRenderItem min;
-			bool activeRemove;
-			double x, xa, dummy, lastx = t0;
-			IEnumerator<ProxyRenderItem> prie = starts.GetEnumerator();
-			bool hasNext = prie.MoveNext();
-			while(hasNext) {
-				min = prie.Current;
-				ln++;
-				ls += min.Surface();
-				min.GetFaceNormalBounds(facenormal, out x, out dummy);
-				active.Add(min);
-				activeRemove = true;
-				while(activeRemove && active.Count > 0x00) {
-					min = active.Min;
-					min.GetFaceNormalBounds(facenormal, out dummy, out xa);
-					activeRemove = xa <= x;
-					if(activeRemove) {
-						active.Remove(min);
-						rn--;
-						lastx = xa;
-						rs -= min.Surface();
-					}
-				}
-				hasNext = prie.MoveNext();
-				if(t0 < x && x < t1) {
-					dummy = ln*ls+rn*rs;
-					if(dummy < heuristic) {
-						heuristic = dummy;
-						ta = tb = x;
-						if(active.Count <= 0x01) {
-							ta = lastx;
+			if(starts.Count < 0x01) {
+				tb = ta = 0.5d*(t0+t1);
+				heuristic = double.PositiveInfinity;
+			}
+			else {
+				int ln = 0x00, rn = starts.Count;
+				starts.First().GetFaceNormalBounds(facenormal, out tb, out ta);
+				ta = tb;
+				heuristic = (t1-tb)*rn;
+				double tmpheu, x, x2, dummy;
+				ProxyRenderItem minfree;
+				bool removing;
+				foreach(ProxyRenderItem pri in starts) {
+					pri.GetFaceNormalBounds(facenormal, out x, out dummy);
+					removing = true;
+					while(removing && active.Count > 0x00) {
+						minfree = active.Min;
+						minfree.GetFaceNormalBounds(facenormal, out dummy, out x2);
+						if(x2 <= x) {
+							active.Remove(minfree);
+							rn--;
+							tmpheu = (x2-t0)*ln+(t1-x2)*rn;
+							if(tmpheu < heuristic) {
+								heuristic = tmpheu;
+								ta = x2;
+							}
+						}
+						else {
+							removing = false;
 						}
 					}
+					tmpheu = (x-t0)*ln+(t1-x)*rn;
+					if(tmpheu < heuristic) {
+						heuristic = tmpheu;
+						ta = x;
+					}
+					ln++;
+					active.Add(pri);
 				}
+				tb = ta;
 			}
 		}
 

@@ -53,7 +53,7 @@ namespace Renderer.SceneBuilding {
 		}
 
 		public override IMeshLoader Clone () {
-			return new Loader3ds();
+			return new LoaderObj();
 		}
 
 		private void InvokeActions () {

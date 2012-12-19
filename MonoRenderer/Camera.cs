@@ -19,7 +19,8 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#undef FALSE_COLOR
+#define FAST_COLOR_INTERSECTION
+#undef FAST_COLOR_MIGRATION
 
 using System;
 using System.Collections.Generic;
@@ -229,12 +230,14 @@ namespace Renderer {
 									ray.Direction.Normalize();
 									ray.NormalizeDirection();
 									ray.Transform(this.matrix);
-#if FALSE_COLOR
-									rt.CalculateColor(ray, 0, 0xffffff);
-									aaRedCache += SystemDiagnostics.Intersections;
-									aaGreenCache += SystemDiagnostics.Intersections;
-									aaBlueCache += SystemDiagnostics.Intersections;
+#if FAST_COLOR_INTERSECTION
+									rt.CalculateColor(ray, 0, Color.White);
+									cc.AddColor(new Color(ColorUtils.FromWavelength(350+5*(int)SystemDiagnostics.Intersections)));
 									SystemDiagnostics.Intersections = 0x00;
+#elif FAST_COLOR_MIGRATION
+									rt.CalculateColor(ray, 0, Color.White);
+									cc.AddColor(new Color(ColorUtils.FromWavelength(350+5*(int)SystemDiagnostics.Migrations)));
+									SystemDiagnostics.Migrations = 0x00;
 #else
 									cc.AddColor(rt.CalculateColor(ray, 0, Color.White));
 #endif

@@ -18,6 +18,9 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#undef FAST_COLOR_MIGRATION
+
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -103,6 +106,9 @@ namespace Renderer {
 				double xt, yt, zt;
 				int nextdim = 0x00;
 				do {
+#if FAST_COLOR_MIGRATION
+					SystemDiagnostics.Migrations++;
+#endif
 					seqxyz[0x04] = fotn.x;
 					seqxyz[0x07] = fotn.y;
 					seqxyz[0x0a] = fotn.z;

@@ -25,6 +25,7 @@ namespace Renderer {
 	public static class SystemDiagnostics {
 
 		public static uint Intersections = 0x00;
+		public static uint Migrations = 0x00;
 
 	}
 }

@@ -77,7 +77,8 @@ namespace Renderer {
 					double len = Point3.DiffLength(hp, li.Position);
 					double thetafrac = Math.PI-Math.Asin(li.Radius/len);
 					uint light = 0x00;
-					if(!double.IsNaN(thetafrac)) {
+					double lightD;
+					if(!double.IsNaN(thetafrac) && lightTest > 0x00) {
 						dis.SetValues(hp, li.Position);
 						dis.Normalize();
 						sr.SetOffsetWithEpsilon(hp);
@@ -93,17 +94,17 @@ namespace Renderer {
 								light++;
 							}
 						}
-						light = Math.Min((uint)((light<<0x08)/lightTest), 0xff);
+						lightD = (double)light/lightTest;
 					}
 					else {
-						light = 0xff;
+						lightD = 1.0d;
 					}
-					if(light > 0x00) {
+					if(lightD > 0.0d) {
 						dis.SetValues(hp, li.Position);
 						dis.Normalize();
 						Color clrl = (li.Color*diffuse)*Point3.CosAngleNorm(dis, norm);
 						clrl += (li.Color*specular)*Math.Pow(Point3.CosAngleNorm(rl, dis), mat.Shininess);
-						clr += Color.LoseIntensity((clrl*light), distanceUnit, len);
+						clr += Color.LoseIntensity((clrl*lightD), distanceUnit, len);
 					}
 				}
 				if(depth < maxDepth) {
