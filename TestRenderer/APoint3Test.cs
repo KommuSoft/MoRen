@@ -60,6 +60,25 @@ namespace TestRenderer {
 				Assert.IsTrue(Math.Abs(norm.Z-p.Z) <= Math.Sqrt(Maths.GlobalEpsilon));
 			}
 		}
+
+		[Test()]
+		public void TestNormalizedRotateLikeZVector2 () {
+			Point3 norm, p;
+			Random rand = new Random();
+			for(int i = 0x00; i < TestParameters.PointTest; i++) {
+				double x = 2.0*rand.NextDouble()-1.0d;
+				double y = 2.0d*rand.NextDouble()-1.0d;
+				double z = 2.0d*rand.NextDouble()-1.0d;
+				p = new Point3(x, y, z);
+				p.Normalize();
+				x = 2.0*rand.NextDouble()-1.0d;
+				y = 2.0d*rand.NextDouble()-1.0d;
+				z = 2.0d*rand.NextDouble()-1.0d;
+				norm = new Point3(z, y, z);
+				norm.NormalizedRotateLikeZVector(p.X, p.Y, p.Z);
+				Assert.IsTrue(Math.Abs(norm.Length-1.0d) <= Maths.GlobalEpsilon);
+			}
+		}
 	}
 }
 

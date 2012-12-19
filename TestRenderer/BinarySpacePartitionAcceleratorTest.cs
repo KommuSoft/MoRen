@@ -42,7 +42,6 @@ namespace TestRenderer {
 			BSPAccelerator oa = new BSPAccelerator(ris);
 			double ta, tb;
 			RenderItem ria, rib;
-			Action<Point3> dummy;
 			for(int i = 0x00; i < TestParameters.TriceratopsTest; i++) {
 				Ray ray = Ray.Random();
 				ray.NormalizeDirection();
@@ -56,7 +55,6 @@ namespace TestRenderer {
 		public void TestHit2 () {
 			double ta, tb;
 			RenderItem ria, rib;
-			Action<Point3> dummy;
 			for(int i = 0; i < TestParameters.BuildTest; i++) {
 				int nt = Math.Max(2, Maths.Random(i));
 				List<RenderItem> ris = new List<RenderItem>();

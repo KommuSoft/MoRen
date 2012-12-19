@@ -42,7 +42,6 @@ namespace TestRenderer {
 			OctTreeAccelerator oa = new OctTreeAccelerator(ris);
 			double ta, tb;
 			RenderItem ria, rib;
-			Action<Point3> dummy;
 			for(int i = 0x00; i < 0x10000000; i++) {
 				Ray ray = Ray.Random();
 				ray.NormalizeDirection();
@@ -69,7 +68,6 @@ namespace TestRenderer {
 			OctTreeAccelerator oa = new OctTreeAccelerator(ris);
 			double ta, tb;
 			RenderItem ria, rib;
-			Action<Point3> dummy;
 			for(int i = 0x00; i < int.MaxValue; i++) {
 				Ray ray = Ray.Random();
 				ray.NormalizeDirection();
@@ -91,7 +89,6 @@ namespace TestRenderer {
 				}
 				NaiveAccelerator ga = new NaiveAccelerator(ris);
 				OctTreeAccelerator oa = new OctTreeAccelerator(ris);
-				Action<Point3> dummy;
 				for(int k = 0; k < TestParameters.RayTest; k++) {
 					Ray ray = Ray.Random();
 					ria = ga.CalculateHit(ray, out ta, double.PositiveInfinity);
