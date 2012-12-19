@@ -631,7 +631,6 @@ namespace Renderer.SceneBuilding {
 						this.materialstr = new List<string>();
 					}
 
-					Console.WriteLine("#Vertex {0} #Faces {1}", this.vertices.Count, this.indices.Count);
 					this.normals = Utils.GenerateSmoothNormalsFromTriangles(this.vertices, this.indices.Select(x => new Tuple<int,int,int>(x.Item1, x.Item2, x.Item3)));
 				}
 				else {

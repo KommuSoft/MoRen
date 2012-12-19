@@ -43,7 +43,6 @@ namespace Renderer.SceneBuilding {
 		#region MeshLoaderBase implementation
 		public override void Load (string currentDir, string filename) {
 			TreeNode<string> tree = filename.ParseTreeBracketsComma();
-			Console.WriteLine(tree.Count);
 			if(tree.Count < 0x03) {
 				pa = Point3.DummyPoint;
 				pb = Point3.DummyXPoint;

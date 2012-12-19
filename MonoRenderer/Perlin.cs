@@ -21,7 +21,6 @@
 using System;
 
 namespace Renderer {
-
 	public static class PerlinCache {
 
 		private static readonly int[] permutationResult = new int[512];
@@ -39,9 +38,9 @@ namespace Renderer {
    49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,
    138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180
    };
-		private static readonly Color[] woodGradient = Color.MakeGradient(0x0400, new Color((uint)0x332211), new Color((uint)0x523121), new Color((uint)0x996633));
-		private static readonly Color[] marbleGradient = Color.MakeGradient(0x0400, new Color((uint)0x111111), new Color((uint)0x696070), new Color((uint)0xffffff));
-		private static readonly Color[] skyGradient = Color.MakeGradient(0x0400, new Color((uint)0x003399), new Color((uint)0xffffff));
+		private static readonly uint[] woodGradient = ColorUtils.MakeGradient(0x0400, 0x332211, 0x523121, 0x996633);
+		private static readonly uint[] marbleGradient = ColorUtils.MakeGradient(0x0400, 0xff111111, 0xff696070, 0xffffffff);
+		private static readonly uint[] skyGradient = ColorUtils.MakeGradient(0x0400, 0x003399, 0xffffff);
 
 		public static double Perlin3d (double xf, double yf, double zf) {
 			int xi = (int)Math.Floor(xf)&255;
@@ -57,7 +56,7 @@ namespace Renderer {
 			R = permutationResult[xi+0x01]+yi, RL = permutationResult[R]+zi, RR = permutationResult[R+0x01]+zi;
 
 			return Maths.LinearInterpolate(w, Maths.LinearInterpolate(v, Maths.LinearInterpolate(u, PerlinGradient(permutationResult[LL], xf, yf, zf), PerlinGradient(permutationResult[RL], xf-0x01, yf, zf)), Maths.LinearInterpolate(u, PerlinGradient(permutationResult[LR], xf, yf-0x01, zf), PerlinGradient(permutationResult[RR], xf-0x01, yf-0x01, zf))),
-												Maths.LinearInterpolate(v, Maths.LinearInterpolate(u, PerlinGradient(permutationResult[LL+0x01], xf, yf, zf-1), PerlinGradient(permutationResult[RL+0x01], xf-0x01, yf, zf-0x01)), Maths.LinearInterpolate(u, PerlinGradient(permutationResult[LR+0x01], xf, yf-1, zf-0x01), PerlinGradient(permutationResult[RR+0x01], xf-0x01, yf-0x01, zf-0x01))));
+                                                Maths.LinearInterpolate(v, Maths.LinearInterpolate(u, PerlinGradient(permutationResult[LL+0x01], xf, yf, zf-1), PerlinGradient(permutationResult[RL+0x01], xf-0x01, yf, zf-0x01)), Maths.LinearInterpolate(u, PerlinGradient(permutationResult[LR+0x01], xf, yf-1, zf-0x01), PerlinGradient(permutationResult[RR+0x01], xf-0x01, yf-0x01, zf-0x01))));
 		}
 		static double PerlinFade (double t) {
 			return t*t*t*(t*(0x06*t-0x0f)+0x0a);
@@ -75,19 +74,19 @@ namespace Renderer {
 				sum += Math.Abs(Perlin3d(xyz.X*i, xyz.Y*i, xyz.Z*i))/i;
 			}
 			double g = Math.Sin(sum);
-			return Utils.FloatIndex(marbleGradient, g);
+			return new Color((uint)Utils.FloatIndex(marbleGradient, g));
 		}
 		public static Color Sky3 (Point3 xyz) {
 			double sum = 0.0d;
 			for(int i = 0x01; i < 0x20; i++) {
 				sum += Math.Abs(Perlin3d(xyz.X*i, xyz.Y*i, xyz.Z*i))/i;
 			}
-			return Utils.FloatIndex(skyGradient, sum);
+			return new Color((uint)Utils.FloatIndex(skyGradient, sum));
 		}
 		public static Color Wood3 (Point3 xyz) {
 			double g = Perlin3d(xyz.X, xyz.Y, xyz.Z)*20;
 			g = g-(int)Math.Floor(g);
-			return Utils.FloatIndex(woodGradient, g);
+			return new Color((uint)Utils.FloatIndex(woodGradient, g));
 		}
 		public static void InitializeNoiseBuffer () {
 			for(int i=0; i < 256; i++)
@@ -96,4 +95,3 @@ namespace Renderer {
 
 	}
 }
-

@@ -68,6 +68,12 @@ namespace Renderer.SceneBuilding {
 						return new CubicalEnvironmentMap(cam, cam, cam, cam, cam, cam);
 					}
 					return null;
+				case "cross":
+					if(parsed.Count >= 0x01) {
+						ColorAtMethod cam = parsed[0x00].Data.PerlinNullOrTexture();
+						return new CrossEnvironmentMap(cam);
+					}
+					return null;
 				default :
 					return null;
 			}

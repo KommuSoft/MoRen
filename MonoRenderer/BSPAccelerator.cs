@@ -71,19 +71,24 @@ namespace Renderer {
 					}
 				}
 				LinkedList<RenderItem> cachea = new LinkedList<RenderItem>(), cacheb = new LinkedList<RenderItem>();
-				Filter(current, cachea, cacheb, nibest, ta, tb);
-				return new BSPNode(nibest, ta, tb, Split(cachea, sh, facenormals, maxDepth, maxSize, depth+1), Split(cacheb, sh, facenormals, maxDepth, maxSize, depth+1));
+				double tm, tM;
+				Filter(current, cachea, cacheb, nibest, ta, tb, out tm, out tM);
+				return new BSPNode(nibest, tm, ta, tb, tM, Split(cachea, sh, facenormals, maxDepth, maxSize, depth+1), Split(cacheb, sh, facenormals, maxDepth, maxSize, depth+1));
 			}
 			else {
 				return new BSPNode(current.ToArray());
 			}
 		}
 
-		public void Filter (LinkedList<RenderItem> source, LinkedList<RenderItem> draina, LinkedList<RenderItem> drainb, Point3 facenormal, double ta, double tb) {
+		public void Filter (LinkedList<RenderItem> source, LinkedList<RenderItem> draina, LinkedList<RenderItem> drainb, Point3 facenormal, double ta, double tb, out double tm, out double tM) {
+			tm = double.PositiveInfinity;
+			tM = double.NegativeInfinity;
 			double xa, xb;
 			LinkedListNode<RenderItem> lln = source.First;
 			while(lln != null) {
 				lln.Value.GetFaceNormalBounds(facenormal, out xa, out xb);
+				tm = Math.Min(tm, xa);
+				tM = Math.Max(tM, xb);
 				if(xb >= tb) {
 					drainb.AddLast(lln.Value);
 				}
@@ -97,8 +102,10 @@ namespace Renderer {
 		private sealed class BSPNode {
 
 			private readonly Point3 splitNormal;
+			private readonly double xm;
 			private readonly double xa;
 			private readonly double xb;
+			private readonly double xM;
 			private readonly RenderItem[] items;
 			private readonly BSPNode left, right;
 
@@ -109,10 +116,12 @@ namespace Renderer {
 				this.items = items;
 			}
 
-			public BSPNode (Point3 splitNormal, double ta, double tb, BSPNode left, BSPNode right) {
+			public BSPNode (Point3 splitNormal, double tm, double ta, double tb, double tM, BSPNode left, BSPNode right) {
 				this.splitNormal = splitNormal;
+				this.xm = tm;
 				this.xa = ta;
 				this.xb = tb;
+				this.xM = tM;
 				this.left = left;
 				this.right = right;
 				this.items = null;
@@ -137,8 +146,11 @@ namespace Renderer {
 			public void Hit (Ray ray, Point3 inter, ref RenderItem item, ref double tcur, double tmig, ref double tmax) {
 				if(this.splitNormal != null) {//we're not at a leaf
 					double x = inter[this.splitNormal];
-					double x0 = ray.Offset[this.splitNormal];
 					double dxi = Maths.SoftInv(ray.Direction[this.splitNormal]);
+					if((x < xm && dxi <= 0.0d) || x > xM && dxi >= 0.0d) {
+						return;
+					}
+					double x0 = ray.Offset[this.splitNormal];
 					double tt = tcur;
 					double tmig0;
 					if(x < xa) {

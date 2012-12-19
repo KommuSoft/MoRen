@@ -83,7 +83,7 @@ namespace Renderer {
 		}
 
 		public static Color FromFrac (double frac) {
-			ulong data = (ulong)frac*MaxValue;
+			ulong data = (ulong)(frac*MaxValue);
 			ulong overflow = (data&OverflowMask);
 			data |= overflow-(overflow>>0x14);
 			data &= NonOverflowMask;
