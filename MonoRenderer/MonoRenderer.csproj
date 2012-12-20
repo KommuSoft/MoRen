@@ -40,7 +40,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="AddRemoveEvent.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CastResult.cs" />
     <Compile Include="CombinedList.cs" />
@@ -102,12 +101,10 @@
     <Compile Include="ProxyRenderItemBase.cs" />
     <Compile Include="MeshLoaderBase.cs" />
     <Compile Include="NormalInterval.cs" />
-    <Compile Include="Blob.cs" />
     <Compile Include="SuperCamera.cs" />
     <Compile Include="SceneTimeGraphNodeCollection.cs" />
     <Compile Include="Color6.cs" />
     <Compile Include="Color6Cache65536.cs" />
-    <Compile Include="SceneGraphAccelerator.cs" />
     <Compile Include="IAccelerator.cs" />
     <Compile Include="SuperCameraTask.cs" />
     <Compile Include="IMixable.cs" />
@@ -128,7 +125,6 @@
     <Compile Include="IMeshLoader.cs" />
     <Compile Include="MeshLoaderAttribute.cs" />
     <Compile Include="TriangleLoader.cs" />
-    <Compile Include="AxisAlignedBoundingBox.cs" />
     <Compile Include="CameraFollowing.cs" />
     <Compile Include="CameraReferencePoint.cs" />
     <Compile Include="RenderingTechnology.cs" />

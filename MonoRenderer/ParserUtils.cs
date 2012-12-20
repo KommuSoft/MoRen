@@ -54,11 +54,11 @@ namespace Renderer {
 				if(namelow.StartsWith("perlin")) {
 					switch(namelow) {
 						case "perlinmarble":
-							return PerlinCache.Marble3;
+							return Perlin.Marble3;
 						case "perlinwood":
-							return PerlinCache.Wood3;
+							return Perlin.Wood3;
 						case "perlinsky":
-							return PerlinCache.Sky3;
+							return Perlin.Sky3;
 						default :
 							return NullOrTexture(name);
 					}

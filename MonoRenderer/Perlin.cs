@@ -21,7 +21,7 @@
 using System;
 
 namespace Renderer {
-	public static class PerlinCache {
+	public static class Perlin {
 
 		private static readonly int[] permutationResult = new int[512];
 		private static readonly int[] permutation = { 151,160,137,91,90,15,

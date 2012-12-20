@@ -136,7 +136,7 @@ namespace Renderer {
 		}
 		
 		public static int Main (string[] args) {
-			PerlinCache.InitializeNoiseBuffer();
+			Perlin.InitializeNoiseBuffer();
 			Mesh.InvokeLoaders();
 			string name = "Scene.xml";
 			if(args.Length > 0x00) {
