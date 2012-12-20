@@ -78,33 +78,37 @@ namespace Renderer {
 					double thetafrac = Math.PI-Math.Asin(li.Radius/len);
 					uint light = 0x00;
 					double lightD;
-					if(!double.IsNaN(thetafrac) && lightTest > 0x00) {
-						dis.SetValues(hp, li.Position);
-						dis.Normalize();
-						sr.SetOffsetWithEpsilon(hp);
-						if(this.acc.CalculateHit(sr, out tdummy, len-li.Radius) == null) {
-							light++;
-						}
-						for(int i = 1; i < lightTest; i++) {
-							lp.SetValues(li.Position, li.Radius);
-							dis.SetValues(hp, lp);
+					dis.SetValues(hp, li.Position);
+					dis.Normalize();
+					if(Point3.CosAngleNorm(dis, norm) >= 0.0d) {
+						if(!double.IsNaN(thetafrac) && lightTest > 0x00) {
+							dis.SetValues(hp, li.Position);
 							dis.Normalize();
 							sr.SetOffsetWithEpsilon(hp);
 							if(this.acc.CalculateHit(sr, out tdummy, len-li.Radius) == null) {
 								light++;
 							}
+							for(int i = 1; i < lightTest; i++) {
+								lp.SetValues(li.Position, li.Radius);
+								dis.SetValues(hp, lp);
+								dis.Normalize();
+								sr.SetOffsetWithEpsilon(hp);
+								if(this.acc.CalculateHit(sr, out tdummy, len-li.Radius) == null) {
+									light++;
+								}
+							}
+							lightD = (double)light/lightTest;
 						}
-						lightD = (double)light/lightTest;
-					}
-					else {
-						lightD = 1.0d;
-					}
-					if(lightD > 0.0d) {
-						dis.SetValues(hp, li.Position);
-						dis.Normalize();
-						Color clrl = (li.Color*diffuse)*Point3.CosAngleNorm(dis, norm);
-						clrl += (li.Color*specular)*Math.Pow(Point3.CosAngleNorm(rl, dis), mat.Shininess);
-						clr += Color.LoseIntensity((clrl*lightD), distanceUnit, len);
+						else {
+							lightD = 1.0d;
+						}
+						if(lightD > 0.0d) {
+							dis.SetValues(hp, li.Position);
+							dis.Normalize();
+							Color clrl = (li.Color*diffuse)*Point3.CosAngleNorm(dis, norm);
+							clrl += (li.Color*specular)*Math.Max(0.0d, Math.Pow(Point3.CosAngleNorm(rl, dis), mat.Shininess));
+							clr += Color.LoseIntensity((clrl*lightD), distanceUnit, len);
+						}
 					}
 				}
 				if(depth < maxDepth) {
@@ -114,8 +118,14 @@ namespace Renderer {
 						clr += this.CalculateColor(ray, depth+1, reflint)*reflectance;
 					}
 					Color refrint = intensityHint*refraction;
-					if(!double.IsNaN(rayCache[depth].Direction.X) && refrint.IntensityTreshold) {
-						clr += this.CalculateColor(rayCache[depth], depth+1, refrint)*refrint;
+					if(refrint.IntensityTreshold) {
+						if(double.IsNaN(rayCache[depth].Direction.X)) {
+							ray.SetWithEpsilon(hp, rl);
+							clr += this.CalculateColor(ray, depth+1, refrint)*refraction;
+						}
+						else {
+							clr += this.CalculateColor(rayCache[depth], depth+1, refrint)*refraction;
+						}
 					}
 				}
 				return Color.LoseIntensity(clr, distanceUnit, t);
@@ -128,7 +138,11 @@ namespace Renderer {
 		public static int Main (string[] args) {
 			PerlinCache.InitializeNoiseBuffer();
 			Mesh.InvokeLoaders();
-			SceneDescription sd = SceneDescription.ParseFromStream("Scene.xml");
+			string name = "Scene.xml";
+			if(args.Length > 0x00) {
+				name = args[0x00];
+			}
+			SceneDescription sd = SceneDescription.ParseFromStream(name);
 			sd.BuildScene();
 			return 0x00;
 		}

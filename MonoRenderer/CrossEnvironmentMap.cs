@@ -41,12 +41,12 @@ namespace Renderer {
 						p.X = 0.125d+0.125d*ray.DZ*ux;
 					}
 					else {//right
-						p.X = 0.375d-0.125d*ray.DZ*ux;
+						p.X = 0.625d-0.125d*ray.DZ*ux;
 					}
 					break;
 				case 0x01://down-up
 					uy = 1.0d/uy;
-					p.X = 0.5d+0.5d*ray.DX*uy;
+					p.X = 0.375d+0.125d*ray.DX*uy;
 					if(ray.DY < 0x00) {//down
 						p.Y = (2.5d-0.5d*ray.DZ*uy)/3;
 					}
