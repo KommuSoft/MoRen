@@ -3,4 +3,5 @@ h1. MoRen
 The *Mo*no *Ren*derer
 
 h2. Features
+
 Raytracing, Phongshading, Acceleration (Grid, Binary Space Hierarchy, K-Hierarchy), Texture-mapping, Bump-mapping, Environment-mapping, Shadow, Reflection, Refraction, 3DS Model Loader, Animation, Motion blur, Anti-Aliassing, Anaglyphs, Circle primitives, Tag motion, Lensflare, 24-bit colors, 63-bit colors, Perlin noise.
