@@ -1,3 +1,6 @@
-h1. Assembla.readme
+h1. MoRen
 
-In assembla you can use "textile(Textile Basics)":http://bit.ly/textile-basics, "html(Html Basics)":http://bit.ly/html-basics or "markdown(Markdown Basics)":http://bit.ly/markdown-basics to add some sugar to your readme files. Just add the extention to your readme file, so we can recognize the markup you want to use!
+The *Mo*no *Ren*derer
+
+h2. Features
+Raytracing, Phongshading, Acceleration (Grid, Binary Space Hierarchy, K-Hierarchy), Texture-mapping, Bump-mapping, Environment-mapping, Shadow, Reflection, Refraction, 3DS Model Loader, Animation, Motion blur, Anti-Aliassing, Anaglyphs, Circle primitives, Tag motion, Lensflare, 24-bit colors, 63-bit colors, Perlin noise.
